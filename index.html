@@ -16,11 +16,29 @@
 
     <section>
       <button id="play-pause-btn">▶️</button>
+
+      <form id="game-speed-form">
+        <label for="normal">
+          <input type="radio" id="normal" name="speed" value="normal" checked />
+          normal
+        </label>
+        <label for="fast">
+          <input type="radio" id="fast" name="speed" value="fast" />
+          fast
+        </label>
+        <label for="faster">
+          <input type="radio" id="faster" name="speed" value="faster" />
+          faster
+        </label>
+      </form>
     </section>
 
-    <svg id="scene" width="500" height="1200" style="background: #555; margin: 0 auto">
-      <!-- <circle id="test" cy="400" cx="250" r="20" fill="red"/> -->
-      <g></g>
+    <svg
+      id="scene"
+      width="500"
+      height="1200"
+      style="background: #555; margin: 0 auto"
+    >
     </svg>
 
     <script type="module" src="/main.js"></script>

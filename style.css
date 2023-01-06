@@ -28,6 +28,13 @@ header {
   padding-inline: 1.5rem;
 }
 
+section {
+  display: flex;
+  /* justify-content: space-between; */
+  align-items: baseline;
+  padding-inline: 1.5rem;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
