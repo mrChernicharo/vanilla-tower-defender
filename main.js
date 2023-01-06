@@ -27,14 +27,17 @@ const gameSpeedForm = document.querySelector("#game-speed-form");
 
 const sceneRect = svg.getBoundingClientRect();
 const tileWidth = sceneRect.width / 6;
-scene.setAttribute("transform", `translate(${tileWidth / 2},${tileWidth / 2})`);
+const margin = tileWidth / 2;
+scene.setAttribute("transform", `translate(${margin},${margin})`);
 
-scene.onpointermove = (e) => {
+svg.onpointermove = (e) => {
   G.mouse = { x: e.offsetX, y: e.offsetY };
 };
+svg.onclick = (e) => {
+  G.lastClick = { x: e.offsetX - margin, y: e.offsetY - margin };
+  console.log(G.lastClick);
+};
 scene.onclick = (e) => {
-  G.lastClick = { x: e.offsetX, y: e.offsetY };
-
   selectTile(e.target.dataset.index);
 };
 playPauseBtn.onclick = (e) => {
@@ -70,21 +73,24 @@ gameSpeedForm.onchange = (e) => {
   G.gameSpeed = speed;
 };
 
-function selectTile(index) {
-  G.lastSelectedTile = G.selectedTile;
-  G.selectedTile = G.tiles[index];
 
-  G.selectedTile.focus();
-  G.lastSelectedTile?.blur();
-  console.log(G.selectedTile)
-}
-
+const getMiddleX = () => sceneRect.width / 2 - margin;
 const getTileColor = (type) => {
   if (type === "path") return "#971";
   const random = Math.floor(Math.random() * 4);
   const greens = ["#060", "#050", "#040", "#030"];
   return greens[random];
 };
+
+
+function selectTile(index) {
+  G.lastSelectedTile = G.selectedTile;
+  G.selectedTile = G.tiles[index];
+
+  G.selectedTile.focus();
+  G.lastSelectedTile?.blur();
+  console.log(G.selectedTile, G);
+}
 
 function createGrid(cols = 5, rows = 12) {
   // prettier-ignore
@@ -137,7 +143,7 @@ function spawnEnemy() {
     id: G.tick,
     shape: null,
     hp: Math.random() * 800 + 100,
-    size: 15,
+    size: 25,
     pos: {
       x: 0,
       y: 0,
@@ -147,7 +153,8 @@ function spawnEnemy() {
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      this.pos.x = sceneRect.width / 2 - this.size / 2;
+      console.log(sceneRect.width, margin, this.size);
+      this.pos.x = getMiddleX();
       this.shape.setAttribute("id", `enemy-${G.tick}`);
       this.shape.setAttribute("cx", parseInt(this.pos.x));
       this.shape.setAttribute("cy", parseInt(this.pos.y));
