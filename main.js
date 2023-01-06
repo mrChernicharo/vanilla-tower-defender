@@ -24,6 +24,7 @@ const svg = document.querySelector("svg");
 const scene = document.querySelector("#scene");
 const playPauseBtn = document.querySelector("#play-pause-btn");
 const gameSpeedForm = document.querySelector("#game-speed-form");
+const selectionRing = document.querySelector("#selection-ring");
 let playPauseIcon = "▶️";
 
 const sceneRect = svg.getBoundingClientRect();
@@ -110,9 +111,13 @@ function selectTile(index) {
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
     G.selectedTile = null;
     G.lastSelectedTile.blur();
+    selectionRing.setAttribute("style", 'opacity: 0');
   } else {
     G.lastSelectedTile?.blur();
     G.selectedTile.focus();
+    const { x, y } = G.selectedTile.pos;
+    selectionRing.setAttribute("transform", `translate(${x},${y})`);
+    selectionRing.setAttribute("style", 'opacity: 0.5');
   }
 
   handleTileMenu(G.selectedTile);
