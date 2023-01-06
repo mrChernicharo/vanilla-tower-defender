@@ -20,13 +20,14 @@ const G = {
   gameSpeed: 2,
 };
 
+const svg = document.querySelector("svg");
 const scene = document.querySelector("#scene");
-const test = document.querySelector("#test");
 const playPauseBtn = document.querySelector("#play-pause-btn");
 const gameSpeedForm = document.querySelector("#game-speed-form");
 
-const sceneRect = scene.getBoundingClientRect();
-const tileWidth = sceneRect.width / 5;
+const sceneRect = svg.getBoundingClientRect();
+const tileWidth = sceneRect.width / 6;
+scene.setAttribute("transform", `translate(${tileWidth / 2},${tileWidth / 2})`);
 
 scene.onpointermove = (e) => {
   G.mouse = { x: e.offsetX, y: e.offsetY };
@@ -72,47 +73,59 @@ gameSpeedForm.onchange = (e) => {
 function selectTile(index) {
   G.lastSelectedTile = G.selectedTile;
   G.selectedTile = G.tiles[index];
-  console.log(index);
-  G.tiles[index];
+
+  G.selectedTile.focus();
+  G.lastSelectedTile?.blur();
+  console.log(G.selectedTile)
 }
 
-const getTileGrassColor = () => {
-  const random = Math.floor(Math.random() * 8);
-  const greens = [
-    "#090",
-    "#060",
-    "#080",
-    "#070",
-    "#060",
-    "#050",
-    "#040",
-    "#030",
-  ];
+const getTileColor = (type) => {
+  if (type === "path") return "#971";
+  const random = Math.floor(Math.random() * 4);
+  const greens = ["#060", "#050", "#040", "#030"];
   return greens[random];
 };
+
 function createGrid(cols = 5, rows = 12) {
   // prettier-ignore
-  for (let row of Array(rows).fill().map((_,i) => i)) {
-    for (let col of Array(cols).fill().map((_,i) => i)) {
-      const pos = { x: col * tileWidth, y: row * tileWidth }
+  for (let row of Array(rows).fill().map((_, i) => i)) {
+    for (let col of Array(cols).fill().map((_, i) => i)) {
+      const pos = { x: col * tileWidth, y: row * tileWidth };
       const newTile = {
         index: row * cols + col,
         id: `${row}:${col}`,
         pos,
         shape: null,
+        fill: null,
+        type: null,
         init() {
-          const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-          rect.setAttribute('id', this.id)
-          rect.setAttribute('data-index', this.index)
-          rect.setAttribute('x', pos.x)
-          rect.setAttribute('y',  pos.y)
-          rect.setAttribute('height',  tileWidth)
-          rect.setAttribute('width', tileWidth)
-          rect.setAttribute('fill', getTileGrassColor())
-          scene.append(rect)
-        }
+          this.shape = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "rect"
+          );
+          this.type = row == 0 && col == 2 ? 'path' : 'grass',
+          this.fill = getTileColor(this.type)
+          this.shape.setAttribute("id", this.id);
+          this.shape.setAttribute("data-index", this.index);
+          this.shape.setAttribute("x", pos.x);
+          this.shape.setAttribute("y", pos.y);
+          this.shape.setAttribute("height", tileWidth);
+          this.shape.setAttribute("width", tileWidth);
+          this.shape.setAttribute("fill", this.fill);
+          this.shape.setAttribute("opacity", 1);
+          scene.append(this.shape);
+        },
+        focus() {
+          this.shape.setAttribute("opacity", 0.4);
+          this.shape.setAttribute('style', `filter: drop-shadow(0 0 1rem #04f);`)
+        },
+        blur() {
+          this.shape.setAttribute("opacity", 1);
+          this.shape.setAttribute('style', `filter: drop-shadow(0 0 0 #04f);`)
+
+        },
       };
-      newTile.init()
+      newTile.init();
       G.tiles.push(newTile);
     }
   }
