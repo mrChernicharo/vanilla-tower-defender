@@ -99,3 +99,22 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+/* #selection-ring-g.animate {
+  animation: grow;
+  animation-duration: 0.5s;
+  transform-origin: center center;
+}
+
+@keyframes grow {
+  0% {
+    scale: 0.5;
+  }
+  100% {
+    scale: 1;
+  }
+} */
+
+.ring-icon:hover {
+  cursor: pointer;
+}
