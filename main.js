@@ -24,6 +24,7 @@ const svg = document.querySelector("svg");
 const scene = document.querySelector("#scene");
 const playPauseBtn = document.querySelector("#play-pause-btn");
 const gameSpeedForm = document.querySelector("#game-speed-form");
+let playPauseIcon = "▶️";
 
 const sceneRect = svg.getBoundingClientRect();
 const tileWidth = sceneRect.width / 6;
@@ -38,12 +39,29 @@ svg.onclick = (e) => {
   console.log(G.lastClick);
 };
 scene.onclick = (e) => {
-  selectTile(e.target.dataset.index);
+  const entity = e.target.dataset.entity;
+  if (!entity) return;
+
+  const entityActions = {
+    enemy() {
+      console.log(`clicked ${entity}`);
+    },
+    tile() {
+      console.log(`clicked ${entity}`);
+      selectTile(e.target.dataset.index);
+      console.log(G.selectedTile);
+    },
+    tower() {
+      console.log(`clicked ${entity}`);
+    },
+  };
+
+  entityActions[entity]();
 };
 playPauseBtn.onclick = (e) => {
   G.isPlaying = !G.isPlaying;
-  const icon = G.isPlaying ? "⏸" : "▶️";
-  playPauseBtn.innerHTML = icon;
+  playPauseIcon = G.isPlaying ? "⏸" : "▶️";
+  playPauseBtn.innerHTML = playPauseIcon;
 
   if (G.isPlaying) {
     G.loopTimestamp = 0;
@@ -57,7 +75,7 @@ playPauseBtn.onclick = (e) => {
 };
 gameSpeedForm.onchange = (e) => {
   e.preventDefault();
-  console.log(e.target.value);
+  // console.log(e.target.value);
   let speed;
   switch (e.target.value) {
     case "normal":
@@ -73,7 +91,6 @@ gameSpeedForm.onchange = (e) => {
   G.gameSpeed = speed;
 };
 
-
 const getMiddleX = () => sceneRect.width / 2 - margin;
 const getTileColor = (type) => {
   if (type === "path") return "#971";
@@ -82,14 +99,23 @@ const getTileColor = (type) => {
   return greens[random];
 };
 
+function handleTileMenu(tile) {
+  console.log("handleTimeMenu", tile);
+}
 
 function selectTile(index) {
   G.lastSelectedTile = G.selectedTile;
   G.selectedTile = G.tiles[index];
 
-  G.selectedTile.focus();
-  G.lastSelectedTile?.blur();
-  console.log(G.selectedTile, G);
+  if (G.lastSelectedTile?.id === G.selectedTile?.id) {
+    G.selectedTile = null;
+    G.lastSelectedTile.blur();
+  } else {
+    G.lastSelectedTile?.blur();
+    G.selectedTile.focus();
+  }
+
+  handleTileMenu(G.selectedTile);
 }
 
 function createGrid(cols = 5, rows = 12) {
@@ -112,6 +138,7 @@ function createGrid(cols = 5, rows = 12) {
           this.type = row == 0 && col == 2 ? 'path' : 'grass',
           this.fill = getTileColor(this.type)
           this.shape.setAttribute("id", this.id);
+          this.shape.setAttribute("data-entity", "tile");
           this.shape.setAttribute("data-index", this.index);
           this.shape.setAttribute("x", pos.x);
           this.shape.setAttribute("y", pos.y);
@@ -128,14 +155,16 @@ function createGrid(cols = 5, rows = 12) {
         blur() {
           this.shape.setAttribute("opacity", 1);
           this.shape.setAttribute('style', `filter: drop-shadow(0 0 0 #04f);`)
-
         },
       };
       newTile.init();
       G.tiles.push(newTile);
     }
   }
-  console.log(G);
+}
+
+function appendTileMenu() {
+  // const element
 }
 
 function spawnEnemy() {
@@ -153,13 +182,13 @@ function spawnEnemy() {
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      console.log(sceneRect.width, margin, this.size);
       this.pos.x = getMiddleX();
       this.shape.setAttribute("id", `enemy-${G.tick}`);
       this.shape.setAttribute("cx", parseInt(this.pos.x));
       this.shape.setAttribute("cy", parseInt(this.pos.y));
       this.shape.setAttribute("r", parseInt(this.size));
       this.shape.setAttribute("data-hp", this.hp);
+      this.shape.setAttribute("data-entity", "enemy");
       this.shape.setAttribute("fill", "blue");
       scene.append(this.shape);
     },
@@ -179,7 +208,6 @@ function spawnEnemy() {
 }
 
 function createTower(pos) {
-  console.log(pos);
   const newTower = {
     id: G.tick,
     shape: null,
@@ -192,7 +220,9 @@ function createTower(pos) {
       this.shape.setAttribute("id", `enemy-${G.tick}`);
       this.shape.setAttribute("cx", parseInt(this.pos.x));
       this.shape.setAttribute("cy", parseInt(this.pos.y));
+      this.shape.setAttribute("data-entity", "tower");
       this.shape.setAttribute("r", 25);
+
       this.shape.setAttribute("fill", "orange");
       scene.append(this.shape);
     },
@@ -218,8 +248,8 @@ function runAnimation(frame) {
   G.tick += G.gameSpeed;
   G.clock = G.tick / 60;
 
+  // spawning enemies
   if (waveInterval < 0) {
-    console.log({ clock: G.clock, tick: G.tick });
     spawnEnemy();
     waveInterval = 120;
   }
@@ -232,3 +262,13 @@ function runAnimation(frame) {
 }
 
 createGrid();
+appendTileMenu();
+
+// auto-play
+setTimeout(() => {
+  G.isPlaying = true;
+  playPauseIcon = "⏸";
+  playPauseBtn.innerHTML = playPauseIcon;
+  G.frameId = requestAnimationFrame(runAnimation);
+  console.log("auto-play");
+}, 1000);
