@@ -43,18 +43,13 @@ scene.onclick = (e) => {
   const entity = e.target.dataset.entity;
   if (!entity) return;
 
+  console.log(`clicked ${entity}`);
   const entityActions = {
-    enemy() {
-      console.log(`clicked ${entity}`);
-    },
+    enemy() {},
     tile() {
-      console.log(`clicked ${entity}`);
-      selectTile(e.target.dataset.index);
-      console.log(G.selectedTile);
+      handleSelectTile(e.target.dataset.index);
     },
-    tower() {
-      console.log(`clicked ${entity}`);
-    },
+    tower() {},
   };
 
   entityActions[entity]();
@@ -93,37 +88,164 @@ gameSpeedForm.onchange = (e) => {
 };
 
 const getMiddleX = () => sceneRect.width / 2 - margin;
-const getTileColor = (type) => {
+const getTileColor = (type, blocked = false) => {
+  if (blocked) return "#444";
   if (type === "path") return "#971";
   const random = Math.floor(Math.random() * 4);
   const greens = ["#060", "#050", "#040", "#030"];
   return greens[random];
 };
 
+// <i class="fa-solid fa-coins"></i>
+// <i class="fa-solid fa-close"></i>
+// <i class="fas-solid fa-shovel"></i>
+
 function handleTileMenu(tile) {
   console.log("handleTimeMenu", tile);
+
+  Array.from(document.querySelectorAll(".ring-icon")).forEach((circle) =>
+    circle.remove()
+  );
+  Array.from(document.querySelectorAll(".defs")).forEach((defs) =>
+    defs.remove()
+  );
+
+  if (tile.blocked) {
+    return;
+  }
+
+  const ring = document.querySelector("#selection-ring-g");
+  const translation = ring.getAttribute("transform");
+  const [x, y] = translation
+    .replace(/translate|\(|\)/g, "")
+    .split(",")
+    .map(Number);
+
+  const menuIcons = {
+    trap: [],
+    newPath: [
+      { x: 75, y: 0, iconClass: null, img: "shovel.svg" },
+      { x: 150, y: 75, iconClass: null, img: "shovel.svg" },
+      { x: 0, y: 75, iconClass: null, img: "shovel.svg" },
+      { x: 75, y: 150, iconClass: null, img: "shovel.svg" },
+    ],
+    tower: [],
+    newTower: [
+      { x: 75, y: 0, iconClass: null, img: "coins.svg" },
+      { x: 150, y: 75, iconClass: null, img: "coins.svg" },
+      { x: 0, y: 75, iconClass: null, img: "coins.svg" },
+      { x: 75, y: 150, iconClass: null, img: "coins.svg" },
+      // { x: 75, y: 0, iconClass: "fa-solid fa-coins" },
+      // { x: 150, y: 75, iconClass: "fa-solid fa-coins" },
+      // { x: 0, y: 75, iconClass: "fa-solid fa-coins" },
+      // { x: 75, y: 150, iconClass: "fa-solid fa-coins" },
+    ],
+  };
+
+  let menuType;
+  if (tile.type === "path") {
+    if (tile.connected) {
+      // trap
+      console.log("trap");
+      menuType = "trap";
+    } else {
+      // newPath
+      console.log("newPath");
+      menuType = "newPath";
+    }
+  } else {
+    if (tile.hasTower) {
+      // tower
+      console.log("tower");
+      menuType = "tower";
+    } else {
+      // newTower
+      console.log("newTower");
+      menuType = "newTower";
+    }
+  }
+  console.log({ menuType });
+
+  for (const [i, item] of menuIcons[menuType].entries()) {
+    const circle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    circle.setAttribute("class", `ring-icon`);
+    circle.setAttribute("cx", tile.pos.x + item.x);
+    circle.setAttribute("cy", tile.pos.y + item.y);
+    circle.setAttribute("r", 20);
+    circle.setAttribute("fill", "blue");
+
+    // if (item.iconClass) {
+    //   const icon = document.createElement("i");
+    //   icon.setAttribute("class", iconClass);
+    //   icon.setAttribute("cx", tile.pos.x + item.x);
+    //   icon.setAttribute("cy", tile.pos.y + item.y);
+    //   ring.append(icon);
+    // }
+
+      const defs = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "defs"
+      );
+      const pattern =  document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "pattern"
+      );
+      const image =  document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "image"
+      );
+      defs.setAttribute('class', 'defs')
+      const patternId = `${tile.id}-bg-img`
+      pattern.setAttribute('id', patternId)
+      pattern.setAttribute('patternUnits','noRepeat')
+      pattern.setAttribute('width',28)
+      pattern.setAttribute('height',28)
+      image.setAttribute('href', item.img)
+      image.setAttribute('x',5)
+      image.setAttribute('y',5)
+      image.setAttribute('width',28)
+      image.setAttribute('height',28)
+
+      pattern.append(image)
+      defs.append(pattern)
+      ring.append(defs)
+
+      circle.setAttribute('fill', `url(#${patternId})`)
+    ring.append(circle);
+  }
 }
 
-function selectTile(index) {
+function handleSelectTile(index) {
   G.lastSelectedTile = G.selectedTile;
   G.selectedTile = G.tiles[index];
 
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
     G.selectedTile = null;
     G.lastSelectedTile.blur();
-    selectionRing.setAttribute("style", 'opacity: 0');
+    selectionRing.setAttribute("style", "opacity: 0");
   } else {
     G.lastSelectedTile?.blur();
     G.selectedTile.focus();
-    const { x, y } = G.selectedTile.pos;
-    selectionRing.setAttribute("transform", `translate(${x},${y})`);
-    selectionRing.setAttribute("style", 'opacity: 0.5');
+    if (G.selectedTile.blocked) {
+      selectionRing.setAttribute("style", "opacity: 0");
+    }
+    if (!G.selectedTile.blocked) {
+      const { x, y } = G.selectedTile.pos;
+      selectionRing.setAttribute("transform", `translate(${x},${y})`);
+      selectionRing.setAttribute("style", "opacity: 0.5");
+    }
+    handleTileMenu(G.selectedTile);
   }
-
-  handleTileMenu(G.selectedTile);
 }
 
 function createGrid(cols = 5, rows = 12) {
+  const isInitialPath = (row, col) => row == 0 && col == 2;
+  const isBlocked = (row, col) =>
+    (row == 3 && col == 2) || (row == 4 && col == 1);
+
   // prettier-ignore
   for (let row of Array(rows).fill().map((_, i) => i)) {
     for (let col of Array(cols).fill().map((_, i) => i)) {
@@ -135,13 +257,17 @@ function createGrid(cols = 5, rows = 12) {
         shape: null,
         fill: null,
         type: null,
+        connected: false,
+        hasTower: false,
+        blocked: false,
         init() {
           this.shape = document.createElementNS(
             "http://www.w3.org/2000/svg",
             "rect"
           );
-          this.type = row == 0 && col == 2 ? 'path' : 'grass',
-          this.fill = getTileColor(this.type)
+          this.type = isInitialPath(row, col) ? 'path' : 'grass';
+          this.blocked = isBlocked(row, col);
+          this.fill = getTileColor(this.type, this.blocked);
           this.shape.setAttribute("id", this.id);
           this.shape.setAttribute("data-entity", "tile");
           this.shape.setAttribute("data-index", this.index);
@@ -168,16 +294,12 @@ function createGrid(cols = 5, rows = 12) {
   }
 }
 
-function appendTileMenu() {
-  // const element
-}
-
 function spawnEnemy() {
   const newEnemy = {
     id: G.tick,
     shape: null,
     hp: Math.random() * 800 + 100,
-    size: 25,
+    size: 13,
     pos: {
       x: 0,
       y: 0,
@@ -255,7 +377,7 @@ function runAnimation(frame) {
 
   // spawning enemies
   if (waveInterval < 0) {
-    spawnEnemy();
+    // spawnEnemy();
     waveInterval = 120;
   }
 
@@ -267,7 +389,6 @@ function runAnimation(frame) {
 }
 
 createGrid();
-appendTileMenu();
 
 // auto-play
 setTimeout(() => {

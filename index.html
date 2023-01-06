@@ -7,6 +7,13 @@
     <title>Vite App</title>
 
     <link rel="stylesheet" href="style.css" />
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css"
+      integrity="sha512-MV7K8+y+gLIBoVD59lQIYicR65iaqukzvf/nwasF0nqhPay5w/9lJmVM2hMDcnK1OnMGCdVK+iQrJ7lzPJQd1w=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    /> -->
   </head>
   <body>
     <header>
@@ -16,6 +23,7 @@
 
     <section>
       <button id="play-pause-btn">▶️</button>
+      <!-- <img src="shovel.svg" /> -->
 
       <form id="game-speed-form">
         <label for="normal">
@@ -36,7 +44,9 @@
     <svg width="600" height="1200" style="background: #555; margin: 0 auto">
       <g id="scene"></g>
 
-      <g transform="translate(25,25)">
+
+
+      <g id="selection-ring-g" transform="translate(25,25)">
         <path
           id="selection-ring"
           height="150px"
@@ -45,10 +55,19 @@
           opacity=".7"
           stroke-width="10"
           d=" M 150 75 A 75 75 0 1 1 150 74.99"
-          style="opacity: 0;"
+          style="opacity: 0"
           pointer-events="none"
         />
       </g>
+
+
+
+      <defs>
+        <pattern id="bg" patternUnits="noRepeat" width="28" height="28">
+          <image href="shovel.svg" x="5" y="5" width="28" height="28"/>
+        </pattern>
+      </defs>
+      <circle r="20" cx="200" cy="200" fill="url(#bg)" stroke="red"/>
       <!-- d="M256,0C114.842,0,0,114.842,0,256s114.842,256,256,256s256-114.842,256-256S397.158,0,256,0z M256,486.4 C128.751,486.4,25.6,383.249,25.6,256S128.751,25.6,256,25.6S486.4,128.751,486.4,256S383.249,486.4,256,486.4z" -->
     </svg>
 
