@@ -88,6 +88,7 @@ const G = {
   selectedTile: null,
   lastSelectedTile: null,
   isPlaying: false,
+  inBattle: false,
   stageNumber: 1,
   waveNumber: null,
   wavesTimes: [{ s: 0, e: null }],
@@ -106,6 +107,8 @@ let playPauseIcon = "▶️";
 const sceneRect = svg.getBoundingClientRect();
 const tileWidth = sceneRect.width / 6;
 const MARGIN = tileWidth / 2;
+const COLS = 5,
+  ROWS = 12;
 scene.setAttribute("transform", `translate(${MARGIN},${MARGIN})`);
 
 svg.onpointermove = (e) => {
@@ -172,14 +175,75 @@ const getTileColor = (type, blocked = false) => {
   const greens = ["#060", "#050", "#040", "#030"];
   return greens[random];
 };
+const canBecomePath = (tile) => {
+  return tile.type === "grass" && !tile.hasTower;
+};
+
+function getAdjacentTile(tile, direction) {
+  console.log("getAdjacentTile", { direction, tile, tiles: G.tiles });
+  let adj;
+  switch (direction) {
+    case "left":
+      {
+        adj = G.tiles.find((t) => t.index === tile.index - 1);
+      }
+      break;
+    case "right":
+      {
+        adj = G.tiles.find((t) => t.index === tile.index + 1);
+      }
+      break;
+    case "bottom":
+      {
+        adj = G.tiles.find((t) => t.index === tile.index + COLS);
+      }
+      break;
+  }
+  return adj || null;
+}
 
 function handleShowTowerPreview(tile, icon) {
   console.log("handle tower preview", tile, icon);
 }
 
+const getIconDirection = (iconType) => iconType.split("-")[1];
+
 function handleCreateNewPath(tile, icon) {
-  console.log("handleCreateNewPath", tile, icon);
-  // const barrierBroken = tile.y > firstWaveRow + waveNumber;
+  const barrierBroken = tile.pos.y / 100 > FIRST_WAVE_AT_ROW + G.waveNumber;
+  const direction = getIconDirection(icon.dataset.type);
+  const adj = getAdjacentTile(tile, direction);
+  console.log("handleCreateNewPath", tile, icon, adj);
+
+  const newTile = {
+    ...adj,
+    type: "path",
+    exits: getTileExits(adj),
+    ...(barrierBroken && { enemyEntrance: true }),
+  };
+
+  const newTileChain = [...G.tileChain];
+  const prevTile = newTileChain.pop();
+  prevTile.connected = true;
+  G.tileChain = [...newTileChain, prevTile, newTile];
+  G.tiles[newTile.index] = newTile;
+
+  if (barrierBroken) {
+    (G.waveNumber = tile.y / 100 - FIRST_WAVE_AT_ROW), (G.inBattle = true);
+  }
+
+  drawNewPathTile(newTile);
+}
+
+function drawNewPathTile(tile) {
+  const tileRect = document.querySelector(`#${tile.id}`);
+  console.log(tileRect);
+  tileRect.setAttribute("fill", getTileColor(tile.type));
+  tileRect.setAttribute("data-type", "path");
+  G.selectedTile?.blur();
+  G.selectedTile = null;
+  selectionRingG.setAttribute("style", "opacity: 0");
+  selectionRing.setAttribute("style", "opacity: 0");
+  console.log(G);
 }
 
 function handleDisplayTileMenu(tile) {
@@ -211,16 +275,22 @@ function handleDisplayTileMenu(tile) {
     }
   };
 
-  const drawRingIcons = (menuType) => {
-    // const translation = selectionRingG.getAttribute("transform");
-    // const [x, y] = translation
-    //   .replace(/translate|\(|\)/g, "")
-    //   .split(",")
-    //   .map(Number);
-    const pluckTowerType = (id) => id.split("-")[0];
-
+  const drawRingIcons = (menuType, tile) => {
     const icons = [];
     for (const [i, item] of menuIcons[menuType].entries()) {
+      if (menuType === "newPath") {
+        const adjacentTile = getAdjacentTile(tile, getIconDirection(item.type));
+        const isBuildableAdj =
+          !tile.connected &&
+          adjacentTile &&
+          !adjacentTile.blocked &&
+          canBecomePath(adjacentTile);
+
+        if (!isBuildableAdj) continue;
+
+        console.log(item.type, { item, adjacentTile, isBuildableAdj });
+      }
+
       const circle = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
@@ -283,7 +353,7 @@ function handleDisplayTileMenu(tile) {
   }
 
   const menuType = getMenuType();
-  const icons = drawRingIcons(menuType);
+  const icons = drawRingIcons(menuType, tile);
   appendIconsListeners(icons);
 }
 
@@ -313,7 +383,7 @@ function handleSelectTile(index) {
   }
 }
 
-function createGrid(cols = 5, rows = 12) {
+function createGrid(cols = COLS, rows = ROWS) {
   const isInitialPath = (row, col) => row == 0 && col == 2;
   const isBlocked = (row, col) =>
     (row == 3 && col == 2) || (row == 4 && col == 1);
@@ -324,7 +394,7 @@ function createGrid(cols = 5, rows = 12) {
       const pos = { x: col * tileWidth, y: row * tileWidth };
       const newTile = {
         index: row * cols + col,
-        id: `${row}:${col}`,
+        id: `tile-${row}-${col}`,
         pos,
         shape: null,
         fill: null,
@@ -479,11 +549,13 @@ setTimeout(() => {
 function getTileExits(tile) {
   if (tile.startingPoint) {
     console.log("hey", tile, G.tiles, G.tileChain);
-    return {
+    const exits = {
       left: { x: tile.pos.x + 25, y: 0 },
       center: { x: tile.pos.x + 50, y: 0 },
       right: { x: tile.pos.x + 75, y: 0 },
     };
+    G.tileChain.push({ ...tile, exits });
+    return exits;
   }
 
   // return;
