@@ -1,78 +1,45 @@
-const FIRST_WAVE_AT_ROW = 3;
+import {
+  COLS,
+  ROWS,
+  FIRST_WAVE_AT_ROW,
+  MARGIN,
+  svg,
+  scene,
+  playPauseBtn,
+  gameSpeedForm,
+  selectionRing,
+  selectionRingG,
+  sceneRect,
+  menuIcons,
+  tileWidth,
+  enemyLaneLeft,
+  enemyLaneCenter,
+  enemyLaneRight,
+  TOWERS,
+  pre,
+} from "./constants";
+import {
+  canBecomePath,
+  getMenuType,
+  getMiddleX,
+  getTileColor,
+  createGrid,
+  getTileExits,
+  getAdjacentTile,
+  getIconDirection,
+  getChains,
+  getTowerType,
+  createPath,
+  drawTowerPreview,
+  drawNewPathTile,
+  removePreviewTower,
+  drawRingIcons,
+  appendIconsListeners,
+  removeRingIcons,
+} from "./helpers";
 
-const menuIcons = {
-  trap: [],
-  newPath: [
-    {
-      id: "shovel-right-icon",
-      type: "shovel-right",
-      x: 150,
-      y: 75,
-      color: "red",
-      img: "assets/shovel.svg",
-    },
-    {
-      id: "shovel-left-icon",
-      type: "shovel-left",
-      x: 0,
-      y: 75,
-      color: "red",
-      img: "assets/shovel.svg",
-    },
-    {
-      id: "shovel-bottom-icon",
-      type: "shovel-bottom",
-      x: 75,
-      y: 150,
-      color: "red",
-      img: "assets/shovel.svg",
-    },
-  ],
-  tower: [],
-  newTower: [
-    {
-      id: "fire-tower-add-icon",
-      type: "fire",
-      x: 75,
-      y: 0,
-      color: "red",
-      img: "assets/fire.svg",
-    },
-    {
-      id: "lightning-tower-add-icon",
-      type: "lightning",
-      x: 150,
-      y: 75,
-      color: "gold",
-      img: "assets/bolt.svg",
-    },
-    {
-      id: "ice-tower-add-icon",
-      type: "ice",
-      x: 0,
-      y: 75,
-      color: "dodgerblue",
-      img: "assets/snowflake.svg",
-    },
-    {
-      id: "earth-tower-add-icon",
-      type: "earth",
-      x: 75,
-      y: 150,
-      color: "orange",
-      img: "assets/mountain.svg",
-    },
-  ],
-};
-
-const menuActions = {
-  trap: function () {},
-  newPath: handleCreateNewPath,
-  newTower: handleShowTowerPreview,
-  tower: function () {},
-};
-
-const G = {
+let playPauseIcon = "▶️";
+export const G = {
   frameId: 0,
   tick: 0,
   clock: 0,
@@ -89,49 +56,97 @@ const G = {
   lastSelectedTile: null,
   isPlaying: false,
   inBattle: false,
+  towerPreviewActive: false,
   stageNumber: 1,
   waveNumber: null,
   wavesTimes: [{ s: 0, e: null }],
-  sceneRect: null,
   gameSpeed: 2,
 };
 
-const svg = document.querySelector("svg");
-const scene = document.querySelector("#scene");
-const playPauseBtn = document.querySelector("#play-pause-btn");
-const gameSpeedForm = document.querySelector("#game-speed-form");
-const selectionRing = document.querySelector("#selection-ring");
-const selectionRingG = document.querySelector("#selection-ring-g");
-let playPauseIcon = "▶️";
+export const menuActions = {
+  trap: function () {},
+  newPath: handleCreateNewPath,
+  newTower: handleShowTowerPreview,
+  tower: function () {},
+};
 
-const sceneRect = svg.getBoundingClientRect();
-const tileWidth = sceneRect.width / 6;
-const MARGIN = tileWidth / 2;
-const COLS = 5,
-  ROWS = 12;
 scene.setAttribute("transform", `translate(${MARGIN},${MARGIN})`);
+
+setInterval(() => {
+  const {
+    isPlaying,
+    inBattle,
+    selectedTile,
+    lastSelectedTile,
+    towerPreviewActive,
+    stageNumber,
+    waveNumber,
+    gameSpeed,
+  } = G;
+  pre.innerHTML = JSON.stringify(
+    {
+      isPlaying,
+      inBattle,
+      selectedTile: selectedTile?.id ?? null,
+      lastSelectedTile: lastSelectedTile?.id ?? null,
+      towerPreviewActive,
+      stageNumber,
+      waveNumber,
+      gameSpeed,
+    },
+    null,
+    2
+  );
+}, 1000);
 
 svg.onpointermove = (e) => {
   G.mouse = { x: e.offsetX, y: e.offsetY };
 };
+document.onclick = (e) => {
+  // console.log(e.composedPath());
+  if (!e.target.closest("svg")) {
+    selectionRingG.setAttribute("style", "opacity: 0; display: none");
+    selectionRing.setAttribute("style", "opacity: 0; display: none");
+    G.lastSelectedTile = G.selectedTile;
+    G.lastSelectedTile?.blur();
+    G.selectedTile = null;
+  }
+
+  if (
+    e.target.closest(`.ring-icon`) ||
+    e.target.closest(`[data-entity="tower"]`)
+  ) {
+    console.log("clicked towerIcon or tower");
+  }
+  if (
+    !e.target.closest(`.ring-icon`) &&
+    !e.target.closest(`[data-entity="tower"]`)
+  ) {
+    removePreviewTower();
+    G.towerPreviewActive = false;
+
+    console.log("clicked elsewhere");
+  }
+};
 svg.onclick = (e) => {
   G.lastClick = { x: e.offsetX - MARGIN, y: e.offsetY - MARGIN };
-  console.log(G.lastClick);
+  // console.log(G.lastClick);
 };
 scene.onclick = (e) => {
-  console.log(e);
+  // console.log(e);
   const entity = e.target.dataset.entity;
   if (!entity) return;
 
-  console.log(`clicked ${entity}`);
+  // console.log(`clicked ${entity}`);
   const entityActions = {
     enemy() {},
     tile() {
-      handleSelectTile(e.target.dataset.index);
+      handleTileSelect(e);
     },
-    tower() {},
+    tower() {
+      handleTowerSelect(e);
+    },
   };
-
   entityActions[entity]();
 };
 playPauseBtn.onclick = (e) => {
@@ -167,184 +182,94 @@ gameSpeedForm.onchange = (e) => {
   G.gameSpeed = speed;
 };
 
-const getMiddleX = () => sceneRect.width / 2 - MARGIN;
-const getTileColor = (type, blocked = false) => {
-  if (blocked) return "#444";
-  if (type === "path") return "#971";
-  const random = Math.floor(Math.random() * 4);
-  const greens = ["#060", "#050", "#040", "#030"];
-  return greens[random];
-};
-const canBecomePath = (tile) => {
-  return tile.type === "grass" && !tile.hasTower;
-};
-
-function getAdjacentTile(tile, direction) {
-  console.log("getAdjacentTile", { direction, tile, tiles: G.tiles });
-  let adj;
-  switch (direction) {
-    case "left":
-      {
-        adj = G.tiles.find((t) => t.index === tile.index - 1);
-      }
-      break;
-    case "right":
-      {
-        adj = G.tiles.find((t) => t.index === tile.index + 1);
-      }
-      break;
-    case "bottom":
-      {
-        adj = G.tiles.find((t) => t.index === tile.index + COLS);
-      }
-      break;
-  }
-  return adj || null;
+function handleTowerSelect(e) {
+  // console.log("handleTowerSelect", e);
 }
 
-function handleShowTowerPreview(tile, icon) {
-  console.log("handle tower preview", tile, icon);
+function handleShowTowerPreview(e, tile, icon) {
+  removePreviewTower();
+
+  // createTower(towerPos, towerType, true);
+  // image.setAttribute("href", G.towerPreviewActive ? 'assets/check.svg' : item.img);
+  // icon
+
+  // const defs =
+  G.towerPreviewActive = true;
+  const iconImg = document.querySelector(`#image-${icon.id}`);
+  // const pattern = iconImg.parentElement;
+  // const defs = pattern.parentElement;
+
+  const icons = document.querySelectorAll(".ring-icon");
+  Array.from(icons).forEach((icon) => {
+    const iconImg = document.querySelector(`#image-${icon.id}`);
+    // console.log("clicked");
+    if (e.target.id === icon.id) {
+      iconImg.setAttribute("href", "assets/check.svg");
+      icon.setAttribute("data-selected", icon.dataset.type);
+    }
+    // console.log("not clicked");
+    else {
+      const idx = menuIcons["newTower"].findIndex(
+        (i) => i.type === icon.dataset.type
+      );
+      iconImg.setAttribute("href", menuIcons["newTower"][idx].img);
+      icon.getAttribute("data-selected") &&
+        icon.removeAttribute("data-selected");
+    }
+    // console.log({ e, icon, iconImg, menuIcons, type: icon.dataset.type });
+  });
+
+  // iconImg.remove()
+  // drawTowerPreview(towerPos, towerType);
+  // const icons = drawRingIcons("newTower", tile);
+  // appendIconsListeners(icons, tile, "newTower");
+
+  // iconImg.setAttribute("href", "assets/check.svg");
+  // console.log("handle tower preview", {
+  //   e,
+  //   icon,
+  //   iconImg,
+  //   defs,
+  //   pattern,
+  //   icons,
+  // });
 }
 
-const getIconDirection = (iconType) => iconType.split("-")[1];
-
-function handleCreateNewPath(tile, icon) {
-  const barrierBroken = tile.pos.y / 100 > FIRST_WAVE_AT_ROW + G.waveNumber;
+function handleCreateNewPath(e, tile, icon) {
+  const barrierBroken =
+    tile.pos.y / tileWidth > FIRST_WAVE_AT_ROW + G.waveNumber;
   const direction = getIconDirection(icon.dataset.type);
-  const adj = getAdjacentTile(tile, direction);
-  console.log("handleCreateNewPath", tile, icon, adj);
+
+  const adj = getAdjacentTile(G.tiles, tile, direction);
+  const exits = getTileExits(adj);
+  // console.log("handleCreateNewPath", tile, icon, adj);
 
   const newTile = {
     ...adj,
     type: "path",
-    exits: getTileExits(adj),
+    exits,
     ...(barrierBroken && { enemyEntrance: true }),
   };
 
   const newTileChain = [...G.tileChain];
   const prevTile = newTileChain.pop();
   prevTile.connected = true;
-  G.tileChain = [...newTileChain, prevTile, newTile];
+
+  G.tiles[prevTile.index] = prevTile;
   G.tiles[newTile.index] = newTile;
+  // getTileExits //////
+  G.tileChain = [...newTileChain, prevTile, newTile];
 
   if (barrierBroken) {
-    (G.waveNumber = tile.y / 100 - FIRST_WAVE_AT_ROW), (G.inBattle = true);
+    (G.waveNumber = tile.y / tileWidth - FIRST_WAVE_AT_ROW),
+      (G.inBattle = true);
   }
 
   drawNewPathTile(newTile);
 }
 
-function drawNewPathTile(tile) {
-  const tileRect = document.querySelector(`#${tile.id}`);
-  console.log(tileRect);
-  tileRect.setAttribute("fill", getTileColor(tile.type));
-  tileRect.setAttribute("data-type", "path");
-  G.selectedTile?.blur();
-  G.selectedTile = null;
-  selectionRingG.setAttribute("style", "opacity: 0");
-  selectionRing.setAttribute("style", "opacity: 0");
-  console.log(G);
-}
-
-function handleDisplayTileMenu(tile) {
+function handleDisplayTileMenu(e, tile) {
   console.log("handleDisplayTileMenu", tile);
-
-  const removeRingIcons = () => {
-    Array.from(document.querySelectorAll(".ring-icon")).forEach((circle) => {
-      circle.removeEventListener("click", menuActions[circle.dataset.type]);
-      circle.remove();
-    });
-    Array.from(document.querySelectorAll(".defs")).forEach((defs) =>
-      defs.remove()
-    );
-  };
-
-  const getMenuType = () => {
-    if (tile.type === "path") {
-      if (tile.connected) {
-        return "trap";
-      } else {
-        return "newPath";
-      }
-    } else {
-      if (tile.hasTower) {
-        return "tower";
-      } else {
-        return "newTower";
-      }
-    }
-  };
-
-  const drawRingIcons = (menuType, tile) => {
-    const icons = [];
-    for (const [i, item] of menuIcons[menuType].entries()) {
-      if (menuType === "newPath") {
-        const adjacentTile = getAdjacentTile(tile, getIconDirection(item.type));
-        const isBuildableAdj =
-          !tile.connected &&
-          adjacentTile &&
-          !adjacentTile.blocked &&
-          canBecomePath(adjacentTile);
-
-        if (!isBuildableAdj) continue;
-
-        console.log(item.type, { item, adjacentTile, isBuildableAdj });
-      }
-
-      const circle = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "circle"
-      );
-
-      circle.setAttribute("class", `ring-icon`);
-      circle.setAttribute("data-entity", `ring-icon`);
-      circle.setAttribute("data-type", item.type);
-      circle.setAttribute("id", item.id);
-      circle.setAttribute("cx", tile.pos.x + item.x);
-      circle.setAttribute("cy", tile.pos.y + item.y);
-      circle.setAttribute("r", 20);
-      circle.setAttribute("stroke", item.color);
-
-      const defs = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "defs"
-      );
-      const pattern = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "pattern"
-      );
-      const image = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "image"
-      );
-      defs.setAttribute("class", "defs");
-      const patternId = `${i}-${tile.id}-bg-img`;
-      pattern.setAttribute("id", patternId);
-      pattern.setAttribute("width", 28);
-      pattern.setAttribute("height", 28);
-      image.setAttribute("href", item.img);
-      image.setAttribute("x", 5);
-      image.setAttribute("y", 5);
-      image.setAttribute("width", 28);
-      image.setAttribute("height", 28);
-
-      pattern.append(image);
-      defs.append(pattern);
-      selectionRingG.append(defs);
-
-      circle.setAttribute("fill", `url(#${patternId})`);
-      selectionRingG.append(circle);
-
-      icons.push(circle);
-    }
-    return icons;
-  };
-
-  const appendIconsListeners = (icons) => {
-    icons.forEach(
-      (icon) => (icon.onclick = (e) => menuActions[menuType](tile, icon))
-    );
-  };
 
   removeRingIcons();
 
@@ -352,92 +277,41 @@ function handleDisplayTileMenu(tile) {
     return;
   }
 
-  const menuType = getMenuType();
+  const menuType = getMenuType(tile);
   const icons = drawRingIcons(menuType, tile);
-  appendIconsListeners(icons);
+  appendIconsListeners(icons, tile, menuType);
 }
 
-function handleSelectTile(index) {
+function handleTileSelect(e) {
+  const { index } = e.target.dataset;
   G.lastSelectedTile = G.selectedTile;
   G.selectedTile = G.tiles[index];
 
+  // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
+    console.log("clicked same tile as before");
     G.selectedTile = null;
     G.lastSelectedTile.blur();
-    selectionRingG.setAttribute("style", "opacity: 0");
-    selectionRing.setAttribute("style", "opacity: 0");
-  } else {
+    selectionRingG.setAttribute("style", "opacity: 0; display: none");
+    selectionRing.setAttribute("style", "opacity: 0; display: none");
+  }
+  // clicked another tile
+  else {
     G.lastSelectedTile?.blur();
     G.selectedTile.focus();
+
     if (G.selectedTile.blocked) {
-      selectionRingG.setAttribute("style", "opacity: 0");
-      selectionRing.setAttribute("style", "opacity: 0");
-    }
-    if (!G.selectedTile.blocked) {
+      console.log("clicked another tile, it is BLOCKED");
+      selectionRingG.setAttribute("style", "opacity: 0; display: none");
+      selectionRing.setAttribute("style", "opacity: 0; display: none");
+    } else {
+      console.log("clicked another tile");
       const { x, y } = G.selectedTile.pos;
       selectionRing.setAttribute("transform", `translate(${x},${y})`);
-      selectionRing.setAttribute("style", "opacity: .75");
-      selectionRingG.setAttribute("style", "opacity: 1");
+      selectionRing.setAttribute("style", "opacity: .75; display: block");
+      selectionRingG.setAttribute("style", "opacity: 1; display: block");
     }
-    handleDisplayTileMenu(G.selectedTile);
-  }
-}
-
-function createGrid(cols = COLS, rows = ROWS) {
-  const isInitialPath = (row, col) => row == 0 && col == 2;
-  const isBlocked = (row, col) =>
-    (row == 3 && col == 2) || (row == 4 && col == 1);
-
-  // prettier-ignore
-  for (let row of Array(rows).fill().map((_, i) => i)) {
-    for (let col of Array(cols).fill().map((_, i) => i)) {
-      const pos = { x: col * tileWidth, y: row * tileWidth };
-      const newTile = {
-        index: row * cols + col,
-        id: `tile-${row}-${col}`,
-        pos,
-        shape: null,
-        fill: null,
-        type: null,
-        connected: false,
-        hasTower: false,
-        blocked: false,
-        startingPoint: false,
-        exits: null,
-        init() {
-          this.shape = document.createElementNS(
-            "http://www.w3.org/2000/svg",
-            "rect"
-          );
-          const isStartingPoint = isInitialPath(row,col);
-          this.type = isStartingPoint ? 'path' : 'grass';
-          this.blocked = isBlocked(row, col);
-          this.startingPoint = isStartingPoint
-          this.exits = isStartingPoint ? getTileExits(this): null;
-          this.fill = getTileColor(this.type, this.blocked);
-          this.shape.setAttribute("id", this.id);
-          this.shape.setAttribute("data-entity", "tile");
-          this.shape.setAttribute("data-index", this.index);
-          this.shape.setAttribute("x", pos.x);
-          this.shape.setAttribute("y", pos.y);
-          this.shape.setAttribute("height", tileWidth);
-          this.shape.setAttribute("width", tileWidth);
-          this.shape.setAttribute("fill", this.fill);
-          this.shape.setAttribute("opacity", 1);
-          scene.append(this.shape);
-        },
-        focus() {
-          this.shape.setAttribute("opacity", 0.4);
-          this.shape.setAttribute('style', `filter: drop-shadow(0 0 1rem #04f);`)
-        },
-        blur() {
-          this.shape.setAttribute("opacity", 1);
-          this.shape.setAttribute('style', `filter: drop-shadow(0 0 0 #04f);`)
-        },
-      };
-      newTile.init();
-      G.tiles.push(newTile);
-    }
+    handleDisplayTileMenu(e, G.selectedTile);
   }
 }
 
@@ -456,7 +330,7 @@ function spawnEnemy() {
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      this.pos.x = getMiddleX();
+      this.pos.x = getMiddleX(sceneRect);
       this.shape.setAttribute("id", `enemy-${G.tick}`);
       this.shape.setAttribute("cx", parseInt(this.pos.x));
       this.shape.setAttribute("cy", parseInt(this.pos.y));
@@ -479,30 +353,6 @@ function spawnEnemy() {
 
   newEnemy.init();
   G.enemies.push(newEnemy);
-}
-
-function createTower(pos) {
-  const newTower = {
-    id: G.tick,
-    shape: null,
-    pos,
-    init() {
-      this.shape = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "circle"
-      );
-      this.shape.setAttribute("id", `enemy-${G.tick}`);
-      this.shape.setAttribute("cx", parseInt(this.pos.x));
-      this.shape.setAttribute("cy", parseInt(this.pos.y));
-      this.shape.setAttribute("data-entity", "tower");
-      this.shape.setAttribute("r", 25);
-
-      this.shape.setAttribute("fill", "orange");
-      scene.append(this.shape);
-    },
-  };
-  newTower.init();
-  G.towers.push(newTower);
 }
 
 function update() {
@@ -534,8 +384,7 @@ function runAnimation(frame) {
     requestAnimationFrame(runAnimation);
   }
 }
-
-createGrid();
+G.tiles = createGrid(COLS, ROWS);
 
 // auto-play
 setTimeout(() => {
@@ -545,54 +394,3 @@ setTimeout(() => {
   G.frameId = requestAnimationFrame(runAnimation);
   console.log("auto-play");
 }, 1000);
-
-function getTileExits(tile) {
-  if (tile.startingPoint) {
-    console.log("hey", tile, G.tiles, G.tileChain);
-    const exits = {
-      left: { x: tile.pos.x + 25, y: 0 },
-      center: { x: tile.pos.x + 50, y: 0 },
-      right: { x: tile.pos.x + 75, y: 0 },
-    };
-    G.tileChain.push({ ...tile, exits });
-    return exits;
-  }
-
-  // return;
-  const prevTile = G.tileChain.at(-1);
-
-  const left = { x: 0, y: 0 };
-  const center = { x: 0, y: 0 };
-  const right = { x: 0, y: 0 };
-
-  // newTile below
-  if (prevTile.pos.y < tile.pos.y) {
-    left.x = tile.pos.x + 25;
-    left.y = tile.pos.y;
-    center.x = tile.pos.x + 50;
-    center.y = tile.pos.y;
-    right.x = tile.pos.x + 75;
-    right.y = tile.pos.y;
-  }
-
-  // newTile to the left
-  if (prevTile.pos.x > tile.pos.x) {
-    left.x = tile.pos.x + 100;
-    left.y = tile.pos.y + 25;
-    center.x = tile.pos.x + 100;
-    center.y = tile.pos.y + 50;
-    right.x = tile.pos.x + 100;
-    right.y = tile.pos.y + 75;
-  }
-
-  // newTile to the right
-  if (prevTile.pos.x < tile.pos.x) {
-    left.x = tile.pos.x;
-    left.y = tile.pos.y + 75;
-    center.x = tile.pos.x;
-    center.y = tile.pos.y + 50;
-    right.x = tile.pos.x;
-    right.y = tile.pos.y + 25;
-  }
-  return { left, center, right };
-}

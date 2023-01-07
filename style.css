@@ -35,6 +35,10 @@ section {
   padding-inline: 1.5rem;
 }
 
+pre {
+  font-size: 11px;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
