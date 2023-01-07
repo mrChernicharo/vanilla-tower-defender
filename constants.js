@@ -104,7 +104,7 @@ export const TOWERS = {
     range: 200,
     rate_of_fire: 3,
     xp: 0,
-    fill: "blue",
+    fill: "dodgerblue",
     price: 80,
     bullet_speed: 100
   },

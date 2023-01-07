@@ -271,6 +271,7 @@ export function getTowerType(icon) {
 }
 
 export function drawTowerPreview(towerPos, towerType) {
+  console.log('drawTowerPreview')
   const tower_id = `tower-${towerPos.y}-${towerPos.x}`;
 
   const towerShape = document.createElementNS(
@@ -375,12 +376,11 @@ export const appendIconsListeners = (icons, tile, menuType) => {
 
       if (icon.dataset.selected) {
         console.log("create that damn tower!");
-        const towerType = getTowerType(icon);
         const towerPos = {
           x: tile.pos.x + tileWidth / 2,
           y: tile.pos.y + tileWidth / 2,
         };
-        createTower(towerPos, towerType);
+        createTower(towerPos,  getTowerType(icon));
         return;
       }
 
@@ -418,6 +418,8 @@ export function drawNewPathTile(tile) {
 }
 
 function createTower(pos, type) {
+  removePreviewTower();
+
   console.log("createTower!", { pos, type });
   const tower_id = `tower-${pos.y}-${pos.x}`;
 

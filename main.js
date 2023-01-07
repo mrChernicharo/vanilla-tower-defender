@@ -192,6 +192,11 @@ function handleShowTowerPreview(e, tile, icon) {
   // createTower(towerPos, towerType, true);
   // image.setAttribute("href", G.towerPreviewActive ? 'assets/check.svg' : item.img);
   // icon
+  const towerPos = {
+    x: tile.pos.x + tileWidth / 2,
+    y: tile.pos.y + tileWidth / 2,
+  };
+  drawTowerPreview(towerPos, getTowerType(icon));
 
   // const defs =
   G.towerPreviewActive = true;
@@ -220,7 +225,6 @@ function handleShowTowerPreview(e, tile, icon) {
   });
 
   // iconImg.remove()
-  // drawTowerPreview(towerPos, towerType);
   // const icons = drawRingIcons("newTower", tile);
   // appendIconsListeners(icons, tile, "newTower");
 
