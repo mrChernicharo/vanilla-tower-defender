@@ -271,7 +271,7 @@ export function getTowerType(icon) {
 }
 
 export function drawTowerPreview(towerPos, towerType) {
-  console.log('drawTowerPreview')
+  console.log("drawTowerPreview");
   const tower_id = `tower-${towerPos.y}-${towerPos.x}`;
 
   const towerShape = document.createElementNS(
@@ -372,6 +372,7 @@ export const appendIconsListeners = (icons, tile, menuType) => {
         // GSelectedTile: G.selectedTile,
         // GLastSelectedTile: G.lastSelectedTile,
         // selected: icon.dataset.selected
+        menuType,
       });
 
       if (icon.dataset.selected) {
@@ -380,7 +381,7 @@ export const appendIconsListeners = (icons, tile, menuType) => {
           x: tile.pos.x + tileWidth / 2,
           y: tile.pos.y + tileWidth / 2,
         };
-        createTower(towerPos,  getTowerType(icon));
+        createTower(towerPos, getTowerType(icon));
         return;
       }
 
@@ -447,6 +448,14 @@ function createTower(pos, type) {
   newTower.init();
 
   G.towers.push(newTower);
+  // G.tiles
+  // mark tile hasTower
+  G.towerPreviewActive = false
+  G.selectedTile = { ...G.selectedTile, hasTower: true };
+  G.tiles[G.selectedTile.index] = {
+    ...G.tiles[G.selectedTile.index],
+    hasTower: true,
+  };
 
   G.selectedTile?.blur();
   G.selectedTile = null;

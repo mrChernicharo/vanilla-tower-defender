@@ -112,20 +112,19 @@ document.onclick = (e) => {
     G.selectedTile = null;
   }
 
-  if (
-    e.target.closest(`.ring-icon`) ||
-    e.target.closest(`[data-entity="tower"]`)
-  ) {
-    console.log("clicked towerIcon or tower");
+  // if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
+  //   console.log("clicked towerIcon or tower");
+  // }
+
+  // console.log("clicked a tower");
+  if (e.target.closest(`[data-entity="tower"]`)) {
+    // console.log("clicked tower", { e, towerPreviewActive: G.towerPreviewActive });
   }
-  if (
-    !e.target.closest(`.ring-icon`) &&
-    !e.target.closest(`[data-entity="tower"]`)
-  ) {
+  // "clicked anywhere but not at a towerIcon neither at a tower"
+  if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
     removePreviewTower();
     G.towerPreviewActive = false;
-
-    console.log("clicked elsewhere");
+    // console.log("clicked anywhere but not at a towerIcon neither at a tower");
   }
 };
 svg.onclick = (e) => {
@@ -139,15 +138,24 @@ scene.onclick = (e) => {
 
   // console.log(`clicked ${entity}`);
   const entityActions = {
-    enemy() {},
-    tile() {
+    enemy(e) {},
+    tile(e) {
+      const { index } = e.target.dataset;
+      G.lastSelectedTile = G.selectedTile;
+      G.selectedTile = G.tiles[index];
       handleTileSelect(e);
     },
-    tower() {
+    tower(e) {
+      const towerId = e.target.id;
+      const [_, y, x] = towerId.split("-").map((v) => Number(v) - 50);
+      const tileIdx = x / tileWidth + (y / tileWidth) * COLS;
+      const tile = G.tiles[tileIdx];
+      G.lastSelectedTile = G.selectedTile
+      G.selectedTile = tile
       handleTowerSelect(e);
     },
   };
-  entityActions[entity]();
+  entityActions[entity](e);
 };
 playPauseBtn.onclick = (e) => {
   G.isPlaying = !G.isPlaying;
@@ -182,61 +190,37 @@ gameSpeedForm.onchange = (e) => {
   G.gameSpeed = speed;
 };
 
-function handleTowerSelect(e) {
-  // console.log("handleTowerSelect", e);
-}
-
 function handleShowTowerPreview(e, tile, icon) {
-  removePreviewTower();
-
-  // createTower(towerPos, towerType, true);
-  // image.setAttribute("href", G.towerPreviewActive ? 'assets/check.svg' : item.img);
-  // icon
   const towerPos = {
     x: tile.pos.x + tileWidth / 2,
     y: tile.pos.y + tileWidth / 2,
   };
+  removePreviewTower();
   drawTowerPreview(towerPos, getTowerType(icon));
 
-  // const defs =
   G.towerPreviewActive = true;
-  const iconImg = document.querySelector(`#image-${icon.id}`);
-  // const pattern = iconImg.parentElement;
-  // const defs = pattern.parentElement;
 
   const icons = document.querySelectorAll(".ring-icon");
   Array.from(icons).forEach((icon) => {
     const iconImg = document.querySelector(`#image-${icon.id}`);
-    // console.log("clicked");
+    // const pattern = iconImg.parentElement;
+    // const defs = pattern.parentElement;
+
+    // console.log("clicked icon"); //
     if (e.target.id === icon.id) {
       iconImg.setAttribute("href", "assets/check.svg");
       icon.setAttribute("data-selected", icon.dataset.type);
     }
     // console.log("not clicked");
     else {
-      const idx = menuIcons["newTower"].findIndex(
+      const iconIdx = menuIcons["newTower"].findIndex(
         (i) => i.type === icon.dataset.type
       );
-      iconImg.setAttribute("href", menuIcons["newTower"][idx].img);
+      iconImg.setAttribute("href", menuIcons["newTower"][iconIdx].img);
       icon.getAttribute("data-selected") &&
         icon.removeAttribute("data-selected");
     }
-    // console.log({ e, icon, iconImg, menuIcons, type: icon.dataset.type });
   });
-
-  // iconImg.remove()
-  // const icons = drawRingIcons("newTower", tile);
-  // appendIconsListeners(icons, tile, "newTower");
-
-  // iconImg.setAttribute("href", "assets/check.svg");
-  // console.log("handle tower preview", {
-  //   e,
-  //   icon,
-  //   iconImg,
-  //   defs,
-  //   pattern,
-  //   icons,
-  // });
 }
 
 function handleCreateNewPath(e, tile, icon) {
@@ -277,19 +261,41 @@ function handleDisplayTileMenu(e, tile) {
 
   removeRingIcons();
 
-  if (tile.blocked) {
+  if (tile?.blocked) {
     return;
   }
 
   const menuType = getMenuType(tile);
+  console.log("Open this menu please!", { menuType });
   const icons = drawRingIcons(menuType, tile);
   appendIconsListeners(icons, tile, menuType);
 }
 
+function handleTowerSelect(e) {
+  console.log("handleTowerSelect", e);
+  let ringX,ringY;
+
+ 
+
+    const { x, y } = G.selectedTile.pos;
+    ringX = x
+    ringY = y
+
+
+
+  selectionRing.setAttribute("transform", `translate(${ringX},${ringY})`);
+  selectionRing.setAttribute("style", "opacity: .75; display: block");
+  selectionRingG.setAttribute("style", "opacity: 1; display: block");
+
+  handleDisplayTileMenu(e, G.selectedTile);
+}
+
 function handleTileSelect(e) {
-  const { index } = e.target.dataset;
-  G.lastSelectedTile = G.selectedTile;
-  G.selectedTile = G.tiles[index];
+ 
+
+  if (G.selectedTile.hasTower) {
+    return handleTowerSelect(e);
+  }
 
   // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
@@ -315,6 +321,7 @@ function handleTileSelect(e) {
       selectionRing.setAttribute("style", "opacity: .75; display: block");
       selectionRingG.setAttribute("style", "opacity: 1; display: block");
     }
+
     handleDisplayTileMenu(e, G.selectedTile);
   }
 }
