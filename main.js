@@ -132,6 +132,21 @@ document.onclick = (e) => {
   // prettier-ignore
   if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
     // console.log("clicked anywhere but not at a towerIcon neither at a tower");
+
+    if (e.target.closest(`[data-entity="tile"]`) && G.tiles[e.target.closest(`[data-entity="tile"]`).dataset.index].hasTower) {
+      console.log('clicked tile with a tower')
+      const { x, y } = G.selectedTile.pos;
+      const rangeCircle = document.querySelector(
+        `#range-tower-${y + 50}-${x + 50}`
+      );
+      rangeCircle.classList.add("locked");
+      rangeCircle.setAttribute("opacity", .1);
+      return
+    }
+    Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
+      range.classList.remove("locked");
+      range.setAttribute('opacity', 0)
+    });
     removePreviewTower();
     G.towerPreviewActive = false;
   }
@@ -284,12 +299,26 @@ function handleDisplayTileMenu(e, tile) {
 }
 
 function handleTowerSelect(e) {
-  console.log("handleTowerSelect",{ e, G});
+  console.log("handleTowerSelect", { e, G });
+  Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
+    range.classList.remove("locked");
+    range.setAttribute("opacity", 0);
+  });
+
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
-    // console.log("clicked same tile as before");
+    // console.log("selected same tower");
+    if (G.towerPreviewActive) removePreviewTower();
     focusNoTile();
     hideRing();
   } else {
+    // console.log("selected different tower");
+    removePreviewTower();
+    const { x, y } = G.selectedTile.pos;
+    const rangeCircle = document.querySelector(
+      `#range-tower-${y + 50}-${x + 50}`
+    );
+    rangeCircle.classList.add("locked");
+    rangeCircle.setAttribute("opacity", 0.1);
     updateFocusedTile();
     showRing();
     handleDisplayTileMenu(e, G.selectedTile);
@@ -300,10 +329,8 @@ function handleTileSelect(e) {
   if (G.selectedTile.hasTower) {
     return handleTowerSelect(e);
   }
-
   // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
-    // console.log("clicked same tile as before");
     focusNoTile();
     hideRing();
   }
@@ -354,7 +381,6 @@ function spawnEnemy() {
         { x: x - 6, y: y - 6 },
         { x: x + 12, y },
       ];
-
       return points.map((p) => `${parseInt(p.x)} ${parseInt(p.y)} `).join("");
     },
     move() {
@@ -369,19 +395,17 @@ function spawnEnemy() {
       );
 
       // get enemy facing angle: find angle considering pos and nextPos
-      // prettier-ignore
-      const angle = getAngle(this.pos.x, this.pos.y, nextPos.x, nextPos.y );
+      this.rotation = getAngle(this.pos.x, this.pos.y, nextPos.x, nextPos.y);
 
       // // update enemies' progress
       this.percProgress = (prog / enemyPath.getTotalLength()) * 100;
       this.progress = prog;
       this.pos.x = nextPos.x;
       this.pos.y = nextPos.y;
-      // this.rotation = angle;
       this.shape.setAttribute(
         "transform",
         `translate(${nextPos.x},${nextPos.y})
-        rotate(${angle})
+        rotate(${this.rotation})
         `
       );
     },

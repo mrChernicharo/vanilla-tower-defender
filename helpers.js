@@ -16,7 +16,6 @@ import {
   enemyLaneLeft,
   enemyLaneCenter,
   enemyLaneRight,
-  towersG,
 } from "./constants";
 import { G, menuActions } from "./main";
 
@@ -296,25 +295,26 @@ export function drawTowerPreview(towerPos, towerType) {
     "circle"
   );
   rangeCircle.setAttribute("id", `range-${tower_id}`);
-  rangeCircle.classList.add('preview-range')
+  rangeCircle.classList.add("preview-range");
   rangeCircle.setAttribute("cx", towerPos.x);
   rangeCircle.setAttribute("cy", towerPos.y);
   rangeCircle.setAttribute("r", TOWERS[towerType].range);
-  rangeCircle.setAttribute("fill",TOWERS[towerType].fill);
+  rangeCircle.setAttribute("fill", TOWERS[towerType].fill);
   rangeCircle.setAttribute("opacity", 0.1);
   rangeCircle.setAttribute("pointer-events", "none");
 
-  towersG.append(rangeCircle);
-  towersG.append(towerShape);
+  scene.append(rangeCircle);
+  scene.append(towerShape);
 }
 
 export function removePreviewTower() {
+  console.log("removePreviewTower");
   Array.from(document.querySelectorAll(".preview-tower")).forEach((tower) =>
     tower.remove()
   );
   Array.from(document.querySelectorAll(".preview-range")).forEach((range) =>
-  range.remove()
-);
+    range.remove()
+  );
 }
 
 export const drawRingIcons = (menuType, tile) => {
@@ -442,8 +442,12 @@ function createTower(pos, type) {
     pos,
     cooldown: 0,
     fill: TOWERS[type].fill,
+    r: 25,
     range: TOWERS[type].range,
+    rotation: 0,
+    g: null,
     init() {
+      this.g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       this.shape = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
@@ -453,14 +457,26 @@ function createTower(pos, type) {
       this.shape.setAttribute("cy", this.pos.y);
       this.shape.setAttribute("data-entity", "tower");
       this.shape.setAttribute("data-type", type);
-      this.shape.setAttribute("r", 25);
+      this.shape.setAttribute("r", this.r);
       this.shape.setAttribute("fill", this.fill);
+
+      const barrel = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "rect"
+      );
+      barrel.setAttribute("x", this.pos.x);
+      barrel.setAttribute("y", this.pos.y);
+      barrel.setAttribute("width", this.r + 10);
+      barrel.setAttribute("height", 3);
+      barrel.setAttribute("fill", this.fill);
 
       const rangeCircle = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
       );
       rangeCircle.setAttribute("id", `range-${tower_id}`);
+      rangeCircle.classList.add("tower-range");
+
       rangeCircle.setAttribute("cx", this.pos.x);
       rangeCircle.setAttribute("cy", this.pos.y);
       rangeCircle.setAttribute("r", this.range);
@@ -468,12 +484,28 @@ function createTower(pos, type) {
       rangeCircle.setAttribute("opacity", 0);
       rangeCircle.setAttribute("pointer-events", "none");
 
-      // prettier-ignore
-      // this.shape.onpointerover = (e) => rangeCircle.setAttribute("opacity", 0.1);
-      // this.shape.onpointerout = (e) => rangeCircle.setAttribute("opacity", 0);
+      this.shape.onpointerover = (e) => {
+        if (!rangeCircle.classList.contains("locked")) {
+          rangeCircle.setAttribute("opacity", 0.1);
+        }
+      };
+      this.shape.onpointerout = (e) => {
+        if (!rangeCircle.classList.contains("locked")) {
+          rangeCircle.setAttribute("opacity", 0);
+        }
+      };
 
-      towersG.append(rangeCircle);
-      towersG.append(this.shape);
+      // this.rotation = getAngle(this.pos.x, this.pos.y, nextPos.x, nextPos.y);
+
+      this.g.append(barrel);
+      this.g.append(rangeCircle);
+      this.g.append(this.shape);
+      scene.append(this.g);
+      setInterval(() => {
+        console.log(this.rotation);
+        this.rotation = this.rotation + 1;
+          this.g.setAttribute('transform', `rotate(${this.rotation}, ${this.pos.x}, ${this.pos.y})`)
+      }, 60);
     },
   };
   newTower.init();
