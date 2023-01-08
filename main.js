@@ -17,6 +17,7 @@ import {
   enemyLaneRight,
   TOWERS,
   pre,
+  enemiesG,
 } from "./constants";
 import {
   canBecomePath,
@@ -40,6 +41,7 @@ import {
   drawRingIcons,
   appendIconsListeners,
   removeRingIcons,
+  getAngle,
 } from "./helpers";
 
 let playPauseIcon = "▶️";
@@ -54,7 +56,7 @@ export const G = {
   enemies: [],
   towers: [],
   bullets: [],
-  tiles: [],
+  tiles: null,
   tileChain: [],
   selectedTile: null,
   lastSelectedTile: null,
@@ -66,6 +68,7 @@ export const G = {
   wavesTimes: [{ s: 0, e: null }],
   gameSpeed: 2,
 };
+G.tiles = createGrid(COLS, ROWS)
 
 export const menuActions = {
   trap: function () {},
@@ -234,7 +237,7 @@ function handleCreateNewPath(e, tile, icon) {
 
   const exits = getTileExits(adj);
 
-  console.log({ barrierBroken });
+  // console.log({ barrierBroken });
 
   const newTile = {
     ...adj,
@@ -314,15 +317,12 @@ function handleTileSelect(e) {
 }
 
 function spawnEnemy() {
-  const initialPos = { x: 200, y: 0 };
-  console.log({ enemyLaneCenter });
-
   const newEnemy = {
     id: G.tick,
     shape: null,
     hp: Math.random() * 800 + 100,
     size: 13,
-    pos: enemyLaneCenter.getPointAtLength(enemyLaneCenter.getTotalLength()),
+    pos: { x: 0, y: 0 },
     spawned: false,
     rotation: -90,
     percProgress: 0,
@@ -331,41 +331,57 @@ function spawnEnemy() {
     init() {
       this.shape = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "circle"
+        "polygon"
       );
       // this.pos.x = getMiddleX(sceneRect);
+
       this.shape.setAttribute("id", `enemy-${G.tick}`);
-      this.shape.setAttribute("cx", parseInt(this.pos.x));
-      this.shape.setAttribute("cy", parseInt(this.pos.y));
-      this.shape.setAttribute("r", parseInt(this.size));
+      this.shape.setAttribute("points", this.getPoints());
       this.shape.setAttribute("data-hp", this.hp);
       this.shape.setAttribute("data-entity", "enemy");
       this.shape.setAttribute("fill", "blue");
-      scene.append(this.shape);
+      this.shape.setAttribute("stroke", "purple");
+      enemiesG.append(this.shape);
+    },
+    getPoints() {
+      const { x, y } = this.pos;
+      const points = [
+        { x: x + 12, y },
+        { x: x - 6, y: y + 6 },
+        { x: x - 6, y: y - 6 },
+        { x: x + 12, y },
+      ];
+
+      return points.map((p) => `${parseInt(p.x)} ${parseInt(p.y)} `).join("");
     },
     move() {
       const enemyPath = enemyLaneCenter;
       const prog =
         enemyPath.getTotalLength() -
         (enemyPath.getTotalLength() -
-          (this.progress + this.speed * G.gameSpeed ));
+          (this.progress + this.speed * G.gameSpeed));
 
       const nextPos = enemyPath.getPointAtLength(
         enemyPath.getTotalLength() - prog
       );
+
+      // get enemy facing angle: find angle considering pos and nextPos
+      // prettier-ignore
+      const angle = getAngle(this.pos.x, this.pos.y, nextPos.x, nextPos.y );
+
       // // update enemies' progress
       this.percProgress = (prog / enemyPath.getTotalLength()) * 100;
       this.progress = prog;
-
-      // // get enemy facing angle: find angle considering pos and nextPos
-      // // prettier-ignore
-      // const angle = getAngle(this.pos.x, this.pos.y, nextPos.x + 50, nextPos.y + 50);
-
       this.pos.x = nextPos.x;
       this.pos.y = nextPos.y;
-      // enemy.rotation = angle;
-      this.shape.setAttribute("cy", this.pos.y);
-      this.shape.setAttribute("cx", this.pos.x);
+      // this.rotation = angle;
+      this.shape.setAttribute(
+        "transform",
+        `translate(${nextPos.x},${nextPos.y})
+        rotate(${angle})
+        `
+        );
+    
     },
     die() {
       this.shape.remove();
@@ -381,7 +397,7 @@ function update() {
     enemy.move();
     enemy.hp -= G.gameSpeed;
 
-    if (enemy.hp <= 0) {
+    if (enemy.hp <= 0 || enemy.percProgress >= 100) {
       enemy.die();
     }
   }
@@ -399,19 +415,20 @@ function runAnimation(frame) {
     waveInterval = 120;
   }
 
-  update();
-
+  
   if (G.isPlaying) {
+    update();
     requestAnimationFrame(runAnimation);
   }
 }
-G.tiles = createGrid(COLS, ROWS);
+
+
 
 // auto-play
-setTimeout(() => {
-  G.isPlaying = true;
-  playPauseIcon = "⏸";
-  playPauseBtn.innerHTML = playPauseIcon;
-  G.frameId = requestAnimationFrame(runAnimation);
-  console.log("auto-play");
-}, 1000);
+// setTimeout(() => {
+//   G.isPlaying = true;
+//   playPauseIcon = "⏸";
+//   playPauseBtn.innerHTML = playPauseIcon;
+//   G.frameId = requestAnimationFrame(runAnimation);
+//   console.log("auto-play");
+// }, 1000);

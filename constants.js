@@ -72,6 +72,7 @@ export const svg = document.querySelector("svg");
 export const scene = document.querySelector("#scene");
 export const sceneRect = svg.getBoundingClientRect();
 export const tileWidth = sceneRect.width / 6;
+export const enemiesG = document.querySelector("#enemies-g");
 export const MARGIN = tileWidth / 2;
 
 export const playPauseBtn = document.querySelector("#play-pause-btn");

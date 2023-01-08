@@ -110,7 +110,7 @@ export function createGrid(cols = COLS, rows = ROWS) {
 }
 
 export function getTileExits(tile) {
-  console.log("getTileExits", { tile });
+  // console.log("getTileExits", { tile });
 
   if (tile.startingPoint) {
     // console.log("hey", tile, G.tiles, G.tileChain);
@@ -158,7 +158,7 @@ export function getTileExits(tile) {
     right.x = tile.pos.x;
     right.y = tile.pos.y + 25;
   }
-  console.log("getTileExits", { prevTile, left, center, right });
+  // console.log("getTileExits", { prevTile, left, center, right });
 
   return { left, center, right };
 }
@@ -398,7 +398,7 @@ export function drawNewPathTile(tile) {
 
   const tileRect = document.querySelector(`#${tile.id}`);
   const chains = getChains(G.tileChain);
-  console.log({ chains, tileChain: G.tileChain });
+  // console.log({ chains, tileChain: G.tileChain });
   // if barrierBroken
 
   enemyLaneLeft.setAttribute("d", createPath(chains.left, "left"));
@@ -429,8 +429,8 @@ function createTower(pos, type) {
         "circle"
       );
       this.shape.setAttribute("id", tower_id);
-      this.shape.setAttribute("cx", parseInt(this.pos.x));
-      this.shape.setAttribute("cy", parseInt(this.pos.y));
+      this.shape.setAttribute("cx",this.pos.x);
+      this.shape.setAttribute("cy",this.pos.y);
       this.shape.setAttribute("data-entity", "tower");
       this.shape.setAttribute("data-type", type);
       this.shape.setAttribute("r", 25);
@@ -470,8 +470,25 @@ export function updateFocusedTile() {
   G.selectedTile.focus();
 }
 export function focusNoTile() {
-  G.selectedTile.blur();
+  G.selectedTile?.blur();
   G.selectedTile = null;
   G.lastSelectedTile?.blur();
 
+}
+
+
+export function getDistance(x1, y1, x2, y2) {
+  let y = x2 - x1;
+  let x = y2 - y1;
+
+  return Math.sqrt(x * x + y * y);
+}
+
+export function getAngle(sx, sy, ex, ey) {
+  var dy = ey - sy;
+  var dx = ex - sx;
+  var theta = Math.atan2(dy, dx);
+  theta *= 180 / Math.PI;
+  if (theta < 0) theta = 360 + theta;
+  return theta;
 }
