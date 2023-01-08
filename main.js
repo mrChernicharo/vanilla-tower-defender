@@ -32,7 +32,7 @@ import {
   createPath,
   drawTowerPreview,
   drawNewPathTile,
-  removePreviewTower,
+  removePreviewTower,focusNoTile,updateFocusedTile,showRing, hideRing,
   drawRingIcons,
   appendIconsListeners,
   removeRingIcons,
@@ -108,23 +108,22 @@ document.onclick = (e) => {
     selectionRingG.setAttribute("style", "opacity: 0; display: none");
     selectionRing.setAttribute("style", "opacity: 0; display: none");
     G.lastSelectedTile = G.selectedTile;
-    G.lastSelectedTile?.blur();
-    G.selectedTile = null;
+    focusNoTile();
   }
 
-  // if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
+  // prettier-ignore
+  if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
   //   console.log("clicked towerIcon or tower");
-  // }
-
-  // console.log("clicked a tower");
+  }
+  // prettier-ignore
   if (e.target.closest(`[data-entity="tower"]`)) {
     // console.log("clicked tower", { e, towerPreviewActive: G.towerPreviewActive });
   }
-  // "clicked anywhere but not at a towerIcon neither at a tower"
+  // prettier-ignore
   if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
+    // console.log("clicked anywhere but not at a towerIcon neither at a tower");
     removePreviewTower();
     G.towerPreviewActive = false;
-    // console.log("clicked anywhere but not at a towerIcon neither at a tower");
   }
 };
 svg.onclick = (e) => {
@@ -150,8 +149,8 @@ scene.onclick = (e) => {
       const [_, y, x] = towerId.split("-").map((v) => Number(v) - 50);
       const tileIdx = x / tileWidth + (y / tileWidth) * COLS;
       const tile = G.tiles[tileIdx];
-      G.lastSelectedTile = G.selectedTile
-      G.selectedTile = tile
+      G.lastSelectedTile = G.selectedTile;
+      G.selectedTile = tile;
       handleTowerSelect(e);
     },
   };
@@ -203,8 +202,6 @@ function handleShowTowerPreview(e, tile, icon) {
   const icons = document.querySelectorAll(".ring-icon");
   Array.from(icons).forEach((icon) => {
     const iconImg = document.querySelector(`#image-${icon.id}`);
-    // const pattern = iconImg.parentElement;
-    // const defs = pattern.parentElement;
 
     // console.log("clicked icon"); //
     if (e.target.id === icon.id) {
@@ -271,28 +268,21 @@ function handleDisplayTileMenu(e, tile) {
   appendIconsListeners(icons, tile, menuType);
 }
 
+
 function handleTowerSelect(e) {
-  console.log("handleTowerSelect", e);
-  let ringX,ringY;
-
- 
-
-    const { x, y } = G.selectedTile.pos;
-    ringX = x
-    ringY = y
-
-
-
-  selectionRing.setAttribute("transform", `translate(${ringX},${ringY})`);
-  selectionRing.setAttribute("style", "opacity: .75; display: block");
-  selectionRingG.setAttribute("style", "opacity: 1; display: block");
-
-  handleDisplayTileMenu(e, G.selectedTile);
+  console.log("handleTowerSelect", e, G);
+  if (G.lastSelectedTile?.id === G.selectedTile?.id) {
+    console.log("clicked same tile as before");
+    focusNoTile();
+    hideRing();
+  } else {
+    updateFocusedTile();
+    showRing();
+    handleDisplayTileMenu(e, G.selectedTile);
+  }
 }
 
 function handleTileSelect(e) {
- 
-
   if (G.selectedTile.hasTower) {
     return handleTowerSelect(e);
   }
@@ -300,28 +290,17 @@ function handleTileSelect(e) {
   // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
     console.log("clicked same tile as before");
-    G.selectedTile = null;
-    G.lastSelectedTile.blur();
-    selectionRingG.setAttribute("style", "opacity: 0; display: none");
-    selectionRing.setAttribute("style", "opacity: 0; display: none");
+    focusNoTile();
+    hideRing();
   }
   // clicked another tile
   else {
-    G.lastSelectedTile?.blur();
-    G.selectedTile.focus();
-
+    updateFocusedTile();
     if (G.selectedTile.blocked) {
-      console.log("clicked another tile, it is BLOCKED");
-      selectionRingG.setAttribute("style", "opacity: 0; display: none");
-      selectionRing.setAttribute("style", "opacity: 0; display: none");
+      hideRing();
     } else {
-      console.log("clicked another tile");
-      const { x, y } = G.selectedTile.pos;
-      selectionRing.setAttribute("transform", `translate(${x},${y})`);
-      selectionRing.setAttribute("style", "opacity: .75; display: block");
-      selectionRingG.setAttribute("style", "opacity: 1; display: block");
+      showRing();
     }
-
     handleDisplayTileMenu(e, G.selectedTile);
   }
 }

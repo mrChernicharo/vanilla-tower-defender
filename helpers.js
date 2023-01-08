@@ -412,10 +412,8 @@ export function drawNewPathTile(tile) {
   tileRect.setAttribute("fill", getTileColor(tile.type));
   tileRect.setAttribute("data-type", "path");
 
-  G.selectedTile?.blur();
-  G.selectedTile = null;
-  selectionRingG.setAttribute("style", "opacity: 0; display: none");
-  selectionRing.setAttribute("style", "opacity: 0; display: none");
+  focusNoTile();
+  hideRing();
 }
 
 function createTower(pos, type) {
@@ -450,15 +448,32 @@ function createTower(pos, type) {
   G.towers.push(newTower);
   // G.tiles
   // mark tile hasTower
-  G.towerPreviewActive = false
+  G.towerPreviewActive = false;
   G.selectedTile = { ...G.selectedTile, hasTower: true };
   G.tiles[G.selectedTile.index] = {
     ...G.tiles[G.selectedTile.index],
     hasTower: true,
   };
 
-  G.selectedTile?.blur();
-  G.selectedTile = null;
+  focusNoTile();
+  hideRing();
+}
+
+export function showRing() {
+  const { x, y } = G.selectedTile.pos;
+  selectionRing.setAttribute("transform", `translate(${x},${y})`);
+  selectionRing.setAttribute("style", "opacity: .75; display: block");
+  selectionRingG.setAttribute("style", "opacity: 1; display: block");
+}
+export function hideRing() {
   selectionRingG.setAttribute("style", "opacity: 0; display: none");
   selectionRing.setAttribute("style", "opacity: 0; display: none");
+}
+export function updateFocusedTile() {
+  G.lastSelectedTile?.blur();
+  G.selectedTile.focus();
+}
+export function focusNoTile() {
+  G.selectedTile = null;
+  G.lastSelectedTile?.blur();
 }
