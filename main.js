@@ -42,6 +42,7 @@ import {
   appendIconsListeners,
   removeRingIcons,
   getAngle,
+  getDistance,
 } from "./helpers";
 
 let playPauseIcon = "▶️";
@@ -65,10 +66,10 @@ export const G = {
   towerPreviewActive: false,
   stageNumber: 1,
   waveNumber: null,
-  wavesTimes: [{ s: 0, e: null }],
+  wavesTimes: [{ start: 0, end: null }],
   gameSpeed: 2,
 };
-G.tiles = createGrid(COLS, ROWS)
+G.tiles = createGrid(COLS, ROWS);
 
 export const menuActions = {
   trap: function () {},
@@ -89,6 +90,7 @@ setInterval(() => {
     stageNumber,
     waveNumber,
     gameSpeed,
+    clock,
   } = G;
   pre.innerHTML = JSON.stringify(
     {
@@ -100,6 +102,7 @@ setInterval(() => {
       stageNumber,
       waveNumber,
       gameSpeed,
+      clock,
     },
     null,
     2
@@ -266,7 +269,7 @@ function handleCreateNewPath(e, tile, icon) {
 }
 
 function handleDisplayTileMenu(e, tile) {
-  // console.log("handleDisplayTileMenu", tile);
+  console.log("handleDisplayTileMenu", tile);
 
   removeRingIcons();
 
@@ -281,7 +284,7 @@ function handleDisplayTileMenu(e, tile) {
 }
 
 function handleTowerSelect(e) {
-  // console.log("handleTowerSelect", e, G);
+  console.log("handleTowerSelect",{ e, G});
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
     // console.log("clicked same tile as before");
     focusNoTile();
@@ -380,8 +383,7 @@ function spawnEnemy() {
         `translate(${nextPos.x},${nextPos.y})
         rotate(${angle})
         `
-        );
-    
+      );
     },
     die() {
       this.shape.remove();
@@ -393,6 +395,51 @@ function spawnEnemy() {
 }
 
 function update() {
+  const waveTime = G.clock - G.wavesTimes[G.waveNumber]?.start || 0;
+
+  for (let tower of G.towers) {
+    let farthestEnemy = null,
+      greatestProgress = -Infinity;
+    // const elapsed = waveTime - tower.lastShot;
+
+    for (let enemy of G.enemies) {
+      // prettier-ignore
+      const d = getDistance(tower.pos.x, tower.pos.y, enemy.pos.x, enemy.pos.y);
+      const enemyInRange = d < tower.range;
+
+      if (enemyInRange) {
+        console.log({ tower, d, enemyInRange });
+        if (enemy.progress > greatestProgress) {
+          greatestProgress = enemy.progress;
+          farthestEnemy = enemy;
+        }
+      }
+    }
+
+    const targetEnemy = farthestEnemy; // or others
+    // const diff = tower.cooldown - elapsed;
+    // const freshCooldown = tower.shotsPerSecond * 60;
+
+    // if (tower.cooldown > 0) {
+    //   tower.cooldown = diff;
+    // } else if (targetEnemy?.spawned) {
+    //   // console.log("SHOOT!");
+    //   tower.cooldown = freshCooldown;
+    //   tower.lastShot = waveTime;
+
+    //   const newBullet = {
+    //     id: bulletCount.current++,
+    //     type: tower.name,
+    //     speed: tower.bullet_speed,
+    //     damage: tower.damage,
+    //     towerPos: tower.pos,
+    //     enemyPos: targetEnemy.pos,
+    //     pos: tower.pos,
+    //     enemyId: targetEnemy.id,
+    //   };
+    //   bullets.current = [...bullets.current, newBullet];
+  }
+
   for (let enemy of G.enemies) {
     enemy.move();
     enemy.hp -= G.gameSpeed;
@@ -403,7 +450,7 @@ function update() {
   }
 }
 
-let waveInterval = 120;
+let waveInterval = 300;
 function runAnimation(frame) {
   waveInterval -= G.gameSpeed;
   G.tick += G.gameSpeed;
@@ -412,17 +459,14 @@ function runAnimation(frame) {
   // spawning enemies
   if (waveInterval < 0 && G.inBattle) {
     spawnEnemy();
-    waveInterval = 120;
+    waveInterval = 300;
   }
 
-  
   if (G.isPlaying) {
     update();
     requestAnimationFrame(runAnimation);
   }
 }
-
-
 
 // auto-play
 // setTimeout(() => {

@@ -16,6 +16,7 @@ import {
   enemyLaneLeft,
   enemyLaneCenter,
   enemyLaneRight,
+  towersG,
 } from "./constants";
 import { G, menuActions } from "./main";
 
@@ -282,21 +283,38 @@ export function drawTowerPreview(towerPos, towerType) {
     "circle"
   );
   towerShape.setAttribute("id", tower_id);
+  towerShape.classList.add("preview-tower");
   towerShape.setAttribute("cx", parseInt(towerPos.x));
   towerShape.setAttribute("cy", parseInt(towerPos.y));
   towerShape.setAttribute("data-entity", "tower");
   towerShape.setAttribute("data-type", towerType);
   towerShape.setAttribute("r", 25);
-
   towerShape.setAttribute("fill", TOWERS[towerType].fill);
-  towerShape.classList.add("preview-tower");
-  scene.append(towerShape);
+
+  const rangeCircle = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "circle"
+  );
+  rangeCircle.setAttribute("id", `range-${tower_id}`);
+  rangeCircle.classList.add('preview-range')
+  rangeCircle.setAttribute("cx", towerPos.x);
+  rangeCircle.setAttribute("cy", towerPos.y);
+  rangeCircle.setAttribute("r", TOWERS[towerType].range);
+  rangeCircle.setAttribute("fill",TOWERS[towerType].fill);
+  rangeCircle.setAttribute("opacity", 0.1);
+  rangeCircle.setAttribute("pointer-events", "none");
+
+  towersG.append(rangeCircle);
+  towersG.append(towerShape);
 }
 
 export function removePreviewTower() {
   Array.from(document.querySelectorAll(".preview-tower")).forEach((tower) =>
     tower.remove()
   );
+  Array.from(document.querySelectorAll(".preview-range")).forEach((range) =>
+  range.remove()
+);
 }
 
 export const drawRingIcons = (menuType, tile) => {
@@ -422,21 +440,40 @@ function createTower(pos, type) {
     id: tower_id,
     shape: null,
     pos,
+    cooldown: 0,
     fill: TOWERS[type].fill,
+    range: TOWERS[type].range,
     init() {
       this.shape = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
       );
       this.shape.setAttribute("id", tower_id);
-      this.shape.setAttribute("cx",this.pos.x);
-      this.shape.setAttribute("cy",this.pos.y);
+      this.shape.setAttribute("cx", this.pos.x);
+      this.shape.setAttribute("cy", this.pos.y);
       this.shape.setAttribute("data-entity", "tower");
       this.shape.setAttribute("data-type", type);
       this.shape.setAttribute("r", 25);
-
       this.shape.setAttribute("fill", this.fill);
-      scene.append(this.shape);
+
+      const rangeCircle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
+      rangeCircle.setAttribute("id", `range-${tower_id}`);
+      rangeCircle.setAttribute("cx", this.pos.x);
+      rangeCircle.setAttribute("cy", this.pos.y);
+      rangeCircle.setAttribute("r", this.range);
+      rangeCircle.setAttribute("fill", this.fill);
+      rangeCircle.setAttribute("opacity", 0);
+      rangeCircle.setAttribute("pointer-events", "none");
+
+      // prettier-ignore
+      // this.shape.onpointerover = (e) => rangeCircle.setAttribute("opacity", 0.1);
+      // this.shape.onpointerout = (e) => rangeCircle.setAttribute("opacity", 0);
+
+      towersG.append(rangeCircle);
+      towersG.append(this.shape);
     },
   };
   newTower.init();
@@ -465,6 +502,7 @@ export function hideRing() {
   selectionRingG.setAttribute("style", "opacity: 0; display: none");
   selectionRing.setAttribute("style", "opacity: 0; display: none");
 }
+
 export function updateFocusedTile() {
   G.lastSelectedTile?.blur();
   G.selectedTile.focus();
@@ -473,9 +511,7 @@ export function focusNoTile() {
   G.selectedTile?.blur();
   G.selectedTile = null;
   G.lastSelectedTile?.blur();
-
 }
-
 
 export function getDistance(x1, y1, x2, y2) {
   let y = x2 - x1;
