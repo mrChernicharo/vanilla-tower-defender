@@ -1,7 +1,7 @@
 export const COLS = 5;
 export const ROWS = 12;
 
-export const FIRST_WAVE_AT_ROW = 3;
+export const FIRST_WAVE_AT_ROW = 2;
 
 export const menuIcons = {
   trap: [],

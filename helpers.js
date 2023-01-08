@@ -110,6 +110,8 @@ export function createGrid(cols = COLS, rows = ROWS) {
 }
 
 export function getTileExits(tile) {
+  console.log("getTileExits", { tile });
+
   if (tile.startingPoint) {
     // console.log("hey", tile, G.tiles, G.tileChain);
     const exits = {
@@ -121,7 +123,6 @@ export function getTileExits(tile) {
     return exits;
   }
 
-  // return;
   const prevTile = G.tileChain.at(-1);
 
   const left = { x: 0, y: 0 };
@@ -157,6 +158,8 @@ export function getTileExits(tile) {
     right.x = tile.pos.x;
     right.y = tile.pos.y + 25;
   }
+  console.log("getTileExits", { prevTile, left, center, right });
+
   return { left, center, right };
 }
 
@@ -246,7 +249,6 @@ export function createPath(points, lane) {
   }
 
   const hasEnemyEntrance = G.tileChain.at(-1)?.enemyEntrance;
-
   if (hasEnemyEntrance) {
     let entryPos = { x: 0, y: 0 };
     const firstTileEntry = points.at(-1);
@@ -263,6 +265,7 @@ export function createPath(points, lane) {
 
     d += ` L ${entryPos.x} ${entryPos.y}`;
   }
+
   return d;
 }
 
@@ -271,7 +274,7 @@ export function getTowerType(icon) {
 }
 
 export function drawTowerPreview(towerPos, towerType) {
-  console.log("drawTowerPreview");
+  // console.log("drawTowerPreview");
   const tower_id = `tower-${towerPos.y}-${towerPos.x}`;
 
   const towerShape = document.createElementNS(
@@ -327,6 +330,7 @@ export const drawRingIcons = (menuType, tile) => {
     circle.setAttribute("cy", tile.pos.y + menuIcon.y);
     circle.setAttribute("r", 20);
     circle.setAttribute("stroke", menuIcon.color);
+    circle.setAttribute("stroke-width", 2);
 
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
     const pattern = document.createElementNS(
@@ -365,18 +369,8 @@ export const drawRingIcons = (menuType, tile) => {
 export const appendIconsListeners = (icons, tile, menuType) => {
   icons.forEach((icon) => {
     icon.onclick = (e) => {
-      console.log("clicked menu icon!", {
-        // tile,
-        // icon,
-        // GTileChain: G.tileChain,
-        // GSelectedTile: G.selectedTile,
-        // GLastSelectedTile: G.lastSelectedTile,
-        // selected: icon.dataset.selected
-        menuType,
-      });
-
       if (icon.dataset.selected) {
-        console.log("create that damn tower!");
+        // console.log("create that damn tower!");
         const towerPos = {
           x: tile.pos.x + tileWidth / 2,
           y: tile.pos.y + tileWidth / 2,
@@ -400,10 +394,12 @@ export const removeRingIcons = () => {
   );
 };
 export function drawNewPathTile(tile) {
-  console.log("drawNewPathTile", tile);
+  // console.log("drawNewPathTile", tile);
 
   const tileRect = document.querySelector(`#${tile.id}`);
   const chains = getChains(G.tileChain);
+  console.log({ chains, tileChain: G.tileChain });
+  // if barrierBroken
 
   enemyLaneLeft.setAttribute("d", createPath(chains.left, "left"));
   enemyLaneCenter.setAttribute("d", createPath(chains.center, "center"));
@@ -419,7 +415,7 @@ export function drawNewPathTile(tile) {
 function createTower(pos, type) {
   removePreviewTower();
 
-  console.log("createTower!", { pos, type });
+  // console.log("createTower!", { pos, type });
   const tower_id = `tower-${pos.y}-${pos.x}`;
 
   const newTower = {
@@ -474,6 +470,8 @@ export function updateFocusedTile() {
   G.selectedTile.focus();
 }
 export function focusNoTile() {
+  G.selectedTile.blur();
   G.selectedTile = null;
   G.lastSelectedTile?.blur();
+
 }

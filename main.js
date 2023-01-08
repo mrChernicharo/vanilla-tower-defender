@@ -32,7 +32,11 @@ import {
   createPath,
   drawTowerPreview,
   drawNewPathTile,
-  removePreviewTower,focusNoTile,updateFocusedTile,showRing, hideRing,
+  removePreviewTower,
+  focusNoTile,
+  updateFocusedTile,
+  showRing,
+  hideRing,
   drawRingIcons,
   appendIconsListeners,
   removeRingIcons,
@@ -221,13 +225,16 @@ function handleShowTowerPreview(e, tile, icon) {
 }
 
 function handleCreateNewPath(e, tile, icon) {
-  const barrierBroken =
-    tile.pos.y / tileWidth > FIRST_WAVE_AT_ROW + G.waveNumber;
   const direction = getIconDirection(icon.dataset.type);
 
   const adj = getAdjacentTile(G.tiles, tile, direction);
+  const barrierBroken =
+    direction === "bottom" &&
+    adj.pos.y / tileWidth + 1 > FIRST_WAVE_AT_ROW + G.waveNumber;
+
   const exits = getTileExits(adj);
-  // console.log("handleCreateNewPath", tile, icon, adj);
+
+  console.log({ barrierBroken });
 
   const newTile = {
     ...adj,
@@ -236,25 +243,27 @@ function handleCreateNewPath(e, tile, icon) {
     ...(barrierBroken && { enemyEntrance: true }),
   };
 
+  if (barrierBroken) {
+    G.waveNumber = tile.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
+    G.inBattle = true;
+  }
+
   const newTileChain = [...G.tileChain];
   const prevTile = newTileChain.pop();
   prevTile.connected = true;
+  if (!barrierBroken) {
+    delete prevTile.enemyEntrance;
+  }
 
   G.tiles[prevTile.index] = prevTile;
   G.tiles[newTile.index] = newTile;
-  // getTileExits //////
   G.tileChain = [...newTileChain, prevTile, newTile];
-
-  if (barrierBroken) {
-    (G.waveNumber = tile.y / tileWidth - FIRST_WAVE_AT_ROW),
-      (G.inBattle = true);
-  }
 
   drawNewPathTile(newTile);
 }
 
 function handleDisplayTileMenu(e, tile) {
-  console.log("handleDisplayTileMenu", tile);
+  // console.log("handleDisplayTileMenu", tile);
 
   removeRingIcons();
 
@@ -263,16 +272,15 @@ function handleDisplayTileMenu(e, tile) {
   }
 
   const menuType = getMenuType(tile);
-  console.log("Open this menu please!", { menuType });
+  // console.log("Open this menu please!", { menuType });
   const icons = drawRingIcons(menuType, tile);
   appendIconsListeners(icons, tile, menuType);
 }
 
-
 function handleTowerSelect(e) {
-  console.log("handleTowerSelect", e, G);
+  // console.log("handleTowerSelect", e, G);
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
-    console.log("clicked same tile as before");
+    // console.log("clicked same tile as before");
     focusNoTile();
     hideRing();
   } else {
@@ -289,7 +297,7 @@ function handleTileSelect(e) {
 
   // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
-    console.log("clicked same tile as before");
+    // console.log("clicked same tile as before");
     focusNoTile();
     hideRing();
   }
@@ -306,21 +314,26 @@ function handleTileSelect(e) {
 }
 
 function spawnEnemy() {
+  const initialPos = { x: 200, y: 0 };
+  console.log({ enemyLaneCenter });
+
   const newEnemy = {
     id: G.tick,
     shape: null,
     hp: Math.random() * 800 + 100,
     size: 13,
-    pos: {
-      x: 0,
-      y: 0,
-    },
+    pos: enemyLaneCenter.getPointAtLength(enemyLaneCenter.getTotalLength()),
+    spawned: false,
+    rotation: -90,
+    percProgress: 0,
+    speed: 1,
+    progress: 0,
     init() {
       this.shape = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      this.pos.x = getMiddleX(sceneRect);
+      // this.pos.x = getMiddleX(sceneRect);
       this.shape.setAttribute("id", `enemy-${G.tick}`);
       this.shape.setAttribute("cx", parseInt(this.pos.x));
       this.shape.setAttribute("cy", parseInt(this.pos.y));
@@ -331,10 +344,28 @@ function spawnEnemy() {
       scene.append(this.shape);
     },
     move() {
-      this.shape.setAttribute(
-        "cy",
-        Number(this.shape.getAttribute("cy")) + G.gameSpeed
+      const enemyPath = enemyLaneCenter;
+      const prog =
+        enemyPath.getTotalLength() -
+        (enemyPath.getTotalLength() -
+          (this.progress + this.speed * G.gameSpeed ));
+
+      const nextPos = enemyPath.getPointAtLength(
+        enemyPath.getTotalLength() - prog
       );
+      // // update enemies' progress
+      this.percProgress = (prog / enemyPath.getTotalLength()) * 100;
+      this.progress = prog;
+
+      // // get enemy facing angle: find angle considering pos and nextPos
+      // // prettier-ignore
+      // const angle = getAngle(this.pos.x, this.pos.y, nextPos.x + 50, nextPos.y + 50);
+
+      this.pos.x = nextPos.x;
+      this.pos.y = nextPos.y;
+      // enemy.rotation = angle;
+      this.shape.setAttribute("cy", this.pos.y);
+      this.shape.setAttribute("cx", this.pos.x);
     },
     die() {
       this.shape.remove();
@@ -363,8 +394,8 @@ function runAnimation(frame) {
   G.clock = G.tick / 60;
 
   // spawning enemies
-  if (waveInterval < 0) {
-    // spawnEnemy();
+  if (waveInterval < 0 && G.inBattle) {
+    spawnEnemy();
     waveInterval = 120;
   }
 
