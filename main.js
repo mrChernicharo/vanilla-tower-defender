@@ -20,30 +20,30 @@ import {
   enemiesG,
 } from "./constants";
 import {
-  canBecomePath,
-  getMenuType,
-  getMiddleX,
-  getTileColor,
-  createGrid,
-  getTileExits,
-  getAdjacentTile,
-  getIconDirection,
-  getChains,
-  getTowerType,
-  createPath,
-  drawTowerPreview,
-  drawNewPathTile,
-  removePreviewTower,
   focusNoTile,
-  updateFocusedTile,
-  showRing,
-  hideRing,
-  drawRingIcons,
-  appendIconsListeners,
-  removeRingIcons,
   getAngle,
   getDistance,
+  getIconDirection,
+  getMenuType,
+  updateFocusedTile,
 } from "./helpers";
+import { spawnEnemy } from "./lib/enemies";
+import {
+  appendIconsListeners,
+  drawRingIcons,
+  drawTowerPreview,
+  hideRing,
+  removePreviewTower,
+  removeRingIcons,
+  showRing,
+} from "./lib/tile-menu";
+import {
+  createGrid,
+  drawNewPathTile,
+  getAdjacentTile,
+  getTileExits,
+} from "./lib/tiles";
+import { getTowerType } from "./lib/towers";
 
 let playPauseIcon = "▶️";
 export const G = {
@@ -58,6 +58,7 @@ export const G = {
   towers: [],
   bullets: [],
   tiles: null,
+  bulletCount: 0,
   tileChain: [],
   selectedTile: null,
   lastSelectedTile: null,
@@ -79,35 +80,6 @@ export const menuActions = {
 };
 
 scene.setAttribute("transform", `translate(${MARGIN},${MARGIN})`);
-
-setInterval(() => {
-  const {
-    isPlaying,
-    inBattle,
-    selectedTile,
-    lastSelectedTile,
-    towerPreviewActive,
-    stageNumber,
-    waveNumber,
-    gameSpeed,
-    clock,
-  } = G;
-  pre.innerHTML = JSON.stringify(
-    {
-      isPlaying,
-      inBattle,
-      selectedTile: selectedTile?.id ?? null,
-      lastSelectedTile: lastSelectedTile?.id ?? null,
-      towerPreviewActive,
-      stageNumber,
-      waveNumber,
-      gameSpeed,
-      clock,
-    },
-    null,
-    2
-  );
-}, 1000);
 
 svg.onpointermove = (e) => {
   G.mouse = { x: e.offsetX, y: e.offsetY };
@@ -214,6 +186,13 @@ gameSpeedForm.onchange = (e) => {
   G.gameSpeed = speed;
 };
 
+function updateClock() {
+  G.clock =
+    G.tick / 60 +
+    (G.wavesTimes[G.waveNumber]?.end || 0) -
+    (G.wavesTimes[G.waveNumber]?.start || 0);
+}
+
 function handleShowTowerPreview(e, tile, icon) {
   const towerPos = {
     x: tile.pos.x + tileWidth / 2,
@@ -265,7 +244,7 @@ function handleCreateNewPath(e, tile, icon) {
   };
 
   if (barrierBroken) {
-    G.waveNumber = tile.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
+    G.waveNumber = adj.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
     G.inBattle = true;
   }
 
@@ -346,85 +325,11 @@ function handleTileSelect(e) {
   }
 }
 
-function spawnEnemy() {
-  const newEnemy = {
-    id: G.tick,
-    shape: null,
-    hp: Math.random() * 800 + 100,
-    size: 13,
-    pos: { x: 0, y: 0 },
-    spawned: false,
-    rotation: -90,
-    percProgress: 0,
-    speed: 1,
-    progress: 0,
-    init() {
-      this.shape = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "polygon"
-      );
-      // this.pos.x = getMiddleX(sceneRect);
-
-      this.shape.setAttribute("id", `enemy-${G.tick}`);
-      this.shape.setAttribute("points", this.getPoints());
-      this.shape.setAttribute("data-hp", this.hp);
-      this.shape.setAttribute("data-entity", "enemy");
-      this.shape.setAttribute("fill", "blue");
-      this.shape.setAttribute("stroke", "purple");
-      enemiesG.append(this.shape);
-    },
-    getPoints() {
-      const { x, y } = this.pos;
-      const points = [
-        { x: x + 12, y },
-        { x: x - 6, y: y + 6 },
-        { x: x - 6, y: y - 6 },
-        { x: x + 12, y },
-      ];
-      return points.map((p) => `${parseInt(p.x)} ${parseInt(p.y)} `).join("");
-    },
-    move() {
-      const enemyPath = enemyLaneCenter;
-      const prog =
-        enemyPath.getTotalLength() -
-        (enemyPath.getTotalLength() -
-          (this.progress + this.speed * G.gameSpeed));
-
-      const nextPos = enemyPath.getPointAtLength(
-        enemyPath.getTotalLength() - prog
-      );
-
-      // get enemy facing angle: find angle considering pos and nextPos
-      this.rotation = getAngle(this.pos.x, this.pos.y, nextPos.x, nextPos.y);
-
-      // // update enemies' progress
-      this.percProgress = (prog / enemyPath.getTotalLength()) * 100;
-      this.progress = prog;
-      this.pos.x = nextPos.x;
-      this.pos.y = nextPos.y;
-      this.shape.setAttribute(
-        "transform",
-        `translate(${nextPos.x},${nextPos.y})
-        rotate(${this.rotation})
-        `
-      );
-    },
-    die() {
-      this.shape.remove();
-    },
-  };
-
-  newEnemy.init();
-  G.enemies.push(newEnemy);
-}
-
 function update() {
-  const waveTime = G.clock - G.wavesTimes[G.waveNumber]?.start || 0;
-
   for (let tower of G.towers) {
+    const elapsed = G.clock - tower.lastShot;
     let farthestEnemy = null,
       greatestProgress = -Infinity;
-    // const elapsed = waveTime - tower.lastShot;
 
     for (let enemy of G.enemies) {
       // prettier-ignore
@@ -432,7 +337,7 @@ function update() {
       const enemyInRange = d < tower.range;
 
       if (enemyInRange) {
-        console.log({ tower, d, enemyInRange });
+        // console.log({ tower, d, enemyInRange });
         if (enemy.progress > greatestProgress) {
           greatestProgress = enemy.progress;
           farthestEnemy = enemy;
@@ -440,55 +345,101 @@ function update() {
       }
     }
 
+    // console.log({ elapsed, enemies: G.enemies });
+
     const targetEnemy = farthestEnemy; // or others
-    // const diff = tower.cooldown - elapsed;
-    // const freshCooldown = tower.shotsPerSecond * 60;
+    const diff = tower.cooldown - elapsed;
+    const freshCooldown = tower.shotsPerSecond * 60;
 
-    // if (tower.cooldown > 0) {
-    //   tower.cooldown = diff;
-    // } else if (targetEnemy?.spawned) {
-    //   // console.log("SHOOT!");
-    //   tower.cooldown = freshCooldown;
-    //   tower.lastShot = waveTime;
-
-    //   const newBullet = {
-    //     id: bulletCount.current++,
-    //     type: tower.name,
-    //     speed: tower.bullet_speed,
-    //     damage: tower.damage,
-    //     towerPos: tower.pos,
-    //     enemyPos: targetEnemy.pos,
-    //     pos: tower.pos,
-    //     enemyId: targetEnemy.id,
-    //   };
-    //   bullets.current = [...bullets.current, newBullet];
-  }
-
-  for (let enemy of G.enemies) {
-    enemy.move();
-    enemy.hp -= G.gameSpeed;
-
-    if (enemy.hp <= 0 || enemy.percProgress >= 100) {
-      enemy.die();
+    if (targetEnemy) {
+      const angle = getAngle(
+        tower.pos.x,
+        tower.pos.y,
+        targetEnemy.pos.x,
+        targetEnemy.pos.y
+      );
+      tower.rotate(angle);
     }
+
+    if (tower.cooldown > 0) {
+      tower.cooldown = diff;
+      // } else {
+    } else if (targetEnemy) {
+      // } else if (targetEnemy?.spawned) {
+      tower.cooldown = freshCooldown;
+      tower.lastShot = G.clock;
+
+      const newBullet = {
+        id: G.bulletCount++,
+        type: tower.type,
+        speed: tower.bullet_speed,
+        damage: tower.damage,
+        towerPos: tower.pos,
+        enemyPos: targetEnemy.pos,
+        pos: tower.pos,
+        path: null,
+        enemyId: targetEnemy.id,
+        init(){
+          this.path = `M ${this.pos.x} ${this.pos.y} L ${this.enemyPos.x} ${this.enemyPos.y}`;
+          // let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          // path.setAttribute("d", bulletPath);
+        },
+        move() {
+          const nextPos = this.path.getPointAtLength(this.speed * G.gameSpeed);
+          this.pos = nextPos;
+        },
+        hit(enemy) {
+          enemy.hp += this.damage;
+        },
+
+      };
+      newBullet.init()
+      G.bullets.push(newBullet);
+      console.log("SHOOT!", tower.type, { targetEnemy, newBullet, bullets: G.bullets });
+    }
+
+    for (let bullet of G.bullets) {
+      // console.log(bullet)
+      // if (bullet.)
+    }
+
+    for (let enemy of G.enemies) {
+      enemy.move();
+      // enemy.hp -= G.gameSpeed;
+
+      if (enemy.hp <= 0) {
+        enemy.die();
+      }
+      if (enemy.percProgress >= 100) {
+        enemy.finish();
+      }
+    }
+
+    // console.log(G);
   }
 }
 
-let waveInterval = 300;
+let waveInterval = 600;
 function runAnimation(frame) {
   waveInterval -= G.gameSpeed;
   G.tick += G.gameSpeed;
-  G.clock = G.tick / 60;
 
   // spawning enemies
   if (waveInterval < 0 && G.inBattle) {
-    spawnEnemy();
-    waveInterval = 300;
+    const randomLane = [enemyLaneLeft, enemyLaneCenter, enemyLaneRight][
+      Math.floor(Math.random() * 3)
+    ];
+    spawnEnemy("goblin", randomLane);
+    waveInterval = 600;
   }
 
-  if (G.isPlaying) {
+  if (G.isPlaying && G.inBattle) {
+    updateClock();
     update();
     requestAnimationFrame(runAnimation);
+  } else {
+    G.wavesTimes[G.waveNumber].end = G.clock;
+    console.log(G.wavesTimes);
   }
 }
 
@@ -500,3 +451,32 @@ function runAnimation(frame) {
 //   G.frameId = requestAnimationFrame(runAnimation);
 //   console.log("auto-play");
 // }, 1000);
+
+setInterval(() => {
+  const {
+    isPlaying,
+    inBattle,
+    selectedTile,
+    lastSelectedTile,
+    towerPreviewActive,
+    stageNumber,
+    waveNumber,
+    gameSpeed,
+    clock,
+  } = G;
+  pre.innerHTML = JSON.stringify(
+    {
+      isPlaying,
+      inBattle,
+      selectedTile: selectedTile?.id ?? null,
+      lastSelectedTile: lastSelectedTile?.id ?? null,
+      towerPreviewActive,
+      stageNumber,
+      waveNumber,
+      gameSpeed,
+      clock,
+    },
+    null,
+    2
+  );
+}, 1000);
