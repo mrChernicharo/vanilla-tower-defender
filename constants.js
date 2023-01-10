@@ -74,6 +74,7 @@ export const sceneRect = svg.getBoundingClientRect();
 export const tileWidth = sceneRect.width / 6;
 export const enemiesG = document.querySelector("#enemies-g");
 export const towersG = document.querySelector("#towers-g");
+export const bulletsG = document.querySelector("#bullets-g");
 export const MARGIN = tileWidth / 2;
 
 export const playPauseBtn = document.querySelector("#play-pause-btn");
@@ -98,17 +99,17 @@ export const TOWERS = {
     xp: 0,
     fill: "red",
     price: 100,
-    bullet_speed: 100
+    bullet_speed: 180
   },
   ice: {
     name: "ice",
-    damage: 40,
+    damage: 10,
     range: 200,
     rate_of_fire: 3,
     xp: 0,
     fill: "dodgerblue",
     price: 80,
-    bullet_speed: 100
+    bullet_speed: 140
   },
   lightning: {
     name: "lightning",
@@ -128,7 +129,7 @@ export const TOWERS = {
     xp: 0,
     fill: "brown",
     price: 60,
-    bullet_speed: 50
+    bullet_speed: 100
   },
 };
 

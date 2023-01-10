@@ -18,6 +18,7 @@ import {
   TOWERS,
   pre,
   enemiesG,
+  bulletsG,
 } from "./constants";
 import {
   focusNoTile,
@@ -27,6 +28,7 @@ import {
   getMenuType,
   updateFocusedTile,
 } from "./helpers";
+import { createBullet } from "./lib/bullets";
 import { spawnEnemy } from "./lib/enemies";
 import {
   appendIconsListeners,
@@ -337,7 +339,6 @@ function update() {
       const enemyInRange = d < tower.range;
 
       if (enemyInRange) {
-        // console.log({ tower, d, enemyInRange });
         if (enemy.progress > greatestProgress) {
           greatestProgress = enemy.progress;
           farthestEnemy = enemy;
@@ -369,43 +370,32 @@ function update() {
       tower.cooldown = freshCooldown;
       tower.lastShot = G.clock;
 
-      const newBullet = {
-        id: G.bulletCount++,
-        type: tower.type,
-        speed: tower.bullet_speed,
-        damage: tower.damage,
-        towerPos: tower.pos,
-        enemyPos: targetEnemy.pos,
-        pos: tower.pos,
-        path: null,
-        enemyId: targetEnemy.id,
-        init(){
-          this.path = `M ${this.pos.x} ${this.pos.y} L ${this.enemyPos.x} ${this.enemyPos.y}`;
-          // let path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-          // path.setAttribute("d", bulletPath);
-        },
-        move() {
-          const nextPos = this.path.getPointAtLength(this.speed * G.gameSpeed);
-          this.pos = nextPos;
-        },
-        hit(enemy) {
-          enemy.hp += this.damage;
-        },
-
-      };
-      newBullet.init()
+      const newBullet = createBullet(tower, targetEnemy);
       G.bullets.push(newBullet);
-      console.log("SHOOT!", tower.type, { targetEnemy, newBullet, bullets: G.bullets });
+
+      console.log("SHOOT!", tower.type, {
+        targetEnemy,
+        bullet: newBullet,
+        bullets: G.bullets,
+      });
     }
 
-    for (let bullet of G.bullets) {
-      // console.log(bullet)
-      // if (bullet.)
+    for (let [b, bullet] of G.bullets.entries()) {
+      bullet.move();
+      // prettier-ignore
+      const distance = getDistance(bullet.pos.x, bullet.pos.y, bullet.enemy.pos.x, bullet.enemy.pos.y);
+
+      if (distance < bullet.enemy.size / 2) {
+        console.log("HIT!", bullet);
+        bullet.hit(bullet.enemy);
+      }
+      if (bullet.enemy.done) {
+        bullet.remove();
+      }
     }
 
     for (let enemy of G.enemies) {
       enemy.move();
-      // enemy.hp -= G.gameSpeed;
 
       if (enemy.hp <= 0) {
         enemy.die();
@@ -414,12 +404,11 @@ function update() {
         enemy.finish();
       }
     }
-
-    // console.log(G);
+    // console.log(G.enemies);
   }
 }
 
-let waveInterval = 600;
+let waveInterval = 100;
 function runAnimation(frame) {
   waveInterval -= G.gameSpeed;
   G.tick += G.gameSpeed;
@@ -438,8 +427,9 @@ function runAnimation(frame) {
     update();
     requestAnimationFrame(runAnimation);
   } else {
+    // G.wavesTimes[G.waveNumber].end = G.clock + G.wavesTimes[G.waveNumber].end;
     G.wavesTimes[G.waveNumber].end = G.clock;
-    console.log(G.wavesTimes);
+    console.log({ wavesTimes: G.wavesTimes });
   }
 }
 
