@@ -195,10 +195,20 @@ function handlePlayPause() {
 }
 
 function updateClock() {
-  G.clock =
+  if (G.wavesTimes[G.waveNumber]?.start > G.wavesTimes[G.waveNumber]?.end) {
+    console.log("DEU RUIM");
+  }
+  const diff =
     G.tick / 60 +
     (G.wavesTimes[G.waveNumber]?.end || 0) -
     (G.wavesTimes[G.waveNumber]?.start || 0);
+  // console.log({ wavesTimes: G.wavesTimes, tick: G.tick });
+
+  if (G.wavesTimes[G.waveNumber].paused) {
+    G.clock = G.wavesTimes[G.waveNumber].paused + diff;
+  } else {
+    G.clock = diff;
+  }
 }
 
 function handleShowTowerPreview(e, tile, icon) {
@@ -350,7 +360,9 @@ function handleTileSelect(e) {
 
 function update() {
   for (let tower of G.towers) {
-    const elapsed = G.clock - tower.lastShot;
+    let elapsedSinceLastShot;
+
+    elapsedSinceLastShot = G.clock - tower.lastShot;
     let farthestEnemy = null,
       greatestProgress = -Infinity;
 
@@ -368,8 +380,26 @@ function update() {
     }
 
     const targetEnemy = farthestEnemy; // or others
-    const diff = tower.cooldown - elapsed;
+    const diff = tower.cooldown - elapsedSinceLastShot;
     const freshCooldown = tower.shotsPerSecond * 60;
+
+    if (diff > tower.cooldown) {
+      console.log("SHIIIIT", {
+        elapsedSinceLastShot: elapsedSinceLastShot.toFixed(2),
+        clock: G.clock.toFixed(2),
+        diff: diff.toFixed(2),
+        cooldown: tower.cooldown.toFixed(2),
+        lastShot: tower.lastShot.toFixed(2),
+      });
+    } else {
+      console.log("OK", {
+        elapsedSinceLastShot: elapsedSinceLastShot.toFixed(2),
+        clock: G.clock.toFixed(2),
+        diff: diff.toFixed(2),
+        cooldown: tower.cooldown.toFixed(2),
+        lastShot: tower.lastShot.toFixed(2),
+      });
+    }
 
     if (targetEnemy) {
       const angle = getAngle(
@@ -383,7 +413,7 @@ function update() {
 
     if (tower.cooldown > 0) {
       tower.cooldown = diff;
-    } else if (targetEnemy) {
+    } else if (tower.cooldown <= 0 && targetEnemy) {
       // } else if (targetEnemy?.spawned) {
       tower.cooldown = freshCooldown;
       tower.lastShot = G.clock;
@@ -452,11 +482,14 @@ function runAnimation(frame) {
       console.log("wave terminated");
       G.inBattle = false;
       const entryTile = G.tileChain.at(-1);
+
       delete entryTile.enemyEntrance;
       entryTile.visible = true;
+
       G.tileChain[G.tileChain.length - 1] = entryTile;
       G.tiles[entryTile.index] = entryTile;
-      G.wavesTimes[G.waveNumber].end = G.clock;
+      G.wavesTimes[G.waveNumber].end =
+        G.clock + G.wavesTimes[G.waveNumber].start;
 
       handlePlayPause();
     }
@@ -466,10 +499,15 @@ function runAnimation(frame) {
     // simple pause
     if (G.inBattle) {
       if (nextWave.some((we) => !we.done)) {
-        console.log("paused");
-      } else {
-     
+        //
+        G.wavesTimes[G.waveNumber].paused =
+          (G.wavesTimes[G.waveNumber]?.paused || 0) + G.clock;
       }
+      console.log("paused", {
+        clock: G.clock,
+        tick: G.tick,
+        wavesTimes: G.wavesTimes,
+      });
     }
 
     // G.wavesTimes[G.waveNumber].end = G.clock + G.wavesTimes[G.waveNumber].end;
@@ -497,18 +535,26 @@ setInterval(() => {
     waveNumber,
     gameSpeed,
     clock,
+    towers,
+    timestamp,
+    loopTimestamp,
+    wavesTimes,
   } = G;
   pre.innerHTML = JSON.stringify(
     {
+      selectedTile: selectedTile?.id,
+      lastSelectedTile: lastSelectedTile?.id,
       isPlaying,
       inBattle,
-      selectedTile: selectedTile?.id ?? null,
-      lastSelectedTile: lastSelectedTile?.id ?? null,
       towerPreviewActive,
       stageNumber,
       waveNumber,
       gameSpeed,
       clock,
+      timestamp,
+      loopTimestamp,
+      wavesTimes,
+      towers,
     },
     null,
     2

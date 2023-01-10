@@ -149,6 +149,7 @@ export const STAGE_WAVES = {
     stage: { number: 1, name: "cozy hills", firstWaveAtRow: 2 },
     waves: [
       [
+        // 0
         { type: "goblin", lane: "left", delay: 0 },
         { type: "orc", lane: "right", delay: 2 },
         { type: "goblin", lane: "left", delay: 4 },
@@ -159,6 +160,15 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 12 },
       ],
       [
+        // 1
+        { type: "troll", lane: "center", delay: 0 },
+        { type: "goblin", lane: "right", delay: 5 },
+        { type: "troll", lane: "center", delay: 10 },
+        { type: "goblin", lane: "left", delay: 15 },
+        { type: "troll", lane: "center", delay: 20 },
+      ],
+      [
+        // 2
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
         { type: "goblin", lane: "left", delay: 4 },
@@ -171,29 +181,20 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 12 },
       ],
       [
+        // 3
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
         { type: "goblin", lane: "left", delay: 4 },
         { type: "goblin", lane: "right", delay: 8 },
         { type: "goblin", lane: "left", delay: 10 },
         { type: "goblin", lane: "right", delay: 12 },
-        { type: "orc", lane: "center", delay: 3 },
+        { type: "goblin", lane: "left", delay: 14 },
+        { type: "goblin", lane: "right", delay: 16 },
         { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
         { type: "orc", lane: "center", delay: 12 },
+        { type: "orc", lane: "center", delay: 18 },
       ],
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-      ],
+
       [
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
