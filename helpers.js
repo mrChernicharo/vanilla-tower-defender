@@ -17,9 +17,6 @@ import {
   gameSpeedForm,
   selectionRing,
   selectionRingG,
-  enemyLaneLeft,
-  enemyLaneCenter,
-  enemyLaneRight,
 } from "./lib/dom-selects";
 import { createTower } from "./lib/towers";
 import { G, menuActions } from "./main";

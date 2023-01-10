@@ -7,14 +7,12 @@ import {
   menuIcons,
   tileWidth,
   TOWERS,
+  STAGE_WAVES,
 } from "./constants";
 import {
   pre,
   enemiesG,
   bulletsG,
-  enemyLaneLeft,
-  enemyLaneCenter,
-  enemyLaneRight,
   svg,
   scene,
   playPauseBtn,
@@ -160,19 +158,7 @@ scene.onclick = (e) => {
   entityActions[entity](e);
 };
 playPauseBtn.onclick = (e) => {
-  G.isPlaying = !G.isPlaying;
-  playPauseIcon = G.isPlaying ? "⏸" : "▶️";
-  playPauseBtn.innerHTML = playPauseIcon;
-
-  if (G.isPlaying) {
-    G.loopTimestamp = 0;
-    G.timestamp = Date.now();
-    G.tick = 0;
-    G.frameId = requestAnimationFrame(runAnimation);
-  } else {
-    cancelAnimationFrame(G.frameId);
-    G.tick = 0;
-  }
+  handlePlayPause();
 };
 gameSpeedForm.onchange = (e) => {
   e.preventDefault();
@@ -191,6 +177,22 @@ gameSpeedForm.onchange = (e) => {
   }
   G.gameSpeed = speed;
 };
+
+function handlePlayPause() {
+  G.isPlaying = !G.isPlaying;
+  playPauseIcon = G.isPlaying ? "⏸" : "▶️";
+  playPauseBtn.innerHTML = playPauseIcon;
+
+  if (G.isPlaying) {
+    G.loopTimestamp = 0;
+    G.timestamp = Date.now();
+    G.tick = 0;
+    G.frameId = requestAnimationFrame(runAnimation);
+  } else {
+    cancelAnimationFrame(G.frameId);
+    G.tick = 0;
+  }
+}
 
 function updateClock() {
   G.clock =
@@ -252,16 +254,21 @@ function handleCreateNewPath(e, tile, icon) {
     G.waveNumber = adj.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
     G.wavesTimes[G.waveNumber] = newWaveInfo;
     G.inBattle = true;
-    console.log("barrier broken!", G);
+    console.log("barrier broken! CALL WAVE", G.waveNumber, {
+      wave: STAGE_WAVES[G.stageNumber].waves[G.waveNumber],
+      G,
+    });
+
     updateVisibleTiles(1);
+    handlePlayPause();
   }
 
   const newTileChain = [...G.tileChain];
   const prevTile = newTileChain.pop();
   prevTile.connected = true;
-  if (!barrierBroken) {
-    delete prevTile.enemyEntrance;
-  }
+  // if (!barrierBroken) {
+  //   delete prevTile.enemyEntrance;
+  // }
 
   G.tiles[prevTile.index] = prevTile;
   G.tiles[newTile.index] = newTile;
@@ -271,16 +278,22 @@ function handleCreateNewPath(e, tile, icon) {
 }
 
 function handleDisplayTileMenu(e, tile) {
-  // console.log("handleDisplayTileMenu", tile);
+  console.log("handleDisplayTileMenu", { tile, inBattle: G.inBattle });
 
   removeRingIcons();
 
+  if (!tile?.visible) {
+    // hideRing();
+    return;
+  }
   if (tile?.blocked) {
     return;
   }
 
   const menuType = getMenuType(tile);
-  // console.log("Open this menu please!", { menuType });
+  if (G.inBattle && menuType === "newPath") {
+    return;
+  }
   const icons = drawRingIcons(menuType, tile);
   appendIconsListeners(icons, tile, menuType);
 }
@@ -313,9 +326,11 @@ function handleTowerSelect(e) {
 }
 
 function handleTileSelect(e) {
+  console.log("handleTileSelect", e);
   if (G.selectedTile.hasTower) {
     return handleTowerSelect(e);
   }
+
   // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
     focusNoTile();
@@ -410,41 +425,56 @@ function update() {
   }
 }
 
-let spawnInterval = 100;
+// let spawnInterval = 100;
 function runAnimation(frame) {
-  spawnInterval -= G.gameSpeed;
+  // spawnInterval -= G.gameSpeed;
   G.tick += G.gameSpeed;
 
   // spawning enemies
-  if (spawnInterval < 0 && G.inBattle) {
-    const randomLane = [enemyLaneLeft, enemyLaneCenter, enemyLaneRight][
-      Math.floor(Math.random() * 3)
-    ];
-    spawnEnemy("goblin", randomLane);
-    spawnInterval = 600;
-  }
+  // console.log(nextWave)
+  const nextWave = STAGE_WAVES[G.stageNumber].waves[G.waveNumber] || [];
+
+  const spawningEnemies = nextWave.filter(
+    (waveEnemy) => !waveEnemy.spawned && waveEnemy.delay < G.clock
+  );
+
+  spawningEnemies.forEach((waveEnemy) => {
+    spawnEnemy(waveEnemy);
+  });
 
   // loop running
-  if (G.isPlaying && G.inBattle) {
+  if (G.isPlaying) {
     updateClock();
     update();
     requestAnimationFrame(runAnimation);
+
+    if (nextWave.every((we) => we.done)) {
+      console.log("wave terminated");
+      G.inBattle = false;
+      const entryTile = G.tileChain.at(-1);
+      delete entryTile.enemyEntrance;
+      entryTile.visible = true;
+      G.tileChain[G.tileChain.length - 1] = entryTile;
+      G.tiles[entryTile.index] = entryTile;
+      G.wavesTimes[G.waveNumber].end = G.clock;
+
+      handlePlayPause();
+    }
   } else {
     // loop paused
 
     // simple pause
-    if (G.inBattle && G.enemies.length) {
-      console.log("paused");
-    } else {
-      console.log("wave terminated");
-      G.isPlaying = false;
-      G.inBattle = false;
+    if (G.inBattle) {
+      if (nextWave.some((we) => !we.done)) {
+        console.log("paused");
+      } else {
+     
+      }
     }
 
     // G.wavesTimes[G.waveNumber].end = G.clock + G.wavesTimes[G.waveNumber].end;
-    G.wavesTimes[G.waveNumber].end = G.clock;
-    console.log({ wave: G.waveNumber, wavesTimes: G.wavesTimes });
   }
+  // console.log({ wave: G.waveNumber, wavesTimes: G.wavesTimes });
 }
 
 // auto-play
@@ -456,31 +486,31 @@ function runAnimation(frame) {
 //   console.log("auto-play");
 // }, 1000);
 
-// setInterval(() => {
-//   const {
-//     isPlaying,
-//     inBattle,
-//     selectedTile,
-//     lastSelectedTile,
-//     towerPreviewActive,
-//     stageNumber,
-//     waveNumber,
-//     gameSpeed,
-//     clock,
-//   } = G;
-//   pre.innerHTML = JSON.stringify(
-//     {
-//       isPlaying,
-//       inBattle,
-//       selectedTile: selectedTile?.id ?? null,
-//       lastSelectedTile: lastSelectedTile?.id ?? null,
-//       towerPreviewActive,
-//       stageNumber,
-//       waveNumber,
-//       gameSpeed,
-//       clock,
-//     },
-//     null,
-//     2
-//   );
-// }, 1000);
+setInterval(() => {
+  const {
+    isPlaying,
+    inBattle,
+    selectedTile,
+    lastSelectedTile,
+    towerPreviewActive,
+    stageNumber,
+    waveNumber,
+    gameSpeed,
+    clock,
+  } = G;
+  pre.innerHTML = JSON.stringify(
+    {
+      isPlaying,
+      inBattle,
+      selectedTile: selectedTile?.id ?? null,
+      lastSelectedTile: lastSelectedTile?.id ?? null,
+      towerPreviewActive,
+      stageNumber,
+      waveNumber,
+      gameSpeed,
+      clock,
+    },
+    null,
+    2
+  );
+}, 200);
