@@ -3,23 +3,26 @@ import {
   ROWS,
   FIRST_WAVE_AT_ROW,
   MARGIN,
+  sceneRect,
+  menuIcons,
+  tileWidth,
+  TOWERS,
+} from "./constants";
+import {
+  pre,
+  enemiesG,
+  bulletsG,
+  enemyLaneLeft,
+  enemyLaneCenter,
+  enemyLaneRight,
   svg,
   scene,
   playPauseBtn,
   gameSpeedForm,
   selectionRing,
   selectionRingG,
-  sceneRect,
-  menuIcons,
-  tileWidth,
-  enemyLaneLeft,
-  enemyLaneCenter,
-  enemyLaneRight,
-  TOWERS,
-  pre,
-  enemiesG,
-  bulletsG,
-} from "./constants";
+} from "./lib/dom-selects";
+
 import {
   focusNoTile,
   getAngle,
@@ -44,6 +47,7 @@ import {
   drawNewPathTile,
   getAdjacentTile,
   getTileExits,
+  updateVisibleTiles,
 } from "./lib/tiles";
 import { getTowerType } from "./lib/towers";
 
@@ -73,6 +77,7 @@ export const G = {
   gameSpeed: 2,
 };
 G.tiles = createGrid(COLS, ROWS);
+updateVisibleTiles();
 
 export const menuActions = {
   trap: function () {},
@@ -87,7 +92,6 @@ svg.onpointermove = (e) => {
   G.mouse = { x: e.offsetX, y: e.offsetY };
 };
 document.onclick = (e) => {
-  // console.log(e.composedPath());
   if (!e.target.closest("svg")) {
     selectionRingG.setAttribute("style", "opacity: 0; display: none");
     selectionRing.setAttribute("style", "opacity: 0; display: none");
@@ -108,7 +112,7 @@ document.onclick = (e) => {
     // console.log("clicked anywhere but not at a towerIcon neither at a tower");
 
     if (e.target.closest(`[data-entity="tile"]`) && G.tiles[e.target.closest(`[data-entity="tile"]`).dataset.index].hasTower) {
-      console.log('clicked tile with a tower')
+      // console.log('clicked tile with a tower')
       const { x, y } = G.selectedTile.pos;
       const rangeCircle = document.querySelector(
         `#range-tower-${y + 50}-${x + 50}`
@@ -236,8 +240,6 @@ function handleCreateNewPath(e, tile, icon) {
 
   const exits = getTileExits(adj);
 
-  // console.log({ barrierBroken });
-
   const newTile = {
     ...adj,
     type: "path",
@@ -246,8 +248,12 @@ function handleCreateNewPath(e, tile, icon) {
   };
 
   if (barrierBroken) {
+    const newWaveInfo = { start: G.clock, end: null };
     G.waveNumber = adj.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
+    G.wavesTimes[G.waveNumber] = newWaveInfo;
     G.inBattle = true;
+    console.log("barrier broken!", G);
+    updateVisibleTiles(1);
   }
 
   const newTileChain = [...G.tileChain];
@@ -265,7 +271,7 @@ function handleCreateNewPath(e, tile, icon) {
 }
 
 function handleDisplayTileMenu(e, tile) {
-  console.log("handleDisplayTileMenu", tile);
+  // console.log("handleDisplayTileMenu", tile);
 
   removeRingIcons();
 
@@ -280,7 +286,7 @@ function handleDisplayTileMenu(e, tile) {
 }
 
 function handleTowerSelect(e) {
-  console.log("handleTowerSelect", { e, G });
+  // console.log("handleTowerSelect", { e, G });
   Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
     range.classList.remove("locked");
     range.setAttribute("opacity", 0);
@@ -346,8 +352,6 @@ function update() {
       }
     }
 
-    // console.log({ elapsed, enemies: G.enemies });
-
     const targetEnemy = farthestEnemy; // or others
     const diff = tower.cooldown - elapsed;
     const freshCooldown = tower.shotsPerSecond * 60;
@@ -364,7 +368,6 @@ function update() {
 
     if (tower.cooldown > 0) {
       tower.cooldown = diff;
-      // } else {
     } else if (targetEnemy) {
       // } else if (targetEnemy?.spawned) {
       tower.cooldown = freshCooldown;
@@ -379,57 +382,68 @@ function update() {
         bullets: G.bullets,
       });
     }
+  }
 
-    for (let [b, bullet] of G.bullets.entries()) {
-      bullet.move();
-      // prettier-ignore
-      const distance = getDistance(bullet.pos.x, bullet.pos.y, bullet.enemy.pos.x, bullet.enemy.pos.y);
+  for (let [b, bullet] of G.bullets.entries()) {
+    bullet.move();
+    // prettier-ignore
+    const distance = getDistance(bullet.pos.x, bullet.pos.y, bullet.enemy.pos.x, bullet.enemy.pos.y);
 
-      if (distance < bullet.enemy.size / 2) {
-        console.log("HIT!", bullet);
-        bullet.hit(bullet.enemy);
-      }
-      if (bullet.enemy.done) {
-        bullet.remove();
-      }
+    if (distance < bullet.enemy.size / 2) {
+      console.log("HIT!", bullet);
+      bullet.hit(bullet.enemy);
     }
-
-    for (let enemy of G.enemies) {
-      enemy.move();
-
-      if (enemy.hp <= 0) {
-        enemy.die();
-      }
-      if (enemy.percProgress >= 100) {
-        enemy.finish();
-      }
+    if (bullet.enemy.done) {
+      bullet.remove();
     }
-    // console.log(G.enemies);
+  }
+
+  for (let enemy of G.enemies) {
+    enemy.move();
+
+    if (enemy.hp <= 0) {
+      enemy.die();
+    }
+    if (enemy.percProgress >= 100) {
+      enemy.finish();
+    }
   }
 }
 
-let waveInterval = 100;
+let spawnInterval = 100;
 function runAnimation(frame) {
-  waveInterval -= G.gameSpeed;
+  spawnInterval -= G.gameSpeed;
   G.tick += G.gameSpeed;
 
   // spawning enemies
-  if (waveInterval < 0 && G.inBattle) {
+  if (spawnInterval < 0 && G.inBattle) {
     const randomLane = [enemyLaneLeft, enemyLaneCenter, enemyLaneRight][
       Math.floor(Math.random() * 3)
     ];
     spawnEnemy("goblin", randomLane);
-    waveInterval = 600;
+    spawnInterval = 600;
   }
 
+  // loop running
   if (G.isPlaying && G.inBattle) {
     updateClock();
     update();
     requestAnimationFrame(runAnimation);
   } else {
+    // loop paused
+
+    // simple pause
+    if (G.inBattle && G.enemies.length) {
+      console.log("paused");
+    } else {
+      console.log("wave terminated");
+      G.isPlaying = false;
+      G.inBattle = false;
+    }
+
     // G.wavesTimes[G.waveNumber].end = G.clock + G.wavesTimes[G.waveNumber].end;
     G.wavesTimes[G.waveNumber].end = G.clock;
-    console.log({ wavesTimes: G.wavesTimes });
+    console.log({ wave: G.waveNumber, wavesTimes: G.wavesTimes });
   }
 }
 
@@ -442,31 +456,31 @@ function runAnimation(frame) {
 //   console.log("auto-play");
 // }, 1000);
 
-setInterval(() => {
-  const {
-    isPlaying,
-    inBattle,
-    selectedTile,
-    lastSelectedTile,
-    towerPreviewActive,
-    stageNumber,
-    waveNumber,
-    gameSpeed,
-    clock,
-  } = G;
-  pre.innerHTML = JSON.stringify(
-    {
-      isPlaying,
-      inBattle,
-      selectedTile: selectedTile?.id ?? null,
-      lastSelectedTile: lastSelectedTile?.id ?? null,
-      towerPreviewActive,
-      stageNumber,
-      waveNumber,
-      gameSpeed,
-      clock,
-    },
-    null,
-    2
-  );
-}, 1000);
+// setInterval(() => {
+//   const {
+//     isPlaying,
+//     inBattle,
+//     selectedTile,
+//     lastSelectedTile,
+//     towerPreviewActive,
+//     stageNumber,
+//     waveNumber,
+//     gameSpeed,
+//     clock,
+//   } = G;
+//   pre.innerHTML = JSON.stringify(
+//     {
+//       isPlaying,
+//       inBattle,
+//       selectedTile: selectedTile?.id ?? null,
+//       lastSelectedTile: lastSelectedTile?.id ?? null,
+//       towerPreviewActive,
+//       stageNumber,
+//       waveNumber,
+//       gameSpeed,
+//       clock,
+//     },
+//     null,
+//     2
+//   );
+// }, 1000);

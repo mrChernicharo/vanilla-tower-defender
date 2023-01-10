@@ -3,20 +3,24 @@ import {
   ROWS,
   FIRST_WAVE_AT_ROW,
   menuIcons,
-  svg,
-  scene,
-  playPauseBtn,
-  gameSpeedForm,
-  selectionRing,
   tileWidth,
-  selectionRingG,
   sceneRect,
   MARGIN,
   TOWERS,
+  
+} from "./constants";
+
+import {
+  scene,
+  svg,
+  playPauseBtn,
+  gameSpeedForm,
+  selectionRing,
+  selectionRingG,
   enemyLaneLeft,
   enemyLaneCenter,
   enemyLaneRight,
-} from "./constants";
+} from "./lib/dom-selects";
 import { createTower } from "./lib/towers";
 import { G, menuActions } from "./main";
 
@@ -42,7 +46,6 @@ export const getMenuType = (tile) => {
 
 export const getMiddleX = (sceneRect) => sceneRect.width / 2 - MARGIN;
 
-
 export const getIconDirection = (iconType) => iconType.split("-")[1];
 
 export const getChains = (tileChain) => {
@@ -60,7 +63,6 @@ export const getChains = (tileChain) => {
     }
   );
 };
-
 
 export function updateFocusedTile() {
   G.lastSelectedTile?.blur();

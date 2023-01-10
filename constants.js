@@ -1,7 +1,13 @@
+import { svg } from "./lib/dom-selects";
+
 export const COLS = 5;
 export const ROWS = 12;
 
 export const FIRST_WAVE_AT_ROW = 2;
+
+export const sceneRect = svg.getBoundingClientRect();
+export const tileWidth = sceneRect.width / 6;
+export const MARGIN = tileWidth / 2;
 
 export const menuIcons = {
   trap: [],
@@ -67,28 +73,6 @@ export const menuIcons = {
     },
   ],
 };
-
-export const svg = document.querySelector("svg");
-export const scene = document.querySelector("#scene");
-export const sceneRect = svg.getBoundingClientRect();
-export const tileWidth = sceneRect.width / 6;
-export const enemiesG = document.querySelector("#enemies-g");
-export const towersG = document.querySelector("#towers-g");
-export const bulletsG = document.querySelector("#bullets-g");
-export const MARGIN = tileWidth / 2;
-
-export const playPauseBtn = document.querySelector("#play-pause-btn");
-export const gameSpeedForm = document.querySelector("#game-speed-form");
-export const pre = document.querySelector("pre");
-
-export const selectionRing = document.querySelector("#selection-ring");
-export const selectionRingG = document.querySelector("#selection-ring-g");
-
-export const enemyLaneLeft = document.querySelector("#enemy-lane-left")
-export const enemyLaneCenter = document.querySelector("#enemy-lane-center")
-export const enemyLaneRight = document.querySelector("#enemy-lane-right")
-
-
 
 export const TOWERS = {
   fire: {
