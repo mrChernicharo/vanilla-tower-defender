@@ -36,7 +36,8 @@ section {
 }
 
 pre {
-  font-size: 11px;
+  font-size: 13px;
+  line-height: 16px;
 }
 
 a {

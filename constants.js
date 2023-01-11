@@ -124,7 +124,7 @@ export const ENEMIES = {
     hp: 100,
     gold: 4,
     fill: "forestgreen",
-    size: 5,
+    size: 6,
   },
   orc: {
     name: "orc",
@@ -132,7 +132,7 @@ export const ENEMIES = {
     hp: 200,
     gold: 7,
     fill: "darkgreen",
-    size: 7,
+    size: 8,
   },
   troll: {
     name: "troll",
@@ -140,7 +140,15 @@ export const ENEMIES = {
     hp: 500,
     gold: 20,
     fill: "#041",
-    size: 10,
+    size: 12,
+  },
+  dragon: {
+    name: "dragon",
+    speed: 2.5,
+    hp: 2500,
+    gold: 20,
+    fill: "#041",
+    size: 15,
   },
 };
 
@@ -148,8 +156,8 @@ export const STAGE_WAVES = {
   1: {
     stage: { number: 1, name: "cozy hills", firstWaveAtRow: 2 },
     waves: [
+      // 0
       [
-        // 0
         { type: "goblin", lane: "left", delay: 0 },
         { type: "orc", lane: "right", delay: 2 },
         { type: "goblin", lane: "left", delay: 4 },
@@ -159,16 +167,16 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 6 },
         { type: "orc", lane: "center", delay: 12 },
       ],
+      // 1
       [
-        // 1
         { type: "troll", lane: "center", delay: 0 },
         { type: "goblin", lane: "right", delay: 5 },
         { type: "troll", lane: "center", delay: 10 },
         { type: "goblin", lane: "left", delay: 15 },
         { type: "troll", lane: "center", delay: 20 },
       ],
+      // 2
       [
-        // 2
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
         { type: "goblin", lane: "left", delay: 4 },
@@ -180,8 +188,8 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 9 },
         { type: "orc", lane: "center", delay: 12 },
       ],
+      // 3
       [
-        // 3
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
         { type: "goblin", lane: "left", delay: 4 },
@@ -194,7 +202,23 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 12 },
         { type: "orc", lane: "center", delay: 18 },
       ],
-
+      [
+        // 4
+        { type: "goblin", lane: "left", delay: 0 },
+        { type: "goblin", lane: "right", delay: 2 },
+        { type: "goblin", lane: "left", delay: 4 },
+        { type: "goblin", lane: "right", delay: 8 },
+        { type: "goblin", lane: "left", delay: 10 },
+        { type: "goblin", lane: "right", delay: 12 },
+        { type: "goblin", lane: "left", delay: 14 },
+        { type: "goblin", lane: "right", delay: 16 },
+        { type: "orc", lane: "center", delay: 3 },
+        { type: "orc", lane: "center", delay: 6 },
+        { type: "orc", lane: "center", delay: 9 },
+        { type: "orc", lane: "center", delay: 12 },
+        { type: "troll", lane: "center", delay: 20 },
+      ],
+      // 5
       [
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
@@ -207,6 +231,7 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 9 },
         { type: "orc", lane: "center", delay: 12 },
       ],
+      // 6
       [
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 2 },
@@ -219,19 +244,54 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 9 },
         { type: "orc", lane: "center", delay: 12 },
       ],
+      //7
       [
         { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
+        { type: "goblin", lane: "right", delay: 1 },
+        { type: "goblin", lane: "left", delay: 2 },
+        { type: "goblin", lane: "right", delay: 3 },
         { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
+        { type: "goblin", lane: "right", delay: 5 },
+        { type: "goblin", lane: "left", delay: 6 },
+        { type: "goblin", lane: "right", delay: 7 },
+        { type: "goblin", lane: "left", delay: 8 },
+        { type: "goblin", lane: "right", delay: 9 },
         { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
+        { type: "goblin", lane: "right", delay: 11 },
+        { type: "goblin", lane: "left", delay: 14 },
+        { type: "goblin", lane: "right", delay: 16 },
         { type: "orc", lane: "center", delay: 3 },
         { type: "orc", lane: "center", delay: 6 },
         { type: "orc", lane: "center", delay: 9 },
         { type: "orc", lane: "center", delay: 12 },
+        { type: "orc", lane: "center", delay: 16 },
+        { type: "troll", lane: "center", delay: 20 },
+      ],
+      // 8
+      [
+        { type: "goblin", lane: "left", delay: 0 },
+        { type: "goblin", lane: "right", delay: 1 },
+        { type: "goblin", lane: "left", delay: 2 },
+        { type: "goblin", lane: "right", delay: 3 },
+        { type: "goblin", lane: "left", delay: 4 },
+        { type: "goblin", lane: "right", delay: 5 },
+        { type: "goblin", lane: "left", delay: 6 },
+        { type: "goblin", lane: "right", delay: 7 },
+        { type: "goblin", lane: "left", delay: 8 },
+        { type: "goblin", lane: "right", delay: 9 },
+        { type: "goblin", lane: "left", delay: 10 },
+        { type: "goblin", lane: "right", delay: 11 },
+        { type: "goblin", lane: "left", delay: 14 },
+        { type: "goblin", lane: "right", delay: 16 },
+        { type: "orc", lane: "center", delay: 3 },
+        { type: "orc", lane: "center", delay: 6 },
+        { type: "orc", lane: "center", delay: 9 },
+        { type: "orc", lane: "center", delay: 12 },
+        { type: "orc", lane: "center", delay: 16 },
+        { type: "troll", lane: "center", delay: 20 },
       ],
       [
+        { type: "dragon", lane: "center", delay: 0 },
         { type: "goblin", lane: "left", delay: 0 },
         { type: "goblin", lane: "right", delay: 1 },
         { type: "goblin", lane: "left", delay: 2 },
@@ -248,24 +308,10 @@ export const STAGE_WAVES = {
         { type: "orc", lane: "center", delay: 6 },
         { type: "orc", lane: "center", delay: 9 },
         { type: "orc", lane: "center", delay: 12 },
-      ],
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 1 },
-        { type: "goblin", lane: "left", delay: 2 },
-        { type: "goblin", lane: "right", delay: 3 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 5 },
-        { type: "goblin", lane: "left", delay: 6 },
-        { type: "goblin", lane: "right", delay: 7 },
-        { type: "goblin", lane: "left", delay: 8 },
-        { type: "goblin", lane: "right", delay: 9 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 11 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
+        { type: "orc", lane: "center", delay: 15 },
+        { type: "orc", lane: "center", delay: 18 },
+        { type: "orc", lane: "center", delay: 21 },
+        { type: "orc", lane: "center", delay: 24 },
       ],
     ],
   },

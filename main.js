@@ -47,15 +47,13 @@ import {
   getTileExits,
   updateVisibleTiles,
 } from "./lib/tiles";
-import { getTowerType } from "./lib/towers";
+import { getTowerType, resetTowers } from "./lib/towers";
 
 let playPauseIcon = "▶️";
 export const G = {
   frameId: 0,
   tick: 0,
   clock: 0,
-  loopTimestamp: 0,
-  timestamp: Date.now(),
   mouse: { x: null, y: null },
   lastClick: { x: null, y: null },
   enemies: [],
@@ -71,7 +69,7 @@ export const G = {
   towerPreviewActive: false,
   stageNumber: 1,
   waveNumber: null,
-  wavesTimes: [{ start: 0, paused: null, end: null }],
+  wavesTimes: [{ start: 0, end: null }],
   gameSpeed: 2,
 };
 G.tiles = createGrid(COLS, ROWS);
@@ -184,37 +182,24 @@ function handlePlayPause() {
   playPauseBtn.innerHTML = playPauseIcon;
 
   if (G.isPlaying) {
-    G.loopTimestamp = 0;
-    G.timestamp = Date.now();
-    G.tick = 0;
     G.frameId = requestAnimationFrame(runAnimation);
   } else {
     cancelAnimationFrame(G.frameId);
-    G.tick = 0;
   }
 }
+
+const getCurrWave = () => G.wavesTimes[G.waveNumber];
+const getPrevWave = () => G.wavesTimes[G.waveNumber - 1] ?? null;
 
 function updateClock() {
-  if (G.wavesTimes[G.waveNumber]?.start > G.wavesTimes[G.waveNumber]?.end) {
-    console.log("DEU RUIM");
-  }
-  const diff =
-    G.tick / 60 +
-    (G.wavesTimes[G.waveNumber]?.end || 0) -
-    (G.wavesTimes[G.waveNumber]?.start || 0);
-  // console.log({ wavesTimes: G.wavesTimes, tick: G.tick });
-
-  if (G.wavesTimes[G.waveNumber].paused) {
-    G.clock = G.wavesTimes[G.waveNumber].paused + diff;
-  } else if (G.wavesTimes[G.waveNumber].end) {
-    G.clock = G.wavesTimes[G.waveNumber].end;
-  } else {
-    G.clock = diff;
-  }
+  G.tick += G.gameSpeed;
+  G.clock = G.tick / 60;
 }
 
-function getCurrWave() {
-  return;
+function addNewToWavesTimes(tile) {
+  const newWaveInfo = { start: G.clock, end: null };
+  G.waveNumber = tile.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
+  G.wavesTimes[G.waveNumber] = newWaveInfo;
 }
 
 function handleShowTowerPreview(e, tile, icon) {
@@ -266,13 +251,13 @@ function handleCreateNewPath(e, tile, icon) {
   };
 
   if (barrierBroken) {
-    const newWaveInfo = { start: G.clock, end: null };
-    G.waveNumber = adj.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
-    G.wavesTimes[G.waveNumber] = newWaveInfo;
+    addNewToWavesTimes(newTile);
+
     G.inBattle = true;
-    console.log("barrier broken! CALL WAVE", G.waveNumber, G.clock, {
-      wave: STAGE_WAVES[G.stageNumber].waves[G.waveNumber],
-      G,
+    console.log("barrier broken! CALL WAVE", {
+      waveNumber: G.waveNumber,
+      clock: G.clock,
+      wavesTimes: G.wavesTimes,
     });
 
     updateVisibleTiles(1);
@@ -282,9 +267,6 @@ function handleCreateNewPath(e, tile, icon) {
   const newTileChain = [...G.tileChain];
   const prevTile = newTileChain.pop();
   prevTile.connected = true;
-  // if (!barrierBroken) {
-  //   delete prevTile.enemyEntrance;
-  // }
 
   G.tiles[prevTile.index] = prevTile;
   G.tiles[newTile.index] = newTile;
@@ -299,7 +281,6 @@ function handleDisplayTileMenu(e, tile) {
   removeRingIcons();
 
   if (!tile?.visible) {
-    // hideRing();
     return;
   }
   if (tile?.blocked) {
@@ -389,23 +370,23 @@ function update() {
     const diff = tower.cooldown - elapsedSinceLastShot;
     const freshCooldown = tower.shotsPerSecond * 60;
 
-    if (diff > tower.cooldown) {
-      console.log("SHIIIIT", {
-        elapsedSinceLastShot: elapsedSinceLastShot.toFixed(2),
-        clock: G.clock.toFixed(2),
-        diff: diff.toFixed(2),
-        cooldown: tower.cooldown.toFixed(2),
-        lastShot: tower.lastShot.toFixed(2),
-      });
-    } else {
-      console.log("OK", {
-        elapsedSinceLastShot: elapsedSinceLastShot.toFixed(2),
-        clock: G.clock.toFixed(2),
-        diff: diff.toFixed(2),
-        cooldown: tower.cooldown.toFixed(2),
-        lastShot: tower.lastShot.toFixed(2),
-      });
-    }
+    // if (diff > tower.cooldown) {
+    //   console.log("SHIIIIT", {
+    //     elapsedSinceLastShot: elapsedSinceLastShot.toFixed(2),
+    //     clock: G.clock.toFixed(2),
+    //     diff: diff.toFixed(2),
+    //     cooldown: tower.cooldown.toFixed(2),
+    //     lastShot: tower.lastShot.toFixed(2),
+    //   });
+    // } else {
+    //   console.log("OK", {
+    //     elapsedSinceLastShot: elapsedSinceLastShot.toFixed(2),
+    //     clock: G.clock.toFixed(2),
+    //     diff: diff.toFixed(2),
+    //     cooldown: tower.cooldown.toFixed(2),
+    //     lastShot: tower.lastShot.toFixed(2),
+    //   });
+    // }
 
     if (targetEnemy) {
       const angle = getAngle(
@@ -441,7 +422,7 @@ function update() {
     const distance = getDistance(bullet.pos.x, bullet.pos.y, bullet.enemy.pos.x, bullet.enemy.pos.y);
 
     if (distance < bullet.enemy.size / 2) {
-      console.log("HIT!", bullet);
+      // console.log("HIT!", bullet);
       bullet.hit(bullet.enemy);
     }
     if (bullet.enemy.done) {
@@ -461,17 +442,15 @@ function update() {
   }
 }
 
-// let spawnInterval = 100;
 function runAnimation(frame) {
-  // spawnInterval -= G.gameSpeed;
-  G.tick += G.gameSpeed;
+  const wave = getCurrWave();
 
   // spawning enemies
-  // console.log(nextWave)
   const nextWave = STAGE_WAVES[G.stageNumber].waves[G.waveNumber] || [];
+  console.log();
 
   const spawningEnemies = nextWave.filter(
-    (waveEnemy) => !waveEnemy.spawned && waveEnemy.delay < G.clock
+    (waveEnemy) => !waveEnemy.spawned && G.clock - wave.start > waveEnemy.delay
   );
 
   spawningEnemies.forEach((waveEnemy) => {
@@ -486,21 +465,16 @@ function runAnimation(frame) {
 
     if (nextWave.every((we) => we.done)) {
       console.log("wave terminated");
-      G.inBattle = false;
       const entryTile = G.tileChain.at(-1);
-
       delete entryTile.enemyEntrance;
       entryTile.visible = true;
-
       G.tileChain[G.tileChain.length - 1] = entryTile;
       G.tiles[entryTile.index] = entryTile;
 
-      G.wavesTimes[G.waveNumber].end =
-        G.clock +
-        G.wavesTimes[G.waveNumber].start +
-        (G.wavesTimes[G.waveNumber].paused || 0);
-
+      wave.end = G.clock;
+      G.inBattle = false;
       handlePlayPause();
+      resetTowers();
     }
   } else {
     // loop paused
@@ -508,60 +482,36 @@ function runAnimation(frame) {
     // simple pause
     if (G.inBattle) {
       if (nextWave.some((we) => !we.done)) {
-        //
-        G.wavesTimes[G.waveNumber].paused =
-          (G.wavesTimes[G.waveNumber]?.paused || 0) + G.clock;
-          console.log("paused", {
-            clock: G.clock,
-            tick: G.tick,
-            wavesTimes: G.wavesTimes,
-          });
-        }
+        console.log("paused", {
+          clock: G.clock,
+          tick: G.tick,
+          wavesTimes: G.wavesTimes,
+        });
+      }
     }
-
-    // G.wavesTimes[G.waveNumber].end = G.clock + G.wavesTimes[G.waveNumber].end;
   }
-  // console.log({ wave: G.waveNumber, wavesTimes: G.wavesTimes });
 }
-
-// auto-play
-// setTimeout(() => {
-//   G.isPlaying = true;
-//   playPauseIcon = "⏸";
-//   playPauseBtn.innerHTML = playPauseIcon;
-//   G.frameId = requestAnimationFrame(runAnimation);
-//   console.log("auto-play");
-// }, 1000);
 
 setInterval(() => {
   const {
     isPlaying,
     inBattle,
+    tick,
     selectedTile,
-    lastSelectedTile,
-    towerPreviewActive,
-    stageNumber,
     waveNumber,
     gameSpeed,
     clock,
     towers,
-    timestamp,
-    loopTimestamp,
     wavesTimes,
   } = G;
   pre.innerHTML = JSON.stringify(
     {
-      selectedTile: selectedTile?.id,
-      lastSelectedTile: lastSelectedTile?.id,
+      tick,
+      clock,
+      gameSpeed,
+      waveNumber,
       isPlaying,
       inBattle,
-      towerPreviewActive,
-      stageNumber,
-      waveNumber,
-      gameSpeed,
-      clock,
-      timestamp,
-      loopTimestamp,
       wavesTimes,
       towers,
     },
