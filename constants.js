@@ -10,7 +10,40 @@ export const tileWidth = sceneRect.width / 6;
 export const MARGIN = tileWidth / 2;
 
 export const menuIcons = {
-  trap: [],
+  trap: [
+    {
+      id: "mine-trap-icon",
+      type: "mine",
+      x: 20,
+      y: 25,
+      color: "coral",
+      img: "assets/bullseye.svg",
+    },
+    {
+      id: "slime-trap-icon",
+      type: "slime",
+      x: 20,
+      y: 125,
+      color: "green",
+      img: "assets/bottle-droplet.svg",
+    },
+    {
+      id: "poison-trap-icon",
+      type: "poison",
+      x: 130,
+      y: 25,
+      color: "#7a2",
+      img: "assets/flask.svg",
+    },
+    {
+      id: "ice-trap-icon",
+      type: "ice",
+      x: 130,
+      y: 125,
+      color: "blue",
+      img: "assets/icicles.svg",
+    },
+  ],
   newPath: [
     {
       id: "shovel-right-icon",
@@ -37,7 +70,32 @@ export const menuIcons = {
       img: "assets/shovel.svg",
     },
   ],
-  tower: [],
+  tower: [
+    {
+      id: "upgrade-icon",
+      type: "upgrade",
+      x: 75,
+      y: 0,
+      color: "green",
+      img: "assets/arrow-up.svg",
+    },
+    {
+      id: "sell-icon",
+      type: "acid",
+      x: 20,
+      y: 125,
+      color: "gold",
+      img: "assets/sack-dollar.svg",
+    },
+    {
+      id: "info-icon",
+      type: "ice",
+      x: 130,
+      y: 125,
+      color: "gray",
+      img: "assets/book.svg",
+    },
+  ],
   newTower: [
     {
       id: "fire-tower-add-icon",

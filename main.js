@@ -252,7 +252,7 @@ function handleCreateNewPath(e, tile, icon) {
 
   if (barrierBroken) {
     addNewToWavesTimes(newTile);
-    playPauseBtn.removeAttribute('disabled')
+    playPauseBtn.removeAttribute("disabled");
     G.inBattle = true;
     console.log("barrier broken! CALL WAVE", {
       waveNumber: G.waveNumber,
@@ -292,6 +292,7 @@ function handleDisplayTileMenu(e, tile) {
     return;
   }
   const icons = drawRingIcons(menuType, tile);
+  console.log(icons, menuType, { icons });
   appendIconsListeners(icons, tile, menuType);
 }
 
@@ -476,10 +477,10 @@ function runAnimation(frame) {
       G.inBattle = false;
       handlePlayPause();
       resetTowers();
-      playPauseBtn.setAttribute('disabled', true)
+      playPauseBtn.setAttribute("disabled", true);
 
       if (G.waveNumber === STAGE_WAVES[G.stageNumber].waves.length - 1) {
-        console.log('you won!')
+        console.log("you won!");
       }
     }
   } else {
@@ -498,30 +499,30 @@ function runAnimation(frame) {
   }
 }
 
-setInterval(() => {
-  const {
-    isPlaying,
-    inBattle,
-    tick,
-    selectedTile,
-    waveNumber,
-    gameSpeed,
-    clock,
-    towers,
-    wavesTimes,
-  } = G;
-  pre.innerHTML = JSON.stringify(
-    {
-      tick,
-      clock,
-      gameSpeed,
-      waveNumber,
-      isPlaying,
-      inBattle,
-      wavesTimes,
-      towers,
-    },
-    null,
-    2
-  );
-}, 200);
+// setInterval(() => {
+//   const {
+//     isPlaying,
+//     inBattle,
+//     tick,
+//     selectedTile,
+//     waveNumber,
+//     gameSpeed,
+//     clock,
+//     towers,
+//     wavesTimes,
+//   } = G;
+//   pre.innerHTML = JSON.stringify(
+//     {
+//       tick,
+//       clock,
+//       gameSpeed,
+//       waveNumber,
+//       isPlaying,
+//       inBattle,
+//       wavesTimes,
+//       towers,
+//     },
+//     null,
+//     2
+//   );
+// }, 200);
