@@ -252,7 +252,7 @@ function handleCreateNewPath(e, tile, icon) {
 
   if (barrierBroken) {
     addNewToWavesTimes(newTile);
-
+    playPauseBtn.removeAttribute('disabled')
     G.inBattle = true;
     console.log("barrier broken! CALL WAVE", {
       waveNumber: G.waveNumber,
@@ -465,6 +465,7 @@ function runAnimation(frame) {
 
     if (nextWave.every((we) => we.done)) {
       console.log("wave terminated");
+
       const entryTile = G.tileChain.at(-1);
       delete entryTile.enemyEntrance;
       entryTile.visible = true;
@@ -475,6 +476,11 @@ function runAnimation(frame) {
       G.inBattle = false;
       handlePlayPause();
       resetTowers();
+      playPauseBtn.setAttribute('disabled', true)
+
+      if (G.waveNumber === STAGE_WAVES[G.stageNumber].waves.length - 1) {
+        console.log('you won!')
+      }
     }
   } else {
     // loop paused

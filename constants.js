@@ -147,7 +147,7 @@ export const ENEMIES = {
     speed: 2.5,
     hp: 2500,
     gold: 20,
-    fill: "#041",
+    fill: "red",
     size: 15,
   },
 };
