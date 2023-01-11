@@ -71,7 +71,7 @@ export const G = {
   towerPreviewActive: false,
   stageNumber: 1,
   waveNumber: null,
-  wavesTimes: [{ start: 0, end: null }],
+  wavesTimes: [{ start: 0, paused: null, end: null }],
   gameSpeed: 2,
 };
 G.tiles = createGrid(COLS, ROWS);
@@ -206,9 +206,15 @@ function updateClock() {
 
   if (G.wavesTimes[G.waveNumber].paused) {
     G.clock = G.wavesTimes[G.waveNumber].paused + diff;
+  } else if (G.wavesTimes[G.waveNumber].end) {
+    G.clock = G.wavesTimes[G.waveNumber].end;
   } else {
     G.clock = diff;
   }
+}
+
+function getCurrWave() {
+  return;
 }
 
 function handleShowTowerPreview(e, tile, icon) {
@@ -264,7 +270,7 @@ function handleCreateNewPath(e, tile, icon) {
     G.waveNumber = adj.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
     G.wavesTimes[G.waveNumber] = newWaveInfo;
     G.inBattle = true;
-    console.log("barrier broken! CALL WAVE", G.waveNumber, {
+    console.log("barrier broken! CALL WAVE", G.waveNumber, G.clock, {
       wave: STAGE_WAVES[G.stageNumber].waves[G.waveNumber],
       G,
     });
@@ -421,11 +427,11 @@ function update() {
       const newBullet = createBullet(tower, targetEnemy);
       G.bullets.push(newBullet);
 
-      console.log("SHOOT!", tower.type, {
-        targetEnemy,
-        bullet: newBullet,
-        bullets: G.bullets,
-      });
+      // console.log("SHOOT!", tower.type, {
+      //   targetEnemy,
+      //   bullet: newBullet,
+      //   bullets: G.bullets,
+      // });
     }
   }
 
@@ -488,8 +494,11 @@ function runAnimation(frame) {
 
       G.tileChain[G.tileChain.length - 1] = entryTile;
       G.tiles[entryTile.index] = entryTile;
+
       G.wavesTimes[G.waveNumber].end =
-        G.clock + G.wavesTimes[G.waveNumber].start;
+        G.clock +
+        G.wavesTimes[G.waveNumber].start +
+        (G.wavesTimes[G.waveNumber].paused || 0);
 
       handlePlayPause();
     }
@@ -502,12 +511,12 @@ function runAnimation(frame) {
         //
         G.wavesTimes[G.waveNumber].paused =
           (G.wavesTimes[G.waveNumber]?.paused || 0) + G.clock;
-      }
-      console.log("paused", {
-        clock: G.clock,
-        tick: G.tick,
-        wavesTimes: G.wavesTimes,
-      });
+          console.log("paused", {
+            clock: G.clock,
+            tick: G.tick,
+            wavesTimes: G.wavesTimes,
+          });
+        }
     }
 
     // G.wavesTimes[G.waveNumber].end = G.clock + G.wavesTimes[G.waveNumber].end;
