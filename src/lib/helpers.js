@@ -84,13 +84,13 @@ export function updateGoldDisplay(amount = 0) {
 }
 
 export function updateCastleHPDisplay(amount = 0) {
-  if (amount) {G.castleHP -= amount;
+  if (amount) {
+    G.castleHP -= amount;
     addToast(`-${amount} 💔`, "danger", 3000);
   }
   if (G.castleHP <= 0) {
-    handlePlayPause()
+    handlePlayPause();
     addToast("you lose!", "danger", 3000);
-
   }
   castleHPDisplay.textContent = G.castleHP;
 }
@@ -125,10 +125,17 @@ export function addToast(
   };
 
   const toast = document.createElement("div");
-  toast.textContent = message;
+
   toast.classList.add("toast");
   toast.style.color = toastColor[type];
+  toast.style.opacity = 0;
+
+  toast.textContent = message;
   toastsArea.append(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = 1;
+  }, 0);
 
   setTimeout(() => {
     toast.style.opacity = 0;

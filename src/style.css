@@ -155,7 +155,11 @@ button:focus-visible {
 #toasts-area {
   position: fixed;
   right: 1rem;
+  bottom: 1rem;
 }
 
 .toast {
+  text-align: right;
+  transition: opacity 1s;
+  width: calc(100vw - 4rem);
 }

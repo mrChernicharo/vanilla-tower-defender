@@ -19,7 +19,7 @@ export const menuIcons = {
       x: 20,
       y: 25,
       color: "gray",
-      img: "/assets/bullseye.svg",
+      img: "/assets/icons/bullseye.svg",
     },
     {
       id: "slime-trap-icon",
@@ -27,7 +27,7 @@ export const menuIcons = {
       x: 20,
       y: 125,
       color: "gray",
-      img: "/assets/bottle-droplet.svg",
+      img: "/assets/icons/bottle-droplet.svg",
     },
     {
       id: "poison-trap-icon",
@@ -35,7 +35,7 @@ export const menuIcons = {
       x: 130,
       y: 25,
       color: "gray",
-      img: "/assets/flask.svg",
+      img: "/assets/icons/flask.svg",
     },
     {
       id: "ice-trap-icon",
@@ -43,7 +43,7 @@ export const menuIcons = {
       x: 130,
       y: 125,
       color: "gray",
-      img: "/assets/icicles.svg",
+      img: "/assets/icons/icicles.svg",
     },
   ],
   newPath: [
@@ -53,7 +53,7 @@ export const menuIcons = {
       x: 150,
       y: 75,
       color: "red",
-      img: "/assets/shovel.svg",
+      img: "/assets/icons/shovel.svg",
     },
     {
       id: "shovel-left-icon",
@@ -61,7 +61,7 @@ export const menuIcons = {
       x: 0,
       y: 75,
       color: "red",
-      img: "/assets/shovel.svg",
+      img: "/assets/icons/shovel.svg",
     },
     {
       id: "shovel-bottom-icon",
@@ -69,7 +69,7 @@ export const menuIcons = {
       x: 75,
       y: 150,
       color: "red",
-      img: "/assets/shovel.svg",
+      img: "/assets/icons/shovel.svg",
     },
   ],
   tower: [
@@ -79,7 +79,7 @@ export const menuIcons = {
       x: 75,
       y: 0,
       color: "#7a2",
-      img: "/assets/arrow-up.svg",
+      img: "/assets/icons/arrow-up.svg",
     },
     {
       id: "sell-icon",
@@ -87,7 +87,7 @@ export const menuIcons = {
       x: 20,
       y: 125,
       color: "gold",
-      img: "/assets/sack-dollar.svg",
+      img: "/assets/icons/sack-dollar.svg",
     },
     {
       id: "info-icon",
@@ -95,7 +95,7 @@ export const menuIcons = {
       x: 130,
       y: 125,
       color: "gray",
-      img: "/assets/book.svg",
+      img: "/assets/icons/book.svg",
     },
   ],
   newTower: [
@@ -105,7 +105,7 @@ export const menuIcons = {
       x: 75,
       y: 0,
       color: "red",
-      img: "/assets/fire.svg",
+      img: "/assets/icons/fire.svg",
     },
     {
       id: "lightning-tower-add-icon",
@@ -113,7 +113,7 @@ export const menuIcons = {
       x: 150,
       y: 75,
       color: "gold",
-      img: "/assets/bolt.svg",
+      img: "/assets/icons/bolt.svg",
     },
     {
       id: "ice-tower-add-icon",
@@ -121,7 +121,7 @@ export const menuIcons = {
       x: 0,
       y: 75,
       color: "dodgerblue",
-      img: "/assets/snowflake.svg",
+      img: "/assets/icons/snowflake.svg",
     },
     {
       id: "earth-tower-add-icon",
@@ -129,7 +129,7 @@ export const menuIcons = {
       x: 75,
       y: 150,
       color: "orange",
-      img: "/assets/mountain.svg",
+      img: "/assets/icons/mountain.svg",
     },
   ],
 };
@@ -161,7 +161,7 @@ export const TOWERS = {
     range: 250,
     rate_of_fire: 1,
     xp: 0,
-    fill: "yellow",
+    fill: "gold",
     price: 120,
     bullet_speed: 200,
   },
@@ -232,12 +232,12 @@ export const STAGE_WAVES = {
       [{ type: "goblin", lane: "left", delay: 0 }],
       //7
       [
-        { type: "orc", lane: "center", delay: 12 },
-        { type: "orc", lane: "center", delay: 16 },
-        { type: "troll", lane: "center", delay: 20 },
+        { type: "orc", lane: "center", delay: 0 },
+        { type: "orc", lane: "center", delay: 0 },
+        { type: "troll", lane: "center", delay: 0 },
       ],
       // 8
-      [{ type: "troll", lane: "center", delay: 20 }],
+      [{ type: "troll", lane: "center", delay: 0 }],
       [{ type: "dragon", lane: "center", delay: 0 }],
     ],
     // waves: [

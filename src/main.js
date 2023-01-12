@@ -143,13 +143,13 @@ gameSpeedForm.onchange = (e) => {
   let speed;
   switch (e.target.value) {
     case "normal":
-      speed = 2;
+      speed = 1;
       break;
     case "fast":
-      speed = 4;
+      speed = 2;
       break;
     case "faster":
-      speed = 8;
+      speed = 4;
       break;
   }
   G.gameSpeed = speed;
@@ -196,7 +196,7 @@ function handleShowTowerPreview(e, tile, icon) {
 
     // console.log("clicked icon"); //
     if (e.target.id === icon.id) {
-      iconImg.setAttribute("href", "/assets/check.svg");
+      iconImg.setAttribute("href", "/assets/icons/check.svg");
       icon.setAttribute("data-selected", icon.dataset.type);
     }
     // console.log("not clicked");
@@ -491,5 +491,4 @@ function runAnimation(frame) {
 //     null,
 //     2
 //   );
-// addToast();
 // }, 800);
