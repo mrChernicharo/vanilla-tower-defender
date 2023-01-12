@@ -1,6 +1,6 @@
-import { menuIcons,  tileWidth, TOWERS } from "./constants";
-import {scene, selectionRing, selectionRingG,} from '../lib/dom-selects'
-import { canBecomePath, getIconDirection } from "./helpers";
+import { menuIcons, tileWidth, TOWERS } from "./constants";
+import { scene, selectionRing, selectionRingG } from "../lib/dom-selects";
+import { canAfford, canBecomePath, getIconDirection } from "./helpers";
 import { menuActions } from "../main";
 import { getAdjacentTile } from "./tiles";
 import { createTower, getTowerType } from "./towers";
@@ -51,12 +51,13 @@ export function removePreviewTower() {
 }
 
 export const drawRingIcons = (menuType, tile) => {
-  console.log('drawRingIcons', {menuType, tile})
+  console.log("drawRingIcons", { menuType, tile });
   const icons = [];
   for (const [i, menuIcon] of menuIcons[menuType].entries()) {
+
     if (menuType === "newPath") {
       const adjacentTile = getAdjacentTile(
-      G.tiles,
+        G.tiles,
         tile,
         getIconDirection(menuIcon.type)
       );
@@ -68,6 +69,12 @@ export const drawRingIcons = (menuType, tile) => {
 
       if (!isBuildableAdj) continue;
     }
+
+    let ringColor = menuIcon.color;
+    if (menuType === "newTower" && !canAfford(TOWERS[menuIcon.type].price)) {
+      ringColor = "#999";
+    }
+
 
     const circle = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -81,7 +88,7 @@ export const drawRingIcons = (menuType, tile) => {
     circle.setAttribute("cx", tile.pos.x + menuIcon.x);
     circle.setAttribute("cy", tile.pos.y + menuIcon.y);
     circle.setAttribute("r", 20);
-    circle.setAttribute("stroke", menuIcon.color);
+    circle.setAttribute("stroke", ringColor);
     circle.setAttribute("stroke-width", 2);
 
     const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
@@ -106,6 +113,10 @@ export const drawRingIcons = (menuType, tile) => {
     image.setAttribute("width", 28);
     image.setAttribute("height", 28);
 
+    if (menuType === "newTower" &&!canAfford(TOWERS[menuIcon.type].price)) {
+      image.setAttribute("style", "filter: grayscale(1)");
+    }
+
     pattern.append(image);
     defs.append(pattern);
     selectionRingG.append(defs);
@@ -122,12 +133,20 @@ export const appendIconsListeners = (icons, tile, menuType) => {
   icons.forEach((icon) => {
     icon.onclick = (e) => {
       if (icon.dataset.selected) {
+        const type = getTowerType(icon);
+
+        if (!canAfford(TOWERS[type].price)) {
+          console.log("not enough money!");
+          return;
+        }
+
         // console.log("create that damn tower!");
         const towerPos = {
           x: tile.pos.x + tileWidth / 2,
           y: tile.pos.y + tileWidth / 2,
         };
-        createTower(towerPos, getTowerType(icon));
+
+        createTower(towerPos, type);
         return;
       }
 

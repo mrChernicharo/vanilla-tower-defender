@@ -21,7 +21,7 @@ export function createTower(pos, type) {
     lastShot: 0,
     shotsPerSecond: 0,
     rotation: 0,
-    r: 25,
+    r: 20,
     type,
     xp: TOWERS[type].xp,
     fill: TOWERS[type].fill,
@@ -100,7 +100,7 @@ export function createTower(pos, type) {
   newTower.init();
 
   G.towers.push(newTower);
-  
+
   G.gold -= newTower.price;
   G.towerPreviewActive = false;
   G.selectedTile = { ...G.selectedTile, hasTower: true };

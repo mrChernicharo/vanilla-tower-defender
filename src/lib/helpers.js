@@ -88,3 +88,7 @@ export function updateWaveDisplay(wave = 0) {
     }
   waveDisplay.textContent = wave;
 }
+
+export function canAfford(value) {
+  return G.gold >= value;
+}
