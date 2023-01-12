@@ -1,25 +1,6 @@
-import {
-  COLS,
-  ROWS,
-  FIRST_WAVE_AT_ROW,
-  menuIcons,
-  tileWidth,
-  sceneRect,
-  MARGIN,
-  TOWERS,
-  
-} from "./constants";
-
-import {
-  scene,
-  svg,
-  playPauseBtn,
-  gameSpeedForm,
-  selectionRing,
-  selectionRingG,
-} from "./dom-selects";
-import { createTower } from "./towers";
-import { G, menuActions } from "../main";
+import { MARGIN, STAGE_WAVES } from "./constants";
+import { castleHPDisplay, goldDisplay, waveDisplay } from "./dom-selects";
+import { G } from "./G";
 
 export const canBecomePath = (tile) => {
   return tile.type === "grass" && !tile.hasTower;
@@ -86,4 +67,24 @@ export function getAngle(sx, sy, ex, ey) {
   theta *= 180 / Math.PI;
   if (theta < 0) theta = 360 + theta;
   return theta;
+}
+
+export function updateGoldDisplay(amount = 0) {
+  if (amount) G.gold += amount;
+  goldDisplay.textContent = G.gold;
+}
+
+export function updateCastleHPDisplay(amount = 0) {
+  if (amount) G.castleHP -= amount;
+  if (G.castleHP <= 0) {
+    console.log("you lose!");
+  }
+  castleHPDisplay.textContent = G.castleHP;
+}
+
+export function updateWaveDisplay(wave = 0) {
+    if (G.waveNumber && wave === STAGE_WAVES[G.waveNumber].waves.length - 1) {
+      waveDisplay.textContent = "Final Wave";
+    }
+  waveDisplay.textContent = wave;
 }

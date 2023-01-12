@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/assets/vite.svg" />
+    <link rel="icon" type="image/svg+xml" href="/assets/coins.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Vite App</title>
 
@@ -21,14 +21,26 @@
       <img src="/assets/javascript.svg" class="logo" />
 
       <a href="stage-select.html">Back</a>
-
     </header>
 
-    <pre></pre>
-
     <section>
-      <button id="play-pause-btn" disabled>▶️</button>
-      <!-- <img src="shovel.svg" /> -->
+      <div class="stats-displays-container">
+        <div class="stats-display">
+          <img src="/assets/coins.svg" width="24" height="24" />
+          <div class="display-value" id="gold-display"></div>
+        </div>
+
+        <div class="stats-display">
+          <img src="/assets/heart.svg" width="24" height="24" />
+          <div class="display-value" id="castle-hp-display"></div>
+        </div>
+
+        <div class="stats-display">
+          <img src="/assets/skull.svg" width="24" height="24" />
+          <div class="display-value" >Wave</div>
+          <div class="display-value" id="wave-display"></div>
+        </div>
+      </div>
 
       <form id="game-speed-form">
         <label for="normal">
@@ -44,12 +56,13 @@
           faster
         </label>
       </form>
+      <button id="play-pause-btn" disabled>▶️</button>
     </section>
 
+    <pre></pre>
 
     <svg width="600" height="1300" style="background: #555; margin: 0 auto">
       <g id="scene"></g>
-
 
       <g id="enemy-lanes-g" transform="translate(50,50)">
         <path
@@ -76,11 +89,11 @@
       </g>
 
       <!-- transform="translate(50,50)" -->
-      <g id="enemies-g"  transform="translate(50,50)" ></g>
-      
-      <g id="towers-g"  transform="translate(50,50)" ></g>
+      <g id="enemies-g" transform="translate(50,50)"></g>
 
-      <g id="bullets-g"  transform="translate(50,50)" ></g>
+      <g id="towers-g" transform="translate(50,50)"></g>
+
+      <g id="bullets-g" transform="translate(50,50)"></g>
 
       <g id="selection-ring-g" transform="translate(25,25)">
         <path
@@ -94,9 +107,7 @@
           style="opacity: 0"
         />
       </g>
-
     </svg>
-
 
     <script type="module" src="/main.js"></script>
   </body>

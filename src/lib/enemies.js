@@ -1,6 +1,6 @@
 import { enemiesG, enemyLanes } from "../lib/dom-selects";
-import { getAngle } from "./helpers";
-import { G } from "../main";
+import { getAngle, updateCastleHPDisplay, updateGoldDisplay } from "./helpers";
+import { G } from "./G";
 import { ENEMIES, STAGE_WAVES } from "./constants";
 
 const getCurrWave = () => STAGE_WAVES[G.stageNumber].waves[G.waveNumber] || [];
@@ -106,6 +106,7 @@ export function spawnEnemy(waveEnemy) {
       G.enemies = G.enemies.filter((e) => e.id !== this.id);
       this.text.remove();
       this.shape.remove();
+      updateGoldDisplay(this.gold)
     },
     finish() {
       this.done = true;
@@ -114,6 +115,7 @@ export function spawnEnemy(waveEnemy) {
       G.enemies = G.enemies.filter((e) => e.id !== this.id);
       this.text.remove();
       this.shape.remove();
+      updateCastleHPDisplay(1)
     },
   };
 

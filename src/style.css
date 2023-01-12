@@ -1,4 +1,6 @@
 :root {
+  --bg-color: #242424;
+
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
   line-height: 24px;
@@ -6,7 +8,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: var(--bg-color);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -29,10 +31,13 @@ header {
 }
 
 section {
+  position: sticky;
   display: flex;
-  /* justify-content: space-between; */
-  align-items: baseline;
+  justify-content: space-between;
+  align-items: center;
   padding-inline: 1.5rem;
+  background-color: var(--bg-color);
+  top: 0;
 }
 
 pre {
@@ -127,4 +132,22 @@ button:focus-visible {
 .icons-grid {
   background: #aaa;
   padding: 1rem;
+}
+
+.stats-displays-container {
+  display: flex;
+}
+.stats-display {
+  display: flex;
+  margin-right: 1rem;
+}
+
+.display-value {
+  margin-left: 0.25rem;
+}
+
+@media (max-width: 767px) {
+  .stats-displays-container{
+    display: block;
+  }
 }

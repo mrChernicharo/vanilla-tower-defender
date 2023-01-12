@@ -28,6 +28,7 @@ import {
   getIconDirection,
   getMenuType,
   updateFocusedTile,
+  updateWaveDisplay,
 } from "./lib/helpers";
 import { createBullet } from "./lib/bullets";
 import { spawnEnemy } from "./lib/enemies";
@@ -48,32 +49,10 @@ import {
   updateVisibleTiles,
 } from "./lib/tiles";
 import { getTowerType, resetTowers } from "./lib/towers";
+import { G } from "./lib/G";
 
 let playPauseIcon = "▶️";
-export const G = {
-  frameId: 0,
-  tick: 0,
-  clock: 0,
-  mouse: { x: null, y: null },
-  lastClick: { x: null, y: null },
-  enemies: [],
-  towers: [],
-  bullets: [],
-  tiles: null,
-  bulletCount: 0,
-  tileChain: [],
-  selectedTile: null,
-  lastSelectedTile: null,
-  isPlaying: false,
-  inBattle: false,
-  towerPreviewActive: false,
-  stageNumber: 1,
-  waveNumber: null,
-  wavesTimes: [{ start: 0, end: null }],
-  gameSpeed: 2,
-};
-G.tiles = createGrid(COLS, ROWS);
-updateVisibleTiles();
+
 
 export const menuActions = {
   trap: function () {},
@@ -253,6 +232,7 @@ function handleCreateNewPath(e, tile, icon) {
     addNewToWavesTimes(newTile);
     playPauseBtn.removeAttribute("disabled");
     G.inBattle = true;
+    
     console.log("barrier broken! CALL WAVE", {
       waveNumber: G.waveNumber,
       clock: G.clock,
@@ -260,6 +240,7 @@ function handleCreateNewPath(e, tile, icon) {
     });
 
     updateVisibleTiles(1);
+    updateWaveDisplay(G.waveNumber + 1)
     handlePlayPause();
   }
 

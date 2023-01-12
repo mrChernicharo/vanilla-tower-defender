@@ -1,6 +1,6 @@
 import { TOWERS } from "./constants";
-import { focusNoTile } from "./helpers";
-import { G } from "../main";
+import { focusNoTile, updateGoldDisplay } from "./helpers";
+import { G } from "./G";
 import { hideRing, removePreviewTower } from "./tile-menu";
 
 export function getTowerType(icon) {
@@ -29,6 +29,7 @@ export function createTower(pos, type) {
     damage: TOWERS[type].damage,
     bullet_speed: TOWERS[type].bullet_speed,
     rate_of_fire: TOWERS[type].rate_of_fire,
+    price: TOWERS[type].price,
     g: null,
     init() {
       this.shotsPerSecond = 60 / this.rate_of_fire / 60;
@@ -99,8 +100,8 @@ export function createTower(pos, type) {
   newTower.init();
 
   G.towers.push(newTower);
-  // G.tiles
-  // mark tile hasTower
+  
+  G.gold -= newTower.price;
   G.towerPreviewActive = false;
   G.selectedTile = { ...G.selectedTile, hasTower: true };
   G.tiles[G.selectedTile.index] = {
@@ -110,6 +111,7 @@ export function createTower(pos, type) {
 
   focusNoTile();
   hideRing();
+  updateGoldDisplay();
 }
 
 export function resetTowers() {

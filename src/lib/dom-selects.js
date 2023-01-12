@@ -6,6 +6,10 @@ export const bulletsG = document.querySelector("#bullets-g");
 
 export const playPauseBtn = document.querySelector("#play-pause-btn");
 export const gameSpeedForm = document.querySelector("#game-speed-form");
+export const goldDisplay = document.querySelector("#gold-display");
+export const castleHPDisplay = document.querySelector("#castle-hp-display");
+export const waveDisplay = document.querySelector("#wave-display");
+
 export const pre = document.querySelector("pre");
 
 export const selectionRing = document.querySelector("#selection-ring");

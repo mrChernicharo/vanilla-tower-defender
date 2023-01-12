@@ -1,9 +1,10 @@
 import { menuIcons,  tileWidth, TOWERS } from "./constants";
 import {scene, selectionRing, selectionRingG,} from '../lib/dom-selects'
 import { canBecomePath, getIconDirection } from "./helpers";
-import { G, menuActions } from "../main";
+import { menuActions } from "../main";
 import { getAdjacentTile } from "./tiles";
 import { createTower, getTowerType } from "./towers";
+import { G } from "./G";
 
 export function drawTowerPreview(towerPos, towerType) {
   // console.log("drawTowerPreview");

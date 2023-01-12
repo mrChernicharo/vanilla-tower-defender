@@ -1,6 +1,6 @@
 import { TOWERS } from "./constants";
 import { bulletsG } from "../lib/dom-selects";
-import { G } from "../main";
+import { G } from "./G";
 
 export function createBullet(tower, enemy) {
   const newBullet = {

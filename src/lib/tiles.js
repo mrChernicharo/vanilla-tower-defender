@@ -8,7 +8,7 @@ import {
   enemyLanes,
 } from "../lib/dom-selects";
 import { focusNoTile, getChains } from "./helpers";
-import { G } from "../main";
+import { G } from "./G";
 import { hideRing } from "./tile-menu";
 
 export function createGrid(cols = COLS, rows = ROWS) {
