@@ -1,5 +1,5 @@
 import { enemiesG, enemyLanes } from "../lib/dom-selects";
-import { getAngle, updateCastleHPDisplay, updateGoldDisplay } from "./helpers";
+import { addToast, getAngle, updateCastleHPDisplay, updateGoldDisplay } from "./helpers";
 import { G } from "./G";
 import { ENEMIES, STAGE_WAVES } from "./constants";
 
@@ -106,7 +106,7 @@ export function spawnEnemy(waveEnemy) {
       G.enemies = G.enemies.filter((e) => e.id !== this.id);
       this.text.remove();
       this.shape.remove();
-      updateGoldDisplay(this.gold)
+      updateGoldDisplay(this.gold);
     },
     finish() {
       this.done = true;
@@ -115,7 +115,7 @@ export function spawnEnemy(waveEnemy) {
       G.enemies = G.enemies.filter((e) => e.id !== this.id);
       this.text.remove();
       this.shape.remove();
-      updateCastleHPDisplay(1)
+      updateCastleHPDisplay(1);
     },
   };
 

@@ -1,5 +1,11 @@
+import { handlePlayPause } from "../main";
 import { MARGIN, STAGE_WAVES } from "./constants";
-import { castleHPDisplay, goldDisplay, waveDisplay } from "./dom-selects";
+import {
+  castleHPDisplay,
+  goldDisplay,
+  toastsArea,
+  waveDisplay,
+} from "./dom-selects";
 import { G } from "./G";
 
 export const canBecomePath = (tile) => {
@@ -70,25 +76,65 @@ export function getAngle(sx, sy, ex, ey) {
 }
 
 export function updateGoldDisplay(amount = 0) {
-  if (amount) G.gold += amount;
+  if (amount) {
+    G.gold += amount;
+    addToast(`+${amount} 💰`, "info", 1000);
+  }
   goldDisplay.textContent = G.gold;
 }
 
 export function updateCastleHPDisplay(amount = 0) {
-  if (amount) G.castleHP -= amount;
+  if (amount) {G.castleHP -= amount;
+    addToast(`-${amount} 💔`, "danger", 3000);
+  }
   if (G.castleHP <= 0) {
-    console.log("you lose!");
+    handlePlayPause()
+    addToast("you lose!", "danger", 3000);
+
   }
   castleHPDisplay.textContent = G.castleHP;
 }
 
 export function updateWaveDisplay(wave = 0) {
-    if (G.waveNumber && wave === STAGE_WAVES[G.waveNumber].waves.length - 1) {
-      waveDisplay.textContent = "Final Wave";
-    }
+  if (
+    wave &&
+    G.waveNumber &&
+    wave === STAGE_WAVES[G.waveNumber]?.waves.length - 1
+  ) {
+    waveDisplay.textContent = "Final Wave";
+    addToast("Final Wave");
+  } else if (wave) {
+    addToast(`wave ${wave}`);
+  }
   waveDisplay.textContent = wave;
 }
 
 export function canAfford(value) {
   return G.gold >= value;
+}
+
+export function addToast(
+  message = "Hello World",
+  type = "info",
+  duration = 2000
+) {
+  const toastColor = {
+    success: "green",
+    danger: "red",
+    info: "#eee",
+  };
+
+  const toast = document.createElement("div");
+  toast.textContent = message;
+  toast.classList.add("toast");
+  toast.style.color = toastColor[type];
+  toastsArea.append(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = 0;
+  }, duration);
+
+  setTimeout(() => {
+    toast.remove();
+  }, duration + 1000);
 }

@@ -22,6 +22,7 @@ import {
 } from "./lib/dom-selects";
 
 import {
+  addToast,
   focusNoTile,
   getAngle,
   getDistance,
@@ -52,7 +53,6 @@ import { getTowerType, resetTowers } from "./lib/towers";
 import { G } from "./lib/G";
 
 let playPauseIcon = "▶️";
-
 
 export const menuActions = {
   trap: function () {},
@@ -157,7 +157,7 @@ gameSpeedForm.onchange = (e) => {
 
 const getCurrWave = () => G.wavesTimes[G.waveNumber];
 
-function handlePlayPause() {
+export function handlePlayPause() {
   G.isPlaying = !G.isPlaying;
   playPauseIcon = G.isPlaying ? "⏸" : "▶️";
   playPauseBtn.innerHTML = playPauseIcon;
@@ -232,7 +232,7 @@ function handleCreateNewPath(e, tile, icon) {
     addNewToWavesTimes(newTile);
     playPauseBtn.removeAttribute("disabled");
     G.inBattle = true;
-    
+
     console.log("barrier broken! CALL WAVE", {
       waveNumber: G.waveNumber,
       clock: G.clock,
@@ -240,7 +240,7 @@ function handleCreateNewPath(e, tile, icon) {
     });
 
     updateVisibleTiles(1);
-    updateWaveDisplay(G.waveNumber + 1)
+    updateWaveDisplay(G.waveNumber + 1);
     handlePlayPause();
   }
 
@@ -442,8 +442,11 @@ function runAnimation(frame) {
       playPauseBtn.setAttribute("disabled", true);
 
       if (G.waveNumber === STAGE_WAVES[G.stageNumber].waves.length - 1) {
-        alert("you won!");
-        location.assign("/pages/stage-select.html");
+        addToast("you won!", "success", 3000);
+        setTimeout(() => {
+          alert("you won!");
+          location.assign("/pages/stage-select.html");
+        }, 2000);
       }
     }
   } else {
@@ -488,4 +491,5 @@ function runAnimation(frame) {
 //     null,
 //     2
 //   );
-// }, 200);
+// addToast();
+// }, 800);
