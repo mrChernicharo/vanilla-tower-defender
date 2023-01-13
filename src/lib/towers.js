@@ -1,7 +1,8 @@
-import { TOWERS } from "./constants";
+import { tileWidth, TOWERS } from "./constants";
 import { focusNoTile, updateGoldDisplay } from "./helpers";
 import { G } from "./G";
 import { hideRing, removePreviewTower } from "./tile-menu";
+import { scene } from "./dom-selects";
 
 export function getTowerType(icon) {
   return icon.dataset.type;
@@ -14,14 +15,14 @@ export function createTower(pos, type) {
   const tower_id = `tower-${pos.y}-${pos.x}`;
 
   const newTower = {
-    id: tower_id,
+    id:null,
     shape: null,
     pos,
     cooldown: 0,
     lastShot: 0,
     shotsPerSecond: 0,
     rotation: 0,
-    r: 20,
+    // r: 50,
     type,
     xp: TOWERS[type].xp,
     fill: TOWERS[type].fill,
@@ -32,36 +33,32 @@ export function createTower(pos, type) {
     price: TOWERS[type].price,
     g: null,
     init() {
+      this.id = tower_id
+      const patternId = `pattern-${this.id}`;
       this.shotsPerSecond = 60 / this.rate_of_fire / 60;
 
       this.g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       this.shape = document.createElementNS(
         "http://www.w3.org/2000/svg",
-        "circle"
-      );
-      this.shape.setAttribute("id", tower_id);
-      this.shape.setAttribute("cx", this.pos.x);
-      this.shape.setAttribute("cy", this.pos.y);
-      this.shape.setAttribute("data-entity", "tower");
-      this.shape.setAttribute("data-type", type);
-      this.shape.setAttribute("r", this.r);
-      this.shape.setAttribute("fill", this.fill);
-
-      const barrel = document.createElementNS(
-        "http://www.w3.org/2000/svg",
         "rect"
       );
-      barrel.setAttribute("x", this.pos.x);
-      barrel.setAttribute("y", this.pos.y);
-      barrel.setAttribute("width", this.r + 10);
-      barrel.setAttribute("height", 3);
-      barrel.setAttribute("fill", this.fill);
+      this.shape.setAttribute("id", this.id);
+      this.shape.setAttribute("x", this.pos.x);
+      this.shape.setAttribute("y", this.pos.y);
+      this.shape.setAttribute("data-entity", "tower");
+      this.shape.setAttribute("data-type", type);
+      this.shape.setAttribute("width", tileWidth);
+      this.shape.setAttribute("height", tileWidth);
+      this.shape.setAttribute("fill", this.fill);
+
+      this.shape.setAttribute("fill", `url(#${patternId})`);
+      this.shape.setAttribute("transform", 'translate(-36, -50)');
 
       const rangeCircle = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "circle"
       );
-      rangeCircle.setAttribute("id", `range-${tower_id}`);
+      rangeCircle.setAttribute("id", `range-${this.id}`);
       rangeCircle.classList.add("tower-range");
 
       rangeCircle.setAttribute("cx", this.pos.x);
@@ -82,11 +79,28 @@ export function createTower(pos, type) {
         }
       };
 
-      // this.rotation = getAngle(this.pos.x, this.pos.y, nextPos.x, nextPos.y);
+      const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      const pattern = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "pattern"
+      );
+      const image = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "image"
+      );
+      defs.setAttribute("id", `defs-${this.id}`);
+      defs.setAttribute("class", "defs tower-defs");
+      pattern.setAttribute("id", patternId);
+      pattern.setAttribute("width", 28);
+      pattern.setAttribute("height", 28);
+      image.setAttribute("href", TOWERS[this.type].img);
+      image.setAttribute("id", `image-${this.id}`);
 
-      this.g.append(barrel);
+      pattern.append(image);
+      defs.append(pattern);
+      this.g.append(defs);
       this.g.append(rangeCircle);
-      this.g.append(this.shape);
+      this.g.append(this.shape)
       scene.append(this.g);
     },
     rotate(angle) {

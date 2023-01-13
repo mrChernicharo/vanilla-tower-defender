@@ -8,6 +8,7 @@ import {
   tileWidth,
   TOWERS,
   STAGE_WAVES,
+  FPS,
 } from "./lib/constants";
 import {
   pre,
@@ -53,6 +54,8 @@ import { getTowerType, resetTowers } from "./lib/towers";
 import { G } from "./lib/G";
 
 let playPauseIcon = "▶️";
+const frameInterval = 1000 / FPS;
+let lastFrameTimestamp = performance.now();
 
 export const menuActions = {
   trap: function () {},
@@ -272,7 +275,6 @@ function handleDisplayTileMenu(e, tile) {
     return;
   }
   const icons = drawRingIcons(menuType, tile);
-  console.log(icons, menuType, { icons });
   appendIconsListeners(icons, tile, menuType);
 }
 
@@ -304,7 +306,7 @@ function handleTowerSelect(e) {
 }
 
 function handleTileSelect(e) {
-  console.log("handleTileSelect", e);
+  // console.log("handleTileSelect", e);
   if (G.selectedTile.hasTower) {
     return handleTowerSelect(e);
   }
@@ -410,19 +412,26 @@ function runAnimation(frame) {
 
   // spawning enemies
   const nextWave = STAGE_WAVES[G.stageNumber].waves[G.waveNumber] || [];
-  console.log();
 
-  const spawningEnemies = nextWave.filter(
-    (waveEnemy) => !waveEnemy.spawned && G.clock - wave.start > waveEnemy.delay
-  );
-
-  spawningEnemies.forEach((waveEnemy) => {
-    spawnEnemy(waveEnemy);
-  });
+  nextWave
+    .filter(
+      (waveEnemy) =>
+        !waveEnemy.spawned && G.clock - wave.start > waveEnemy.delay
+    )
+    .forEach((waveEnemy) => {
+      spawnEnemy(waveEnemy);
+    });
 
   // loop running
   if (G.isPlaying) {
     updateClock();
+
+    // TODO: control FPS here
+    // console.log({
+    //   clock: G.clock,
+    //   tick: G.tick,
+    //   frameInterval,
+    // });
     update();
     requestAnimationFrame(runAnimation);
 
@@ -453,14 +462,12 @@ function runAnimation(frame) {
     // loop paused
 
     // simple pause
-    if (G.inBattle) {
-      if (nextWave.some((we) => !we.done)) {
-        console.log("paused", {
-          clock: G.clock,
-          tick: G.tick,
-          wavesTimes: G.wavesTimes,
-        });
-      }
+    if (G.inBattle && nextWave.some((we) => !we.done)) {
+      console.log("paused", {
+        clock: G.clock,
+        tick: G.tick,
+        wavesTimes: G.wavesTimes,
+      });
     }
   }
 }

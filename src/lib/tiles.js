@@ -223,12 +223,11 @@ export function createPath(points, lane) {
 }
 
 export function drawNewPathTile(tile) {
-  console.log("drawNewPathTile", tile);
+  // console.log("drawNewPathTile", tile);
 
   const tileRect = document.querySelector(`#${tile.id}`);
   const chains = getChains(G.tileChain);
   // console.log({ chains, tileChain: G.tileChain });
-  // if barrierBroken
 
   enemyLanes.left.setAttribute("d", createPath(chains.left, "left"));
   enemyLanes.center.setAttribute("d", createPath(chains.center, "center"));

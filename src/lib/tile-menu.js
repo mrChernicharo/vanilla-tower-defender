@@ -51,10 +51,9 @@ export function removePreviewTower() {
 }
 
 export const drawRingIcons = (menuType, tile) => {
-  console.log("drawRingIcons", { menuType, tile });
+  // console.log("drawRingIcons", { menuType, tile });
   const icons = [];
   for (const [i, menuIcon] of menuIcons[menuType].entries()) {
-
     if (menuType === "newPath") {
       const adjacentTile = getAdjacentTile(
         G.tiles,
@@ -74,7 +73,6 @@ export const drawRingIcons = (menuType, tile) => {
     if (menuType === "newTower" && !canAfford(TOWERS[menuIcon.type].price)) {
       ringColor = "#999";
     }
-
 
     const circle = document.createElementNS(
       "http://www.w3.org/2000/svg",
@@ -113,7 +111,7 @@ export const drawRingIcons = (menuType, tile) => {
     image.setAttribute("width", 28);
     image.setAttribute("height", 28);
 
-    if (menuType === "newTower" &&!canAfford(TOWERS[menuIcon.type].price)) {
+    if (menuType === "newTower" && !canAfford(TOWERS[menuIcon.type].price)) {
       image.setAttribute("style", "filter: grayscale(1)");
     }
 
@@ -160,9 +158,12 @@ export const removeRingIcons = () => {
     icon.removeEventListener("click", menuActions[icon.dataset.type]);
     icon.remove();
   });
-  Array.from(document.querySelectorAll(".defs")).forEach((defs) =>
-    defs.remove()
-  );
+  Array.from(document.querySelectorAll(".defs")).forEach((defs) => {
+    // remove defs for ring icons, but leave tower defs
+    if (!defs.classList.contains("tower-defs")) {
+      defs.remove();
+    }
+  });
 };
 
 export function showRing() {
