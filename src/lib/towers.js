@@ -106,32 +106,19 @@ export function createTower(pos, type) {
         )
       );
 
-      // tower wants to leap
-      if (distanceToNextAngle >= 12) {
-        angle = angle > this.rotation ? this.rotation + 10 : this.rotation - 10;
-
-        if (distanceToNextAngle <= 100) {
-          // tower wants to turn on the right direction
-          console.log("leap", {
-            distanceToNextAngle,
-            next: angle,
-            prev: this.rotation,
-          });
-
-          angle =
-            angle > this.rotation ? this.rotation + 10 : this.rotation - 10;
-        } else {
-          console.log("crazyyy leaaaap", {
-            distanceToNextAngle,
-            next: angle,
-            prev: this.rotation,
-          });
-
-          angle =
-            angle > this.rotation
-              ? this.rotation + 10 + 360
-              : this.rotation - 10 - 360;
-        }
+      const towerWantsToLeap = distanceToNextAngle >= 8;
+      const leapOver360 = distanceToNextAngle > 360;
+      if (towerWantsToLeap && leapOver360) {
+        // console.log("huge leap");
+        angle =
+          angle > this.rotation
+            ? this.rotation + 7.5 + 360
+            : this.rotation - 7.5 - 360;
+      } else if (towerWantsToLeap) {
+        // console.log("leap");
+        angle = angle > this.rotation ? this.rotation + 7.5 : this.rotation - 7.5;
+      } else {
+        // console.log("no leap");
       }
 
       this.rotation = angle;
@@ -141,6 +128,7 @@ export function createTower(pos, type) {
       );
     },
   };
+
   newTower.init();
 
   G.towers.push(newTower);

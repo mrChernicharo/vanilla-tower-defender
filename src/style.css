@@ -30,6 +30,26 @@ header {
   padding-inline: 1.5rem;
 }
 
+header .header-wrapper {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+}
+
+header .header-wrapper h2 {
+  flex-grow: 0;
+}
+
+header .header-wrapper .filler {
+  flex-grow: 4;
+}
+
+
+header .header-wrapper a {
+ display: flex;
+ align-items: center;
+}
+
 section {
   position: sticky;
   display: flex;

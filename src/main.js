@@ -468,7 +468,7 @@ function runAnimation(frame) {
           wavesTimes: G.wavesTimes,
         });
       } else {
-        alert("SURPRIZE, YOU'RE DEAD");
+        alert("SURPRISE, YOU'RE DEAD! ☠️");
         location.assign("/pages/stage-select.html");
       }
     }
