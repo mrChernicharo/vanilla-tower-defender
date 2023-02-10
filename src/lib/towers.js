@@ -119,17 +119,17 @@ export function createTower(pos, type) {
         angle
       );
 
-      const towerWantsToLeap = distanceToNextAngle >= 8;
+      const towerWantsToLeap = distanceToNextAngle >= 5;
       const leapOver180 = distanceToNextAngle > 180;
 
       if (towerWantsToLeap && leapOver180) {
         angle =
           angle > this.rotation
-            ? this.rotation + 7.5 + 360
-            : this.rotation - 7.5 - 360;
+            ? this.rotation + 4.5 + 360
+            : this.rotation - 4.5 - 360;
       } else if (towerWantsToLeap) {
         angle =
-          angle > this.rotation ? this.rotation + 7.5 : this.rotation - 7.5;
+          angle > this.rotation ? this.rotation + 4.5 : this.rotation - 4.5;
       }
 
       this.applyRotation(angle);

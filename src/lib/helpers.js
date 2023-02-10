@@ -80,7 +80,8 @@ export function getAngle(sx, sy, ex, ey) {
 export function updateGoldDisplay(amount = 0) {
   if (amount) {
     G.gold += amount;
-    addToast(`+${amount} 💰`, "info", 1000);
+    const textAmount = amount < 0 ? `${amount}` : `+${amount}`
+    addToast(`${textAmount} 💰`, "info", 1000);
   }
   goldDisplay.textContent = G.gold;
 }

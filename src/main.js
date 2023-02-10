@@ -80,7 +80,6 @@ const towerActions = {
     }
     // sell confirmed!
     else {
-
       G.towers.splice(towerIdx, 1);
       G.tiles[G.selectedTile.index].hasTower = false;
       tower.g.remove();
@@ -389,6 +388,7 @@ export function runAnimation(frame) {
       resetTowers();
       resetBullets();
       handlePlayPause();
+      handleDisplayTileMenu(null, G.selectedTile); // refresh ring-menu
       playPauseBtn.setAttribute("disabled", true);
 
       if (G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1) {
