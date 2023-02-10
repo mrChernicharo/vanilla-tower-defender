@@ -1,9 +1,9 @@
 import { enemiesG, enemyLanes } from "../lib/dom-selects";
 import { addToast, getAngle, updateCastleHPDisplay, updateGoldDisplay } from "./helpers";
 import { G } from "./G";
-import { ENEMIES, STAGE_WAVES } from "./constants";
+import { ENEMIES, STAGES_AND_WAVES } from "./constants";
 
-const getCurrWave = () => STAGE_WAVES[G.stageNumber].waves[G.waveNumber] || [];
+const getCurrWave = () => STAGES_AND_WAVES[G.stageNumber].waves[G.waveNumber] || [];
 
 export function spawnEnemy(waveEnemy) {
   // const initialPos =

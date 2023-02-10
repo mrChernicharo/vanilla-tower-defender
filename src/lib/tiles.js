@@ -13,7 +13,7 @@ import { hideRing } from "./tile-menu";
 
 export function createGrid(cols = COLS, rows = ROWS) {
   const tiles = [];
-  const isInitialPath = (row, col) => row == 0 && col == 2;
+  const isInitialPath = (row, col) => row == 0 && col == 1;
   const isBlocked = (row, col) =>
     (row == 3 && col == 2) || (row == 4 && col == 1);
 

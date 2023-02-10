@@ -7,7 +7,7 @@ import {
   menuIcons,
   tileWidth,
   TOWERS,
-  STAGE_WAVES,
+  STAGES_AND_WAVES,
   FPS,
 } from "./lib/constants";
 import {
@@ -411,7 +411,7 @@ function runAnimation(frame) {
   const wave = getCurrWave();
 
   // spawning enemies
-  const nextWave = STAGE_WAVES[G.stageNumber].waves[G.waveNumber] || [];
+  const nextWave = STAGES_AND_WAVES[G.stageNumber].waves[G.waveNumber] || [];
 
   nextWave
     .filter(
@@ -450,7 +450,7 @@ function runAnimation(frame) {
       resetTowers();
       playPauseBtn.setAttribute("disabled", true);
 
-      if (G.waveNumber === STAGE_WAVES[G.stageNumber].waves.length - 1) {
+      if (G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1) {
         addToast("you won!", "success", 3000);
         setTimeout(() => {
           alert("you won!");
@@ -460,18 +460,22 @@ function runAnimation(frame) {
     }
   } else {
     // loop paused
-
-    // simple pause
     if (G.inBattle && nextWave.some((we) => !we.done)) {
-      console.log("paused", {
-        clock: G.clock,
-        tick: G.tick,
-        wavesTimes: G.wavesTimes,
-      });
+      if (G.castleHP > 0) {
+        console.log("paused", {
+          clock: G.clock,
+          tick: G.tick,
+          wavesTimes: G.wavesTimes,
+        });
+      } else {
+        alert("SURPRIZE, YOU'RE DEAD");
+        location.assign("/pages/stage-select.html");
+      }
     }
   }
 }
 
+{
 // setInterval(() => {
 //   const {
 //     isPlaying,
@@ -499,3 +503,4 @@ function runAnimation(frame) {
 //     2
 //   );
 // }, 800);
+}

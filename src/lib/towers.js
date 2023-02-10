@@ -15,7 +15,7 @@ export function createTower(pos, type) {
   const tower_id = `tower-${pos.y}-${pos.x}`;
 
   const newTower = {
-    id:null,
+    id: null,
     shape: null,
     pos,
     cooldown: 0,
@@ -33,7 +33,7 @@ export function createTower(pos, type) {
     price: TOWERS[type].price,
     g: null,
     init() {
-      this.id = tower_id
+      this.id = tower_id;
       const patternId = `pattern-${this.id}`;
       this.shotsPerSecond = 60 / this.rate_of_fire / 60;
 
@@ -52,7 +52,7 @@ export function createTower(pos, type) {
       this.shape.setAttribute("fill", this.fill);
 
       this.shape.setAttribute("fill", `url(#${patternId})`);
-      this.shape.setAttribute("transform", 'translate(-36, -50)');
+      this.shape.setAttribute("transform", "translate(-36, -50)");
 
       const rangeCircle = document.createElementNS(
         "http://www.w3.org/2000/svg",
@@ -68,18 +68,13 @@ export function createTower(pos, type) {
       rangeCircle.setAttribute("opacity", 0);
       rangeCircle.setAttribute("pointer-events", "none");
 
-      this.shape.onpointerover = (e) => {
-        if (!rangeCircle.classList.contains("locked")) {
-          rangeCircle.setAttribute("opacity", 0.1);
-        }
-      };
-      this.shape.onpointerout = (e) => {
-        if (!rangeCircle.classList.contains("locked")) {
-          rangeCircle.setAttribute("opacity", 0);
-        }
-      };
+      this.shape.onpointerover = () => handlePointerOver(rangeCircle);
+      this.shape.onpointerout = () => handlePointerOut(rangeCircle);
 
-      const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      const defs = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "defs"
+      );
       const pattern = document.createElementNS(
         "http://www.w3.org/2000/svg",
         "pattern"
@@ -91,8 +86,8 @@ export function createTower(pos, type) {
       defs.setAttribute("id", `defs-${this.id}`);
       defs.setAttribute("class", "defs tower-defs");
       pattern.setAttribute("id", patternId);
-      pattern.setAttribute("width", 28);
-      pattern.setAttribute("height", 28);
+      pattern.setAttribute("width", 1);
+      pattern.setAttribute("height", 1);
       image.setAttribute("href", TOWERS[this.type].img);
       image.setAttribute("id", `image-${this.id}`);
 
@@ -100,10 +95,45 @@ export function createTower(pos, type) {
       defs.append(pattern);
       this.g.append(defs);
       this.g.append(rangeCircle);
-      this.g.append(this.shape)
+      this.g.append(this.shape);
       scene.append(this.g);
     },
     rotate(angle) {
+      const distanceToNextAngle = Math.abs(
+        Math.min(
+          2 * Math.PI - Math.abs(this.rotation - angle),
+          Math.abs(this.rotation - angle)
+        )
+      );
+
+      // tower wants to leap
+      if (distanceToNextAngle >= 12) {
+        angle = angle > this.rotation ? this.rotation + 10 : this.rotation - 10;
+
+        if (distanceToNextAngle <= 100) {
+          // tower wants to turn on the right direction
+          console.log("leap", {
+            distanceToNextAngle,
+            next: angle,
+            prev: this.rotation,
+          });
+
+          angle =
+            angle > this.rotation ? this.rotation + 10 : this.rotation - 10;
+        } else {
+          console.log("crazyyy leaaaap", {
+            distanceToNextAngle,
+            next: angle,
+            prev: this.rotation,
+          });
+
+          angle =
+            angle > this.rotation
+              ? this.rotation + 10 + 360
+              : this.rotation - 10 - 360;
+        }
+      }
+
       this.rotation = angle;
       this.g.setAttribute(
         "transform",
@@ -130,4 +160,16 @@ export function createTower(pos, type) {
 
 export function resetTowers() {
   G.towers = G.towers.map((t) => ({ ...t, cooldown: 0, lastShot: 0 }));
+}
+
+function handlePointerOver(rangeCircle) {
+  if (!rangeCircle.classList.contains("locked")) {
+    rangeCircle.setAttribute("opacity", 0.1);
+  }
+}
+
+function handlePointerOut(rangeCircle) {
+  if (!rangeCircle.classList.contains("locked")) {
+    rangeCircle.setAttribute("opacity", 0);
+  }
 }

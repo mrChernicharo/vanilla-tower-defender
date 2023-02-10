@@ -1,5 +1,5 @@
 import { handlePlayPause } from "../main";
-import { MARGIN, STAGE_WAVES } from "./constants";
+import { MARGIN, STAGES_AND_WAVES } from "./constants";
 import {
   castleHPDisplay,
   goldDisplay,
@@ -99,7 +99,7 @@ export function updateWaveDisplay(wave = 0) {
   if (
     wave &&
     G.waveNumber &&
-    wave === STAGE_WAVES[G.waveNumber]?.waves.length - 1
+    wave === STAGES_AND_WAVES[G.waveNumber]?.waves.length - 1
   ) {
     waveDisplay.textContent = "Final Wave";
     addToast("Final Wave");
