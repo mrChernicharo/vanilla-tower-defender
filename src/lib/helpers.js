@@ -3,6 +3,7 @@ import {
   castleHPDisplay,
   gameOverOverlay,
   goldDisplay,
+  emeraldsDisplay,
   toastsArea,
   waveDisplay,
 } from "./dom-selects";
@@ -82,6 +83,14 @@ export function updateGoldDisplay(amount = 0) {
     addToast(`+${amount} 💰`, "info", 1000);
   }
   goldDisplay.textContent = G.gold;
+}
+
+export function updateEmeraldDisplay(amount = 0) {
+  if (amount) {
+    G.emeralds += amount;
+    addToast(`+${amount} 💰`, "info", 1000);
+  }
+  emeraldsDisplay.textContent = G.emeralds;
 }
 
 export function updateCastleHPDisplay(amount = 0) {

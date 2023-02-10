@@ -80,13 +80,13 @@ const towerActions = {
     }
     // sell confirmed!
     else {
-      G.gold += tower.price / 2;
+
       G.towers.splice(towerIdx, 1);
       G.tiles[G.selectedTile.index].hasTower = false;
       tower.g.remove();
       focusNoTile();
       hideRing();
-      updateGoldDisplay();
+      updateGoldDisplay(tower.price / 2);
     }
   },
   info(e, tower, towerIdx) {
@@ -204,6 +204,16 @@ function handleDisplayTileMenu(e, tile) {
   appendIconsListeners(icons, tile, menuType);
 }
 
+function handleTowerOptions(e) {
+  const [_, tileY, tileX] = G.selectedTile.id.split("-");
+  const towerId = `tower-${tileY * 100 + 50}-${tileX * 100 + 50}`;
+
+  const towerIdx = G.towers.findIndex((tower) => tower.id === towerId);
+
+  // trigger tower action!
+  towerActions[e.target.dataset.type](e, G.towers[towerIdx], towerIdx);
+}
+
 export function handleTowerSelect(e) {
   // console.log("handleTowerSelect", { e, G });
   Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
@@ -231,15 +241,6 @@ export function handleTowerSelect(e) {
     showRing();
     handleDisplayTileMenu(e, G.selectedTile);
   }
-}
-
-export function handleTowerOptions(e) {
-  const [_, tileY, tileX] = G.selectedTile.id.split("-");
-  const towerId = `tower-${tileY * 100 + 50}-${tileX * 100 + 50}`;
-
-  const towerIdx = G.towers.findIndex((tower) => tower.id === towerId);
-
-  towerActions[e.target.dataset.type](e, G.towers[towerIdx], towerIdx);
 }
 
 export function handleTileSelect(e) {

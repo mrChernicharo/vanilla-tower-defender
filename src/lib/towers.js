@@ -147,7 +147,6 @@ export function createTower(pos, type) {
 
   G.towers.push(newTower);
 
-  G.gold -= newTower.price;
   G.towerPreviewActive = false;
   G.selectedTile = { ...G.selectedTile, hasTower: true };
   G.tiles[G.selectedTile.index] = {
@@ -157,7 +156,7 @@ export function createTower(pos, type) {
 
   focusNoTile();
   hideRing();
-  updateGoldDisplay();
+  updateGoldDisplay(-newTower.price);
 }
 
 export function resetTowers() {

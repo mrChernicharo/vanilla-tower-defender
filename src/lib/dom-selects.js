@@ -7,6 +7,7 @@ export const bulletsG = document.querySelector("#bullets-g");
 export const playPauseBtn = document.querySelector("#play-pause-btn");
 export const gameSpeedForm = document.querySelector("#game-speed-form");
 export const goldDisplay = document.querySelector("#gold-display");
+export const emeraldsDisplay = document.querySelector("#emeralds-display");
 export const castleHPDisplay = document.querySelector("#castle-hp-display");
 export const waveDisplay = document.querySelector("#wave-display");
 export const toastsArea = document.querySelector("#toasts-area");
@@ -22,7 +23,7 @@ export const enemyLanes = {
   right: document.querySelector("#enemy-lane-right"),
 };
 
-export const gameOverOverlay = document.querySelector('#game-over-overlay');
+export const gameOverOverlay = document.querySelector("#game-over-overlay");
 
 const params = location.search;
 const urlParams = new URLSearchParams(location.search);
