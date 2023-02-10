@@ -57,10 +57,9 @@ header .header-wrapper .filler {
   flex-grow: 4;
 }
 
-
 header .header-wrapper a {
- display: flex;
- align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 section {
@@ -130,8 +129,6 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-
-
 /* #selection-ring-g.animate {
   animation: grow;
   animation-duration: 0.5s;
@@ -188,5 +185,27 @@ button:focus-visible {
 .toast {
   text-align: right;
   transition: opacity 1s;
+  font-size: 24px;
+  /* border: 1px solid red; */
+  padding: 0.5rem;
   width: calc(100vw - 4rem);
+}
+
+#game-over-overlay {
+  position: fixed;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s;
+}
+
+#game-over-overlay:not(.hidden) {
+  opacity: 0.8;
 }

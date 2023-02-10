@@ -6,7 +6,7 @@ export const ROWS = 12;
 
 export const initialGold = 450;
 export const initialEmeralds = 50;
-export const initialCastleHP = 10;
+export const initialCastleHP = 1;
 export const FIRST_WAVE_AT_ROW = 2;
 
 export const sceneRect = svg.getBoundingClientRect();
@@ -349,19 +349,19 @@ export const STAGES_AND_WAVES = {
       // 0
       [
         { type: "goblin", lane: "left", delay: 0 },
-        // { type: "goblin", lane: "left", delay: 2 },
-        // { type: "goblin", lane: "left", delay: 4 },
-        // { type: "goblin", lane: "left", delay: 6 },
-        // { type: "goblin", lane: "right", delay: 8 },
-        // { type: "goblin", lane: "left", delay: 10 },
-        // { type: "goblin", lane: "right", delay: 12 },
-        // { type: "goblin", lane: "right", delay: 14 },
-        // { type: "goblin", lane: "right", delay: 16 },
-        // { type: "goblin", lane: "right", delay: 18 },
-        // { type: "goblin", lane: "right", delay: 20 },
-        // { type: "orc", lane: "center", delay: 7 },
-        // { type: "orc", lane: "center", delay: 14 },
-        // { type: "orc", lane: "center", delay: 21 },
+        { type: "goblin", lane: "left", delay: 2 },
+        { type: "goblin", lane: "left", delay: 4 },
+        { type: "goblin", lane: "left", delay: 6 },
+        { type: "goblin", lane: "right", delay: 8 },
+        { type: "goblin", lane: "left", delay: 10 },
+        { type: "goblin", lane: "right", delay: 12 },
+        { type: "goblin", lane: "right", delay: 14 },
+        { type: "goblin", lane: "right", delay: 16 },
+        { type: "goblin", lane: "right", delay: 18 },
+        { type: "goblin", lane: "right", delay: 20 },
+        { type: "orc", lane: "center", delay: 7 },
+        { type: "orc", lane: "center", delay: 14 },
+        { type: "orc", lane: "center", delay: 21 },
       ],
       // 1
       [

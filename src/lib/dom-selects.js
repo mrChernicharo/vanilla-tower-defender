@@ -22,6 +22,8 @@ export const enemyLanes = {
   right: document.querySelector("#enemy-lane-right"),
 };
 
+export const gameOverOverlay = document.querySelector('#game-over-overlay');
+
 const params = location.search;
 const urlParams = new URLSearchParams(location.search);
 

@@ -322,13 +322,13 @@ export function runAnimation(frame) {
   // loop running
   if (G.isPlaying) {
     updateClock();
-
     // TODO: control FPS here
     // console.log({
     //   clock: G.clock,
     //   tick: G.tick,
     //   frameInterval,
     // });
+
     update();
     requestAnimationFrame(runAnimation);
 
@@ -365,10 +365,7 @@ export function runAnimation(frame) {
           tick: G.tick,
           wavesTimes: G.wavesTimes,
         });
-      } else {
-        alert("SURPRISE, YOU'RE DEAD! ☠️");
-        location.assign("/pages/stage-select.html");
-      }
+      } 
     }
   }
 }

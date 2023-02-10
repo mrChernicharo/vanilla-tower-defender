@@ -1,6 +1,7 @@
 import { MARGIN, STAGES_AND_WAVES } from "./constants";
 import {
   castleHPDisplay,
+  gameOverOverlay,
   goldDisplay,
   toastsArea,
   waveDisplay,
@@ -88,11 +89,19 @@ export function updateCastleHPDisplay(amount = 0) {
     G.castleHP -= amount;
     addToast(`-${amount} 💔`, "danger", 3000);
   }
+
+  castleHPDisplay.textContent = G.castleHP;
+
   if (G.castleHP <= 0) {
     handlePlayPause();
     addToast("you lose!", "danger", 3000);
+    gameOverOverlay.classList.remove('hidden');
+
+    setTimeout(() => {
+      alert("SURPRISE, YOU'RE DEAD! ☠️");
+      location.assign("/pages/stage-select.html");
+    }, 1000);
   }
-  castleHPDisplay.textContent = G.castleHP;
 }
 
 export function updateWaveDisplay(wave = 0) {
