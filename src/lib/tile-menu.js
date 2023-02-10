@@ -51,7 +51,7 @@ export function drawTowerPreview(towerPos, towerType) {
   const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
 
   defs.setAttribute("id", `defs-${tower_id}`);
-  defs.setAttribute("class", "defs tower-defs");
+  defs.setAttribute("class", "defs preview-tower-defs");
   pattern.setAttribute("id", patternId);
   pattern.setAttribute("width", 1);
   pattern.setAttribute("height", 1);
@@ -77,6 +77,9 @@ export function removePreviewTower() {
   Array.from(document.querySelectorAll(".preview-range")).forEach((range) =>
     range.remove()
   );
+  Array.from(document.querySelectorAll(".preview-tower-defs")).forEach((defs) =>
+  defs.remove()
+);
 }
 
 export const drawRingIcons = (menuType, tile) => {

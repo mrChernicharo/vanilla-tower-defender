@@ -22,8 +22,8 @@ export function createBullet(tower, enemy) {
         "d",
         `M ${this.pos.x} ${this.pos.y} L ${this.enemy.pos.x} ${this.enemy.pos.y}`
       );
-      this.path.setAttribute("stroke-width", 2);
-      this.path.setAttribute("stroke", "gray");
+      // this.path.setAttribute("stroke-width", 2);
+      // this.path.setAttribute("stroke", "gray");
 
       this.shape = document.createElementNS(
         "http://www.w3.org/2000/svg",
