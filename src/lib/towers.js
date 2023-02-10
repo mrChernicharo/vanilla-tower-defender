@@ -1,5 +1,9 @@
 import { tileWidth, TOWERS } from "./constants";
-import { focusNoTile, updateGoldDisplay } from "./helpers";
+import {
+  focusNoTile,
+  getDistanceBetweenAngles,
+  updateGoldDisplay,
+} from "./helpers";
 import { G } from "./G";
 import { hideRing, removePreviewTower } from "./tile-menu";
 import { scene } from "./dom-selects";
@@ -22,6 +26,7 @@ export function createTower(pos, type) {
     lastShot: 0,
     shotsPerSecond: 0,
     rotation: 0,
+    enemyInSight: false,
     // r: 50,
     type,
     xp: TOWERS[type].xp,
@@ -92,7 +97,7 @@ export function createTower(pos, type) {
       image.setAttribute("id", `image-${this.id}`);
       image.setAttribute("width", 100);
       image.setAttribute("height", 100);
-      
+
       this.applyRotation(90);
 
       pattern.append(image);
@@ -101,26 +106,25 @@ export function createTower(pos, type) {
       this.g.append(rangeCircle);
       this.g.append(this.shape);
       scene.append(this.g);
-
     },
     rotate(angle) {
-      const distanceToNextAngle = Math.abs(
-        Math.min(
-          2 * Math.PI - Math.abs(this.rotation - angle),
-          Math.abs(this.rotation - angle)
-        )
+      const distanceToNextAngle = getDistanceBetweenAngles(
+        this.rotation,
+        angle
       );
 
       const towerWantsToLeap = distanceToNextAngle >= 8;
       const leapOver180 = distanceToNextAngle > 180;
+
       if (towerWantsToLeap && leapOver180) {
         angle =
           angle > this.rotation
             ? this.rotation + 7.5 + 360
             : this.rotation - 7.5 - 360;
       } else if (towerWantsToLeap) {
-        angle = angle > this.rotation ? this.rotation + 7.5 : this.rotation - 7.5;
-      } 
+        angle =
+          angle > this.rotation ? this.rotation + 7.5 : this.rotation - 7.5;
+      }
 
       this.applyRotation(angle);
     },
@@ -130,9 +134,8 @@ export function createTower(pos, type) {
         "transform",
         `rotate(${this.rotation}, ${this.pos.x}, ${this.pos.y})`
       );
-    }
+    },
   };
- 
 
   newTower.init();
 

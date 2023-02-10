@@ -1,4 +1,3 @@
-import { handlePlayPause } from "../main";
 import { MARGIN, STAGES_AND_WAVES } from "./constants";
 import {
   castleHPDisplay,
@@ -7,6 +6,7 @@ import {
   waveDisplay,
 } from "./dom-selects";
 import { G } from "./G";
+import { handlePlayPause } from "./game-events";
 
 export const canBecomePath = (tile) => {
   return tile.type === "grass" && !tile.hasTower;
@@ -145,3 +145,9 @@ export function addToast(
     toast.remove();
   }, duration + 1000);
 }
+
+export const getDistanceBetweenAngles = (aDeg, bDeg) => {
+  return Math.abs(
+    Math.min(2 * Math.PI - Math.abs(aDeg - bDeg), Math.abs(aDeg - bDeg))
+  );
+};

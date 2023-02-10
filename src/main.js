@@ -52,8 +52,8 @@ import {
 } from "./lib/tiles";
 import { getTowerType, resetTowers } from "./lib/towers";
 import { G } from "./lib/G";
+import { appendGameEvents, handlePlayPause } from "./lib/game-events";
 
-let playPauseIcon = "▶️";
 const frameInterval = 1000 / FPS;
 let lastFrameTimestamp = performance.now();
 
@@ -64,113 +64,8 @@ export const menuActions = {
   tower: function () {},
 };
 
-scene.setAttribute("transform", `translate(${MARGIN},${MARGIN})`);
-
-svg.onpointermove = (e) => {
-  G.mouse = { x: e.offsetX, y: e.offsetY };
-};
-document.onclick = (e) => {
-  if (!e.target.closest("svg")) {
-    selectionRingG.setAttribute("style", "opacity: 0; display: none");
-    selectionRing.setAttribute("style", "opacity: 0; display: none");
-    G.lastSelectedTile = G.selectedTile;
-    focusNoTile();
-  }
-
-  // prettier-ignore
-  if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
-  //   console.log("clicked towerIcon or tower");
-  }
-  // prettier-ignore
-  if (e.target.closest(`[data-entity="tower"]`)) {
-    // console.log("clicked tower", { e, towerPreviewActive: G.towerPreviewActive });
-  }
-  // prettier-ignore
-  if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
-    // console.log("clicked anywhere but not at a towerIcon neither at a tower");
-
-    if (e.target.closest(`[data-entity="tile"]`) && G.tiles[e.target.closest(`[data-entity="tile"]`).dataset.index].hasTower) {
-      // console.log('clicked tile with a tower')
-      const { x, y } = G.selectedTile.pos;
-      const rangeCircle = document.querySelector(
-        `#range-tower-${y + 50}-${x + 50}`
-      );
-      rangeCircle.classList.add("locked");
-      rangeCircle.setAttribute("opacity", .1);
-      return
-    }
-    Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
-      range.classList.remove("locked");
-      range.setAttribute('opacity', 0)
-    });
-    removePreviewTower();
-    G.towerPreviewActive = false;
-  }
-};
-svg.onclick = (e) => {
-  G.lastClick = { x: e.offsetX - MARGIN, y: e.offsetY - MARGIN };
-  // console.log(G.lastClick);
-};
-scene.onclick = (e) => {
-  // console.log(e);
-  const entity = e.target.dataset.entity;
-  if (!entity) return;
-
-  // console.log(`clicked ${entity}`);
-  const entityActions = {
-    enemy(e) {},
-    tile(e) {
-      const { index } = e.target.dataset;
-      G.lastSelectedTile = G.selectedTile;
-      G.selectedTile = G.tiles[index];
-      handleTileSelect(e);
-    },
-    tower(e) {
-      const towerId = e.target.id;
-      const [_, y, x] = towerId.split("-").map((v) => Number(v) - 50);
-      const tileIdx = x / tileWidth + (y / tileWidth) * COLS;
-      const tile = G.tiles[tileIdx];
-      G.lastSelectedTile = G.selectedTile;
-      G.selectedTile = tile;
-      handleTowerSelect(e);
-    },
-  };
-  entityActions[entity](e);
-};
-playPauseBtn.onclick = (e) => {
-  handlePlayPause();
-};
-gameSpeedForm.onchange = (e) => {
-  e.preventDefault();
-  // console.log(e.target.value);
-  let speed;
-  switch (e.target.value) {
-    case "normal":
-      speed = 1;
-      break;
-    case "fast":
-      speed = 2;
-      break;
-    case "faster":
-      speed = 4;
-      break;
-  }
-  G.gameSpeed = speed;
-};
-
 const getCurrWave = () => G.wavesTimes[G.waveNumber];
 
-export function handlePlayPause() {
-  G.isPlaying = !G.isPlaying;
-  playPauseIcon = G.isPlaying ? "⏸" : "▶️";
-  playPauseBtn.innerHTML = playPauseIcon;
-
-  if (G.isPlaying) {
-    G.frameId = requestAnimationFrame(runAnimation);
-  } else {
-    cancelAnimationFrame(G.frameId);
-  }
-}
 
 function updateClock() {
   G.tick += G.gameSpeed;
@@ -278,7 +173,7 @@ function handleDisplayTileMenu(e, tile) {
   appendIconsListeners(icons, tile, menuType);
 }
 
-function handleTowerSelect(e) {
+export function handleTowerSelect(e) {
   // console.log("handleTowerSelect", { e, G });
   Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
     range.classList.remove("locked");
@@ -305,7 +200,7 @@ function handleTowerSelect(e) {
   }
 }
 
-function handleTileSelect(e) {
+export function handleTileSelect(e) {
   // console.log("handleTileSelect", e);
   if (G.selectedTile.hasTower) {
     return handleTowerSelect(e);
@@ -407,7 +302,7 @@ function update() {
   }
 }
 
-function runAnimation(frame) {
+export function runAnimation(frame) {
   const wave = getCurrWave();
 
   // spawning enemies
@@ -475,32 +370,4 @@ function runAnimation(frame) {
   }
 }
 
-{
-// setInterval(() => {
-//   const {
-//     isPlaying,
-//     inBattle,
-//     tick,
-//     selectedTile,
-//     waveNumber,
-//     gameSpeed,
-//     clock,
-//     towers,
-//     wavesTimes,
-//   } = G;
-//   pre.innerHTML = JSON.stringify(
-//     {
-//       tick,
-//       clock,
-//       gameSpeed,
-//       waveNumber,
-//       isPlaying,
-//       inBattle,
-//       wavesTimes,
-//       towers,
-//     },
-//     null,
-//     2
-//   );
-// }, 800);
-}
+appendGameEvents();
