@@ -31,6 +31,7 @@ import {
   getIconDirection,
   getMenuType,
   updateFocusedTile,
+  updateGoldDisplay,
   updateWaveDisplay,
 } from "./lib/helpers";
 import { createBullet, resetBullets } from "./lib/bullets";
@@ -62,7 +63,27 @@ export const menuActions = {
   trap: function () {},
   newPath: handleCreateNewPath,
   newTower: handleShowTowerPreview,
-  tower: function () {},
+  tower: handleTowerOptions,
+};
+
+const towerActions = {
+  upgrade(tower, towerIdx) {
+    console.log("upgrade", { tower, towerIdx });
+  },
+  sell(tower, towerIdx) {
+    console.log("sell", { tower, towerIdx });
+    
+    G.gold += tower.price;
+    G.towers.splice(towerIdx, 1);
+    tower.g.remove();
+    G.tiles[G.selectedTile.index].hasTower = false;
+    focusNoTile();
+    hideRing();
+    updateGoldDisplay();
+  },
+  info(tower, towerIdx) {
+    console.log("info", { tower, towerIdx });
+  },
 };
 
 const getCurrWave = () => G.wavesTimes[G.waveNumber];
@@ -92,9 +113,11 @@ function handleShowTowerPreview(e, tile, icon) {
   Array.from(icons).forEach((icon) => {
     const iconImg = document.querySelector(`#image-${icon.id}`);
 
-    // console.log("clicked icon"); //
     if (e.target.id === icon.id) {
-      iconImg.setAttribute("href", "/assets/icons/check.svg");
+      // prettier-ignore
+      const imagePath = `/assets/icons/check-${TOWERS[getTowerType(icon)].fill}.svg`;
+
+      iconImg.setAttribute("href", imagePath);
       icon.setAttribute("data-selected", icon.dataset.type);
     }
     // console.log("not clicked");
@@ -182,7 +205,9 @@ export function handleTowerSelect(e) {
 
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
     // console.log("selected same tower");
-    if (G.towerPreviewActive) removePreviewTower();
+    if (G.towerPreviewActive) {
+      removePreviewTower();
+    }
     focusNoTile();
     hideRing();
   } else {
@@ -198,6 +223,15 @@ export function handleTowerSelect(e) {
     showRing();
     handleDisplayTileMenu(e, G.selectedTile);
   }
+}
+
+export function handleTowerOptions(e) {
+  const [_, tileY, tileX] = G.selectedTile.id.split("-");
+  const towerId = `tower-${tileY * 100 + 50}-${tileX * 100 + 50}`;
+
+  const towerIdx = G.towers.findIndex((tower) => tower.id === towerId);
+
+  towerActions[e.target.dataset.type](G.towers[towerIdx], towerIdx);
 }
 
 export function handleTileSelect(e) {
@@ -365,9 +399,14 @@ export function runAnimation(frame) {
           tick: G.tick,
           wavesTimes: G.wavesTimes,
         });
-      } 
+      }
     }
   }
 }
 
 appendGameEvents();
+
+setInterval(() => {
+  const { tiles, enemies, bullets, ...rest } = G;
+  pre.textContent = JSON.stringify(tiles, null, 2);
+}, 500);

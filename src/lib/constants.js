@@ -176,7 +176,7 @@ export const TOWERS = {
     range: 140,
     rate_of_fire: 4,
     xp: 0,
-    fill: "brown",
+    fill: "orange",
     price: 100,
     bullet_speed: 100,
     img: "/assets/sprites/earth-tower.svg",
