@@ -107,19 +107,15 @@ export function createTower(pos, type) {
       );
 
       const towerWantsToLeap = distanceToNextAngle >= 8;
-      const leapOver360 = distanceToNextAngle > 360;
-      if (towerWantsToLeap && leapOver360) {
-        // console.log("huge leap");
+      const leapOver180 = distanceToNextAngle > 180;
+      if (towerWantsToLeap && leapOver180) {
         angle =
           angle > this.rotation
             ? this.rotation + 7.5 + 360
             : this.rotation - 7.5 - 360;
       } else if (towerWantsToLeap) {
-        // console.log("leap");
         angle = angle > this.rotation ? this.rotation + 7.5 : this.rotation - 7.5;
-      } else {
-        // console.log("no leap");
-      }
+      } 
 
       this.rotation = angle;
       this.g.setAttribute(
