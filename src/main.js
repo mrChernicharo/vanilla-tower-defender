@@ -225,11 +225,11 @@ export function handleTileSelect(e) {
 
 function update() {
   for (let tower of G.towers) {
-    let elapsedSinceLastShot;
-
-    elapsedSinceLastShot = G.clock - tower.lastShot;
-    let farthestEnemy = null,
-      greatestProgress = -Infinity;
+    let elapsedSinceLastShot = G.clock - tower.lastShot;
+    let farthestEnemy = null;
+    let greatestProgress = -Infinity;
+    let angle = null;
+    let distanceToEnemyInDeg = null;
 
     for (let enemy of G.enemies) {
       // prettier-ignore
@@ -244,12 +244,10 @@ function update() {
       }
     }
 
-    const targetEnemy = farthestEnemy; // or others
+    const targetEnemy = farthestEnemy; // or other strategies?
     const diff = tower.cooldown - elapsedSinceLastShot;
     const freshCooldown = tower.shotsPerSecond * 60;
 
-    let angle;
-    let distanceToEnemyInDeg;
     if (targetEnemy) {
       angle = getAngle(
         tower.pos.x,
@@ -260,7 +258,7 @@ function update() {
       distanceToEnemyInDeg = getDistanceBetweenAngles(tower.rotation, angle);
       tower.rotate(angle);
     }
-    const enemyInSight = distanceToEnemyInDeg < 10
+    const enemyInSight = distanceToEnemyInDeg < 10;
 
     if (tower.cooldown > 0) {
       tower.cooldown = diff;

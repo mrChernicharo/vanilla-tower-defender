@@ -2,7 +2,6 @@ import { TOWERS } from "./constants";
 import { bulletsG } from "../lib/dom-selects";
 import { G } from "./G";
 import { getAngle } from "./helpers";
-const bulletImg = "/assets/sprites/bullet.svg";
 
 export function createBullet(tower, enemy) {
   const newBullet = {
@@ -41,6 +40,30 @@ export function createBullet(tower, enemy) {
       // this.shape.setAttribute("fill", TOWERS[this.type].fill);
 
       const patternId = `bullet-pattern-${this.id}`;
+      const bulletImgs = {
+        fire: "/assets/sprites/bullet.svg",
+        ice: "/assets/sprites/ice-bullet.svg",
+        lightning: "/assets/sprites/bullet.svg",
+        earth: "/assets/sprites/earth-bullet.svg",
+      };
+      const translations = {
+        fire: "4px, 4px",
+        ice: "4px, 4px",
+        lightning: "4px, 4px",
+        earth: "4px, 10px",
+      };
+      const angle = getAngle(
+        tower.pos.x,
+        tower.pos.y,
+        enemy.pos.x,
+        enemy.pos.y
+      );
+
+      const bulletImg = bulletImgs[this.type];
+      const imgTransform = `translate(${
+        translations[this.type]
+      }) rotate(${angle}deg)`;
+
       // this.shape.setAttribute("fill", TOWERS[this.type].fill);
       this.shape.setAttribute("fill", `url(#${patternId})`);
 
@@ -67,13 +90,7 @@ export function createBullet(tower, enemy) {
       image.setAttribute("width", 40);
       image.setAttribute("height", 40);
 
-      const angle = getAngle(
-        tower.pos.x,
-        tower.pos.y,
-        enemy.pos.x,
-        enemy.pos.y
-      );
-      image.style.transform = `translate(4px, 4px) rotate(${angle}deg)`;
+      image.style.transform = imgTransform;
 
       pattern.append(image);
       this.defs.append(pattern);
@@ -116,7 +133,5 @@ export function resetBullets() {
     childCount: bulletsG.childElementCount,
   });
 
-  if (bulletsG.childElementCount > 0) {
-    bulletsG.childNodes.forEach((child) => child.remove());
-  }
+  bulletsG.innerHTML = "";
 }
