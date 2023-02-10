@@ -67,21 +67,29 @@ export const menuActions = {
 };
 
 const towerActions = {
-  upgrade(tower, towerIdx) {
-    console.log("upgrade", { tower, towerIdx });
+  upgrade(e, tower, towerIdx) {
+    console.log("upgrade", { e, tower, towerIdx });
   },
-  sell(tower, towerIdx) {
-    console.log("sell", { tower, towerIdx });
-    
-    G.gold += tower.price;
-    G.towers.splice(towerIdx, 1);
-    tower.g.remove();
-    G.tiles[G.selectedTile.index].hasTower = false;
-    focusNoTile();
-    hideRing();
-    updateGoldDisplay();
+  sell(e, tower, towerIdx) {
+    const iconImg = document.querySelector(`#image-${e.target.id}`);
+    const imgHref = iconImg.getAttribute("href");
+
+    // confirm sell?
+    if (imgHref.includes("sack-dollar.svg")) {
+      iconImg.setAttribute("href", "/assets/icons/check-gold.svg");
+    }
+    // sell confirmed!
+    else {
+      G.gold += tower.price / 2;
+      G.towers.splice(towerIdx, 1);
+      G.tiles[G.selectedTile.index].hasTower = false;
+      tower.g.remove();
+      focusNoTile();
+      hideRing();
+      updateGoldDisplay();
+    }
   },
-  info(tower, towerIdx) {
+  info(e, tower, towerIdx) {
     console.log("info", { tower, towerIdx });
   },
 };
@@ -231,7 +239,7 @@ export function handleTowerOptions(e) {
 
   const towerIdx = G.towers.findIndex((tower) => tower.id === towerId);
 
-  towerActions[e.target.dataset.type](G.towers[towerIdx], towerIdx);
+  towerActions[e.target.dataset.type](e, G.towers[towerIdx], towerIdx);
 }
 
 export function handleTileSelect(e) {
