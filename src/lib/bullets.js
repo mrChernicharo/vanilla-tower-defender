@@ -109,3 +109,14 @@ export function createBullet(tower, enemy) {
   newBullet.init();
   return newBullet;
 }
+
+export function resetBullets() {
+  console.log("reset bullets now!", {
+    bulletsG,
+    childCount: bulletsG.childElementCount,
+  });
+
+  if (bulletsG.childElementCount > 0) {
+    bulletsG.childNodes.forEach((child) => child.remove());
+  }
+}

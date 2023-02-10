@@ -27,12 +27,13 @@ import {
   focusNoTile,
   getAngle,
   getDistance,
+  getDistanceBetweenAngles,
   getIconDirection,
   getMenuType,
   updateFocusedTile,
   updateWaveDisplay,
 } from "./lib/helpers";
-import { createBullet } from "./lib/bullets";
+import { createBullet, resetBullets } from "./lib/bullets";
 import { spawnEnemy } from "./lib/enemies";
 import {
   appendIconsListeners,
@@ -65,7 +66,6 @@ export const menuActions = {
 };
 
 const getCurrWave = () => G.wavesTimes[G.waveNumber];
-
 
 function updateClock() {
   G.tick += G.gameSpeed;
@@ -248,19 +248,23 @@ function update() {
     const diff = tower.cooldown - elapsedSinceLastShot;
     const freshCooldown = tower.shotsPerSecond * 60;
 
+    let angle;
+    let distanceToEnemyInDeg;
     if (targetEnemy) {
-      const angle = getAngle(
+      angle = getAngle(
         tower.pos.x,
         tower.pos.y,
         targetEnemy.pos.x,
         targetEnemy.pos.y
       );
+      distanceToEnemyInDeg = getDistanceBetweenAngles(tower.rotation, angle);
       tower.rotate(angle);
     }
+    const enemyInSight = distanceToEnemyInDeg < 10
 
     if (tower.cooldown > 0) {
       tower.cooldown = diff;
-    } else if (tower.cooldown <= 0 && targetEnemy) {
+    } else if (tower.cooldown <= 0 && targetEnemy && enemyInSight) {
       // } else if (targetEnemy?.spawned) {
       tower.cooldown = freshCooldown;
       tower.lastShot = G.clock;
@@ -341,8 +345,9 @@ export function runAnimation(frame) {
 
       wave.end = G.clock;
       G.inBattle = false;
-      handlePlayPause();
       resetTowers();
+      resetBullets();
+      handlePlayPause();
       playPauseBtn.setAttribute("disabled", true);
 
       if (G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1) {

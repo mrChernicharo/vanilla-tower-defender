@@ -26,7 +26,6 @@ export function createTower(pos, type) {
     lastShot: 0,
     shotsPerSecond: 0,
     rotation: 0,
-    enemyInSight: false,
     // r: 50,
     type,
     xp: TOWERS[type].xp,
