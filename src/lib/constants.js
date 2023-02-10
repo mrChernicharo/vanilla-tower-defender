@@ -4,7 +4,7 @@ export const FPS = 15;
 export const COLS = 5;
 export const ROWS = 12;
 
-export const initialGold = 250;
+export const initialGold = 450;
 export const initialEmeralds = 50;
 export const initialCastleHP = 10;
 export const FIRST_WAVE_AT_ROW = 2;

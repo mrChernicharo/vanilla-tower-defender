@@ -54,9 +54,9 @@ export function updateFocusedTile() {
 }
 
 export function focusNoTile() {
-  G.selectedTile?.blur();
+  G.selectedTile?.blur && G.selectedTile.blur();
   G.selectedTile = null;
-  G.lastSelectedTile?.blur();
+  G.lastSelectedTile?.blur && G.lastSelectedTile.blur();
 }
 
 export function getDistance(x1, y1, x2, y2) {

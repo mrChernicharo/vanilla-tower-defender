@@ -1,6 +1,11 @@
-import { COLS, ROWS,initialGold , initialCastleHP} from "./constants";
-import { updateGoldDisplay, updateCastleHPDisplay,updateWaveDisplay } from "./helpers";
+import { COLS, ROWS, initialGold, initialCastleHP } from "./constants";
+import {
+  updateGoldDisplay,
+  updateCastleHPDisplay,
+  updateWaveDisplay,
+} from "./helpers";
 import { createGrid, updateVisibleTiles } from "./tiles";
+import { createTower } from "./towers";
 
 const G = {
   frameId: 0,
@@ -27,8 +32,14 @@ const G = {
   gameSpeed: 2,
 };
 G.tiles = createGrid(COLS, ROWS);
+
 updateVisibleTiles();
-updateGoldDisplay()
-updateCastleHPDisplay()
-updateWaveDisplay(0)
+updateGoldDisplay();
+updateCastleHPDisplay();
+updateWaveDisplay(0);
+
 export { G };
+
+setTimeout(() => {
+  createTower({ x: 50, y: 150 }, "fire");
+}, 300);

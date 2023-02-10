@@ -90,6 +90,10 @@ export function createTower(pos, type) {
       pattern.setAttribute("height", 1);
       image.setAttribute("href", TOWERS[this.type].img);
       image.setAttribute("id", `image-${this.id}`);
+      image.setAttribute("width", 100);
+      image.setAttribute("height", 100);
+      
+      this.applyRotation(90);
 
       pattern.append(image);
       defs.append(pattern);
@@ -97,6 +101,7 @@ export function createTower(pos, type) {
       this.g.append(rangeCircle);
       this.g.append(this.shape);
       scene.append(this.g);
+
     },
     rotate(angle) {
       const distanceToNextAngle = Math.abs(
@@ -117,13 +122,17 @@ export function createTower(pos, type) {
         angle = angle > this.rotation ? this.rotation + 7.5 : this.rotation - 7.5;
       } 
 
+      this.applyRotation(angle);
+    },
+    applyRotation(angle) {
       this.rotation = angle;
       this.g.setAttribute(
         "transform",
         `rotate(${this.rotation}, ${this.pos.x}, ${this.pos.y})`
       );
-    },
+    }
   };
+ 
 
   newTower.init();
 
