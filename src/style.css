@@ -192,10 +192,8 @@ button:focus-visible {
 }
 
 #game-over-overlay {
+  display: none;
   position: fixed;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 100vw;
   height: 100vh;
   top: 0;
@@ -207,5 +205,9 @@ button:focus-visible {
 }
 
 #game-over-overlay:not(.hidden) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   opacity: 0.8;
 }

@@ -20,7 +20,7 @@ export const menuIcons = {
       type: "mine",
       x: 20,
       y: 25,
-      color: "gray",
+      color: "orangered",
       img: "/assets/icons/bullseye.svg",
     },
     {
@@ -28,7 +28,7 @@ export const menuIcons = {
       type: "slime",
       x: 20,
       y: 125,
-      color: "gray",
+      color: "#22b165",
       img: "/assets/icons/bottle-droplet.svg",
     },
     {
@@ -36,7 +36,7 @@ export const menuIcons = {
       type: "poison",
       x: 130,
       y: 25,
-      color: "gray",
+      color: "lightgreen",
       img: "/assets/icons/flask.svg",
     },
     {
@@ -44,7 +44,7 @@ export const menuIcons = {
       type: "ice",
       x: 130,
       y: 125,
-      color: "gray",
+      color: "lightblue",
       img: "/assets/icons/icicles.svg",
     },
   ],
@@ -81,22 +81,22 @@ export const menuIcons = {
       x: 75,
       y: 0,
       color: "#7a2",
-      img: "/assets/icons/arrow-up.svg",
+      img: "/assets/icons/upgrade.svg",
     },
     {
       id: "sell-icon",
-      type: "acid",
-      x: 20,
-      y: 125,
+      type: "sell",
+      x: 10, // 310
+      y: 115, // 213
       color: "gold",
       img: "/assets/icons/sack-dollar.svg",
     },
     {
       id: "info-icon",
-      type: "ice",
-      x: 130,
-      y: 125,
-      color: "gray",
+      type: "info",
+      x: 140, // 440 - 30
+      y: 115, // 215 - 225
+      color: "#ddd",
       img: "/assets/icons/book.svg",
     },
   ],

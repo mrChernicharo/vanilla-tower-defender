@@ -96,11 +96,6 @@ export function updateCastleHPDisplay(amount = 0) {
     handlePlayPause();
     addToast("you lose!", "danger", 3000);
     gameOverOverlay.classList.remove('hidden');
-
-    setTimeout(() => {
-      alert("SURPRISE, YOU'RE DEAD! ☠️");
-      location.assign("/pages/stage-select.html");
-    }, 1000);
   }
 }
 
