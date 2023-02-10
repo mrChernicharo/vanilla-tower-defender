@@ -38,9 +38,17 @@ export function createTower(pos, type) {
     price: TOWERS[type].price,
     g: null,
     init() {
+      this.shotsPerSecond = 60 / this.rate_of_fire / 60;
+      
       this.id = tower_id;
       const patternId = `pattern-${this.id}`;
-      this.shotsPerSecond = 60 / this.rate_of_fire / 60;
+      const translations = {
+        fire: 'translate(-36, -50)',
+        ice: 'translate(-36, -50)',
+        lightning: 'translate(-36, -50)',
+        earth: 'translate(-49, -50)',
+      }
+
 
       this.g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       this.shape = document.createElementNS(
@@ -56,7 +64,7 @@ export function createTower(pos, type) {
       this.shape.setAttribute("height", tileWidth);
 
       this.shape.setAttribute("fill", `url(#${patternId})`);
-      this.shape.setAttribute("transform", "translate(-36, -50)");
+      this.shape.setAttribute("transform", translations[type]);
 
       const rangeCircle = document.createElementNS(
         "http://www.w3.org/2000/svg",

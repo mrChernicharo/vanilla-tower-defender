@@ -41,5 +41,5 @@ updateWaveDisplay(0);
 export { G };
 
 setTimeout(() => {
-  createTower({ x: 50, y: 150 }, "fire");
+  createTower({ x: 350, y: 150 }, "lightning");
 }, 300);

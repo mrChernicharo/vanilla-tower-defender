@@ -17,6 +17,19 @@
   -webkit-text-size-adjust: 100%;
 }
 
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
 body {
   margin: 0;
   display: flex;
@@ -117,18 +130,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+
 
 /* #selection-ring-g.animate {
   animation: grow;
@@ -144,6 +146,11 @@ button:focus-visible {
     scale: 1;
   }
 } */
+
+.bullet-image {
+  transform-box: fill-box;
+  transform-origin: center;
+}
 
 .ring-icon:hover {
   cursor: pointer;
