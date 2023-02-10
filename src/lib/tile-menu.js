@@ -9,19 +9,26 @@ import { G } from "./G";
 export function drawTowerPreview(towerPos, towerType) {
   // console.log("drawTowerPreview");
   const tower_id = `tower-${towerPos.y}-${towerPos.x}`;
+  const patternId = `pattern-${tower_id}`;
 
   const towerShape = document.createElementNS(
     "http://www.w3.org/2000/svg",
-    "circle"
+    "rect"
   );
   towerShape.setAttribute("id", tower_id);
   towerShape.classList.add("preview-tower");
-  towerShape.setAttribute("cx", parseInt(towerPos.x));
-  towerShape.setAttribute("cy", parseInt(towerPos.y));
+  towerShape.setAttribute("x", parseInt(towerPos.x));
+  towerShape.setAttribute("y", parseInt(towerPos.y));
   towerShape.setAttribute("data-entity", "tower");
   towerShape.setAttribute("data-type", towerType);
-  towerShape.setAttribute("r", 25);
-  towerShape.setAttribute("fill", TOWERS[towerType].fill);
+  towerShape.setAttribute("width", tileWidth);
+  towerShape.setAttribute("height", tileWidth);
+
+  towerShape.setAttribute("fill", `url(#${patternId})`);
+  towerShape.setAttribute(
+    "transform",
+    `translate(50, -40) rotate(${90}, ${towerPos.x}, ${towerPos.y})`
+  );
 
   const rangeCircle = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -36,6 +43,28 @@ export function drawTowerPreview(towerPos, towerType) {
   rangeCircle.setAttribute("opacity", 0.1);
   rangeCircle.setAttribute("pointer-events", "none");
 
+  const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+  const pattern = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "pattern"
+  );
+  const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
+
+  defs.setAttribute("id", `defs-${tower_id}`);
+  defs.setAttribute("class", "defs tower-defs");
+  pattern.setAttribute("id", patternId);
+  pattern.setAttribute("width", 1);
+  pattern.setAttribute("height", 1);
+  image.setAttribute("href", TOWERS[towerType].img);
+  image.setAttribute("id", `image-${tower_id}`);
+  image.setAttribute("width", 100);
+  image.setAttribute("height", 100);
+
+  // this.applyRotation(90);
+
+  pattern.append(image);
+  defs.append(pattern);
+  scene.append(defs);
   scene.append(rangeCircle);
   scene.append(towerShape);
 }

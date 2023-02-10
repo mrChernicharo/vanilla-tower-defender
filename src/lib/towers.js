@@ -54,7 +54,6 @@ export function createTower(pos, type) {
       this.shape.setAttribute("data-type", type);
       this.shape.setAttribute("width", tileWidth);
       this.shape.setAttribute("height", tileWidth);
-      this.shape.setAttribute("fill", this.fill);
 
       this.shape.setAttribute("fill", `url(#${patternId})`);
       this.shape.setAttribute("transform", "translate(-36, -50)");
