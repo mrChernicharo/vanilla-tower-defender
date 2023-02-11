@@ -1,5 +1,5 @@
 import { handleTileSelect, handleTowerSelect, runAnimation } from "../main";
-import { MARGIN, STAGES_AND_WAVES, tileWidth } from "./constants";
+import { MARGIN, STAGES_AND_WAVES, TILE_WIDTH } from "./constants";
 import { G } from "./G";
 import { focusNoTile } from "./helpers";
 import {
@@ -84,8 +84,8 @@ export function appendGameEvents() {
         const towerId = e.target.id;
         const [_, y, x] = towerId.split("-").map((v) => Number(v) - 50);
         const tileIdx =
-          x / tileWidth +
-          (y / tileWidth) * STAGES_AND_WAVES[G.stageNumber].stage.cols;
+          x / TILE_WIDTH +
+          (y / TILE_WIDTH) * STAGES_AND_WAVES[G.stageNumber].stage.cols;
         const tile = G.tiles[tileIdx];
         G.lastSelectedTile = G.selectedTile;
         G.selectedTile = tile;

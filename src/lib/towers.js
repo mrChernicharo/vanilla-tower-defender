@@ -1,4 +1,4 @@
-import { tileWidth, TOWERS } from "./constants";
+import { TILE_WIDTH, TOWERS } from "./constants";
 import {
   focusNoTile,
   getDistanceBetweenAngles,
@@ -59,8 +59,8 @@ export function createTower(pos, type) {
       this.shape.setAttribute("y", this.pos.y);
       this.shape.setAttribute("data-entity", "tower");
       this.shape.setAttribute("data-type", type);
-      this.shape.setAttribute("width", tileWidth);
-      this.shape.setAttribute("height", tileWidth);
+      this.shape.setAttribute("width", TILE_WIDTH);
+      this.shape.setAttribute("height", TILE_WIDTH);
 
       this.shape.setAttribute("fill", `url(#${patternId})`);
       this.shape.setAttribute("transform", translations[type]);

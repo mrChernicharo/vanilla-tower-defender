@@ -2,7 +2,7 @@ import {
   MARGIN,
   sceneRect,
   menuIcons,
-  tileWidth,
+  TILE_WIDTH,
   TOWERS,
   STAGES_AND_WAVES,
   FPS,
@@ -99,14 +99,14 @@ function updateClock() {
 
 function addNewToWavesTimes(tile) {
   const newWaveInfo = { start: G.clock, end: null };
-  G.waveNumber = tile.pos.y / tileWidth - STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
+  G.waveNumber = tile.pos.y / TILE_WIDTH - STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
   G.wavesTimes[G.waveNumber] = newWaveInfo;
 }
 
 function handleShowTowerPreview(e, tile, icon) {
   const towerPos = {
-    x: tile.pos.x + tileWidth / 2,
-    y: tile.pos.y + tileWidth / 2,
+    x: tile.pos.x + TILE_WIDTH / 2,
+    y: tile.pos.y + TILE_WIDTH / 2,
   };
   removePreviewTower();
   drawTowerPreview(towerPos, getTowerType(icon));
@@ -142,7 +142,7 @@ function handleCreateNewPath(e, tile, icon) {
   const adj = getAdjacentTile(G.tiles, tile, direction);
   const barrierBroken =
     direction === "bottom" &&
-    adj.pos.y / tileWidth + 1 > STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + G.waveNumber;
+    adj.pos.y / TILE_WIDTH + 1 > STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + G.waveNumber;
 
   const exits = getTileExits(adj);
 

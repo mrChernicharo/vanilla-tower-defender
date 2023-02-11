@@ -10,8 +10,8 @@ export const initialEmeralds = 50;
 export const initialCastleHP = 10;
 
 export const sceneRect = svg.getBoundingClientRect();
-export const tileWidth = sceneRect.width / 6;
-export const MARGIN = tileWidth / 2;
+export const TILE_WIDTH = 100;
+export const MARGIN = TILE_WIDTH / 2;
 
 export const menuIcons = {
   trap: [
@@ -253,7 +253,7 @@ export const STAGES_AND_WAVES = {
 };
 
 // enemyType: any, lane: any, quantity: any, interval: any, startingAt: any
-
+// 1
 STAGES_AND_WAVES[1].waves[0] = new WaveDefinition()
   .defEnemySeq("goblin", "center", 5, 5, 0)
   .defEnemySeq("goblin", "left", 1, 1, 4).wave;
@@ -270,6 +270,7 @@ STAGES_AND_WAVES[1].waves[2] = new WaveDefinition()
 STAGES_AND_WAVES[1].stage.rows =
   STAGES_AND_WAVES[1].stage.firstWaveAtRow + STAGES_AND_WAVES[1].waves.length;
 
+// 2
 STAGES_AND_WAVES[2].waves[0] = new WaveDefinition()
   .defEnemySeq("dragon", "center", 1, 5, 0)
   .defEnemySeq("goblin", "left", 1, 1, 4).wave;
@@ -293,6 +294,7 @@ STAGES_AND_WAVES[2].waves[3] = new WaveDefinition()
 STAGES_AND_WAVES[2].stage.rows =
   STAGES_AND_WAVES[2].stage.firstWaveAtRow + STAGES_AND_WAVES[2].waves.length;
 
+// 3
 STAGES_AND_WAVES[3].waves[0] = new WaveDefinition()
   .defEnemySeq("dragon", "center", 1, 5, 0)
   .defEnemySeq("goblin", "left", 6, 5, 0)

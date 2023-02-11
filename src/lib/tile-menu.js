@@ -1,4 +1,4 @@
-import { menuIcons, tileWidth, TOWERS } from "./constants";
+import { menuIcons, TILE_WIDTH, TOWERS } from "./constants";
 import { scene, selectionRing, selectionRingG } from "../lib/dom-selects";
 import { canAfford, canBecomePath, getIconDirection } from "./helpers";
 import { menuActions } from "../main";
@@ -21,8 +21,8 @@ export function drawTowerPreview(towerPos, towerType) {
   towerShape.setAttribute("y", parseInt(towerPos.y));
   towerShape.setAttribute("data-entity", "tower");
   towerShape.setAttribute("data-type", towerType);
-  towerShape.setAttribute("width", tileWidth);
-  towerShape.setAttribute("height", tileWidth);
+  towerShape.setAttribute("width", TILE_WIDTH);
+  towerShape.setAttribute("height", TILE_WIDTH);
 
   towerShape.setAttribute("fill", `url(#${patternId})`);
   towerShape.setAttribute(
@@ -172,8 +172,8 @@ export const appendIconsListeners = (icons, tile, menuType) => {
 
         // console.log("create that damn tower!");
         const towerPos = {
-          x: tile.pos.x + tileWidth / 2,
-          y: tile.pos.y + tileWidth / 2,
+          x: tile.pos.x + TILE_WIDTH / 2,
+          y: tile.pos.y + TILE_WIDTH / 2,
         };
 
         createTower(towerPos, type);

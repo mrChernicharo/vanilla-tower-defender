@@ -1,5 +1,5 @@
-import { STAGES_AND_WAVES, tileWidth } from "./constants";
-import { enemyLanes } from "../lib/dom-selects";
+import { STAGES_AND_WAVES, TILE_WIDTH } from "./constants";
+import { enemyLanes, svg } from "../lib/dom-selects";
 import { focusNoTile, getChains } from "./helpers";
 import { G } from "./G";
 import { hideRing } from "./tile-menu";
@@ -7,6 +7,13 @@ import { hideRing } from "./tile-menu";
 export function createGrid() {
   const tiles = [];
   const { cols, rows } = STAGES_AND_WAVES[G.stageNumber].stage;
+
+  // set scene size
+  svg.setAttribute('width', (cols + 1) * TILE_WIDTH)
+  svg.setAttribute('height',(rows + 1) * TILE_WIDTH)
+
+  // define rocks and entrypointCol
+
   const isInitialPath = (row, col) => row == 0 && col == 1;
   const isBlocked = (row, col) =>
     (row == 3 && col == 2) || (row == 4 && col == 1);
@@ -14,7 +21,7 @@ export function createGrid() {
   // prettier-ignore
   for (let row of Array(rows).fill().map((_, i) => i)) {
     for (let col of Array(cols).fill().map((_, i) => i)) {
-      const pos = { x: col * tileWidth, y: row * tileWidth };
+      const pos = { x: col * TILE_WIDTH, y: row * TILE_WIDTH };
       const newTile = {
         index: row * cols + col,
         id: `tile-${row}-${col}`,
@@ -44,8 +51,8 @@ export function createGrid() {
           this.shape.setAttribute("data-index", this.index);
           this.shape.setAttribute("x", pos.x);
           this.shape.setAttribute("y", pos.y);
-          this.shape.setAttribute("height", tileWidth);
-          this.shape.setAttribute("width", tileWidth);
+          this.shape.setAttribute("height", TILE_WIDTH);
+          this.shape.setAttribute("width", TILE_WIDTH);
           this.shape.setAttribute("fill", this.fill);
           this.shape.setAttribute("opacity", 1);
           scene.append(this.shape);
@@ -140,13 +147,19 @@ export function getAdjacentTile(tiles, tile, direction) {
     case "right":
       {
         adj = tiles.find(
-          (t) => t.index === tile.index + 1 && tile.pos.x / tileWidth < STAGES_AND_WAVES[G.stageNumber].stage.cols - 1
+          (t) =>
+            t.index === tile.index + 1 &&
+            tile.pos.x / TILE_WIDTH <
+              STAGES_AND_WAVES[G.stageNumber].stage.cols - 1
         );
       }
       break;
     case "bottom":
       {
-        adj = tiles.find((t) => t.index === tile.index + STAGES_AND_WAVES[G.stageNumber].stage.cols);
+        adj = tiles.find(
+          (t) =>
+            t.index === tile.index + STAGES_AND_WAVES[G.stageNumber].stage.cols
+        );
       }
       break;
   }
@@ -169,7 +182,7 @@ export function createPath(points, lane) {
       // arc
       else {
         let sweep = "0";
-        if (prevPos.y % tileWidth === 0) {
+        if (prevPos.y % TILE_WIDTH === 0) {
           // "from the top to the right"
           if (prevPos.x < pos.x) {
             sweep = "0";
@@ -201,13 +214,13 @@ export function createPath(points, lane) {
     const firstTileEntry = points.at(-1);
 
     entryPos.x = firstTileEntry.x;
-    entryPos.y = firstTileEntry.y + tileWidth * 0.5;
+    entryPos.y = firstTileEntry.y + TILE_WIDTH * 0.5;
 
     if (lane === "left") {
-      entryPos.x += tileWidth * 0.25;
+      entryPos.x += TILE_WIDTH * 0.25;
     }
     if (lane === "right") {
-      entryPos.x -= tileWidth * 0.25;
+      entryPos.x -= TILE_WIDTH * 0.25;
     }
 
     d += ` L ${entryPos.x} ${entryPos.y}`;
@@ -239,7 +252,7 @@ export function updateVisibleTiles(sum = 0) {
     G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + sum;
   for (let [i, tile] of G.tiles.entries()) {
     // console.log(tile.pos.y)
-    if (tile.pos.y / tileWidth < waveLine) {
+    if (tile.pos.y / TILE_WIDTH < waveLine) {
       tile.visible = true;
     } else {
       tile.visible = false;
