@@ -4,9 +4,15 @@ import { focusNoTile, getChains } from "./helpers";
 import { G } from "./G";
 import { hideRing } from "./tile-menu";
 
+const tileColors = {
+  grass: "#052",
+  dirt: "#430",
+  wall: "#666",
+};
+
 export function createGrid() {
-  const { stage, blockedTiles } = STAGES_AND_WAVES[G.stageNumber];
-  const { cols, rows, entrypoint } = stage;
+  const { stage, wallTiles, blockedTiles } = STAGES_AND_WAVES[G.stageNumber];
+  const { cols, rows, entrypoint, baseTile /* wallTiles */ } = stage;
 
   // set scene size
   svg.setAttribute("width", (cols + 1) * TILE_WIDTH);
@@ -15,8 +21,17 @@ export function createGrid() {
   // define rocks and entrypointCol
 
   const isInitialPath = (row, col) => row == 0 && col == entrypoint;
+
   const isBlocked = (row, col) =>
     Boolean(blockedTiles[row] && blockedTiles[row].includes(col));
+
+  const isWall = (row, col) =>
+    Boolean(wallTiles[row] && wallTiles[row].includes(col));
+
+  const getTileType = (isStartingPoint) => {
+    if (isStartingPoint) return "path";
+    else return baseTile;
+  };
 
   const tiles = [];
   // prettier-ignore
@@ -43,7 +58,7 @@ export function createGrid() {
           );
           const isStartingPoint = isInitialPath(row,col);
           
-          this.type = isStartingPoint ? 'path' : 'grass';
+          this.type = isWall(row, col) ? 'wall' : getTileType(isStartingPoint);
           this.blocked = isBlocked(row, col);
           this.startingPoint = isStartingPoint
           this.exits = isStartingPoint ? getTileExits(this): null;
@@ -76,12 +91,17 @@ export function createGrid() {
   return tiles;
 }
 
+let pathTileCount = 0;
 export const getTileColor = (type, blocked = false) => {
-  if (blocked) return "#444";
-  if (type === "path") return "#971";
-  const random = Math.floor(Math.random() * 4);
-  const greens = ["#005a22", "#051", "#041", "#042"];
-  return greens[random];
+  if (blocked) return "#333";
+
+  if (type === "path") {
+    const pathColor = pathTileCount % 2 === 0 ? "#971" : "#861";
+    pathTileCount++;
+    return pathColor;
+  }
+
+  return tileColors[type];
 };
 
 export function getTileExits(tile) {

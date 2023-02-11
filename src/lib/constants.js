@@ -225,32 +225,40 @@ export const STAGES_AND_WAVES = {
       cols: 4,
       entrypoint: 0,
       vegetation: "grasslands",
+      baseTile: "grass",
       rows: null,
     },
     // blockedTiles[row][col]
     blockedTiles: {
-      0: [1, 3],
-      1: [1, 3],
-      3: [0],
       5: [2],
       6: [3],
+    },
+    wallTiles: {
+      0: [3],
+      1: [1, 3],
+      3: [0],
     },
     waves: [],
   },
   2: {
     stage: {
       number: 2,
-      name: "Lapa boulevard",
+      name: "Guadalajara road",
       firstWaveAtRow: 2,
       entrypoint: 2,
       cols: 5,
       vegetation: "desert",
+      baseTile: "dirt",
       rows: null,
+    },
+    wallTiles: {
+      2: [1, 3],
+      4: [1, 3],
     },
     blockedTiles: {
       1: [0, 4],
-      2: [0, 1, 3, 4],
-      4: [1, 2, 3],
+      2: [0, 4],
+      4: [2],
     },
     waves: [],
   },
@@ -262,9 +270,37 @@ export const STAGES_AND_WAVES = {
       entrypoint: 1,
       cols: 3,
       vegetation: "grasslands",
+      baseTile: "grass",
       rows: null,
     },
     blockedTiles: {},
+    wallTiles: {
+      2: [1],
+      4: [0, 2],
+      6: [1, 2],
+    },
+    waves: [],
+  },
+  4: {
+    stage: {
+      number: 2,
+      name: "Lapa boulevard",
+      firstWaveAtRow: 3,
+      entrypoint: 3,
+      cols: 4,
+      vegetation: "desert",
+      baseTile: "dirt",
+      rows: null,
+    },
+    blockedTiles: {
+      1: [0],
+      2: [3],
+      6: [0, 1],
+    },
+    wallTiles: {
+      2: [0, 1],
+      4: [1, 2],
+    },
     waves: [],
   },
 };
@@ -297,9 +333,9 @@ STAGES_AND_WAVES[2].waves[1] = new WaveDefinition()
   .defEnemySeq("orc", "center", 1, 12, 1).wave;
 
 STAGES_AND_WAVES[2].waves[2] = new WaveDefinition()
-.defEnemySeq("goblin", "left", 6, 5)
-.defEnemySeq("goblin", "right", 6, 1, 5)
-.defEnemySeq("dragon", "center", 1, 5)
+  .defEnemySeq("goblin", "left", 6, 5)
+  .defEnemySeq("goblin", "right", 6, 1, 5)
+  .defEnemySeq("dragon", "center", 1, 5)
   .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
 STAGES_AND_WAVES[2].waves[3] = new WaveDefinition()
@@ -318,22 +354,22 @@ STAGES_AND_WAVES[3].waves[0] = new WaveDefinition()
   .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
 STAGES_AND_WAVES[3].waves[1] = new WaveDefinition()
-.defEnemySeq("goblin", "left", 10, 0)
+  .defEnemySeq("goblin", "left", 10, 0)
   .defEnemySeq("goblin", "right", 10, 10)
   .defEnemySeq("goblin", "center", 10, 20).wave;
 
-  STAGES_AND_WAVES[3].waves[2] = new WaveDefinition()
+STAGES_AND_WAVES[3].waves[2] = new WaveDefinition()
   .defEnemySeq("dragon", "center", 2, 10)
   .defEnemySeq("goblin", "left", 6, 0, 5)
   .defEnemySeq("goblin", "right", 6, 1, 5)
   .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
-  STAGES_AND_WAVES[3].waves[3] = new WaveDefinition()
+STAGES_AND_WAVES[3].waves[3] = new WaveDefinition()
   .defEnemySeq("goblin", "left", 10, 0)
   .defEnemySeq("goblin", "right", 10, 10)
   .defEnemySeq("goblin", "center", 10, 20).wave;
 
-  STAGES_AND_WAVES[3].waves[4] = new WaveDefinition()
+STAGES_AND_WAVES[3].waves[4] = new WaveDefinition()
   .defEnemySeq("dragon", "center", 2, 10)
   .defEnemySeq("goblin", "left", 6, 0, 5)
   .defEnemySeq("goblin", "right", 6, 1, 5)
@@ -342,38 +378,37 @@ STAGES_AND_WAVES[3].waves[1] = new WaveDefinition()
 STAGES_AND_WAVES[3].stage.rows =
   STAGES_AND_WAVES[3].stage.firstWaveAtRow + STAGES_AND_WAVES[3].waves.length;
 
-  // 3
-STAGES_AND_WAVES[3].waves[0] = new WaveDefinition()
-.defEnemySeq("goblin", "left", 6, 0, 5)
-.defEnemySeq("goblin", "right", 6, 2.5, 5)
-.defEnemySeq("orc", "center", 2, 12, 12).wave;
+// 4
+STAGES_AND_WAVES[4].waves[0] = new WaveDefinition()
+  .defEnemySeq("goblin", "left", 6, 0, 5)
+  .defEnemySeq("goblin", "right", 6, 2.5, 5)
+  .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
-STAGES_AND_WAVES[3].waves[1] = new WaveDefinition()
-.defEnemySeq("dragon", "center", 2, 10)
-.defEnemySeq("goblin", "left", 6, 0, 5)
-.defEnemySeq("goblin", "right", 6, 1, 5)
-.defEnemySeq("orc", "center", 2, 12, 12).wave;
+STAGES_AND_WAVES[4].waves[1] = new WaveDefinition()
+  .defEnemySeq("goblin", "left", 6, 0, 5)
+  .defEnemySeq("goblin", "right", 6, 1, 5)
+  .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
-STAGES_AND_WAVES[3].waves[2] = new WaveDefinition()
-.defEnemySeq("dragon", "center", 2, 10)
-.defEnemySeq("goblin", "left", 6, 0, 5)
-.defEnemySeq("goblin", "right", 6, 1, 5)
-.defEnemySeq("orc", "center", 2, 12, 12).wave;
+STAGES_AND_WAVES[4].waves[2] = new WaveDefinition()
+  .defEnemySeq("dragon", "center", 1, 10)
+  .defEnemySeq("goblin", "left", 6, 0, 5)
+  .defEnemySeq("goblin", "right", 6, 1, 5)
+  .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
-STAGES_AND_WAVES[3].waves[3] = new WaveDefinition()
-.defEnemySeq("dragon", "center", 2, 10)
-.defEnemySeq("goblin", "left", 6, 0, 5)
-.defEnemySeq("goblin", "right", 6, 1, 5)
-.defEnemySeq("orc", "center", 2, 12, 12).wave;
+STAGES_AND_WAVES[4].waves[3] = new WaveDefinition()
+  .defEnemySeq("dragon", "center", 2, 10, 20)
+  .defEnemySeq("goblin", "left", 6, 0, 5)
+  .defEnemySeq("goblin", "right", 6, 1, 5)
+  .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
-STAGES_AND_WAVES[3].waves[4] = new WaveDefinition()
-.defEnemySeq("dragon", "center", 2, 10)
-.defEnemySeq("goblin", "left", 6, 0, 5)
-.defEnemySeq("goblin", "right", 6, 1, 5)
-.defEnemySeq("orc", "center", 2, 12, 12).wave;
+STAGES_AND_WAVES[4].waves[4] = new WaveDefinition()
+  .defEnemySeq("dragon", "center", 3, 10, 10)
+  .defEnemySeq("goblin", "left", 6, 0, 5)
+  .defEnemySeq("goblin", "right", 6, 1, 5)
+  .defEnemySeq("orc", "center", 2, 12, 12).wave;
 
-STAGES_AND_WAVES[3].stage.rows =
-STAGES_AND_WAVES[3].stage.firstWaveAtRow + STAGES_AND_WAVES[3].waves.length;
+STAGES_AND_WAVES[4].stage.rows =
+  STAGES_AND_WAVES[4].stage.firstWaveAtRow + STAGES_AND_WAVES[4].waves.length;
 
 console.log(STAGES_AND_WAVES);
 

@@ -11,7 +11,7 @@ import { G } from "./G";
 import { handlePlayPause } from "./game-events";
 
 export const canBecomePath = (tile) => {
-  return tile.type === "grass" && !tile.hasTower;
+  return ["grass", "dirt"].includes(tile.type) && !tile.hasTower;
 };
 
 export const getMenuType = (tile) => {
@@ -80,7 +80,7 @@ export function getAngle(sx, sy, ex, ey) {
 export function updateGoldDisplay(amount = 0) {
   if (amount) {
     G.gold += amount;
-    const textAmount = amount < 0 ? `${amount}` : `+${amount}`
+    const textAmount = amount < 0 ? `${amount}` : `+${amount}`;
     addToast(`${textAmount} 💰`, "info", 1000);
   }
   goldDisplay.textContent = G.gold;
@@ -105,7 +105,7 @@ export function updateCastleHPDisplay(amount = 0) {
   if (G.castleHP <= 0) {
     handlePlayPause();
     addToast("you lose!", "danger", 3000);
-    gameOverOverlay.classList.remove('hidden');
+    gameOverOverlay.classList.remove("hidden");
   }
 }
 
