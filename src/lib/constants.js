@@ -1,4 +1,5 @@
 import { svg } from "./dom-selects";
+import { WaveDefinition } from "./WaveDefinition";
 
 export const FPS = 15;
 export const COLS = 5;
@@ -220,295 +221,164 @@ export const ENEMIES = {
 
 export const STAGES_AND_WAVES = {
   1: {
-    stage: { number: 1, name: "cozy hills", firstWaveAtRow: 2 },
-    // waves:
-    // [
-    //   // 0
-    //   [{ type: "goblin", lane: "left", delay: 0 }],
-    //   // 1
-    //   [{ type: "troll", lane: "center", delay: 0 }],
-    //   // 2
-    //   [{ type: "goblin", lane: "left", delay: 0 }],
-    //   // 3
-    //   [{ type: "goblin", lane: "left", delay: 0 }],
-    //   // 4
-    //   [{ type: "goblin", lane: "left", delay: 0 }],
-    //   // 5
-    //   [{ type: "goblin", lane: "left", delay: 0 }],
-    //   // 6
-    //   [{ type: "goblin", lane: "left", delay: 0 }],
-    //   //7
-    //   [
-    //     { type: "orc", lane: "center", delay: 0 },
-    //     { type: "orc", lane: "center", delay: 0 },
-    //     { type: "troll", lane: "center", delay: 0 },
-    //   ],
-    //   // 8
-    //   [{ type: "troll", lane: "center", delay: 0 }],
-    //   [{ type: "dragon", lane: "center", delay: 0 }],
-    // ],
-
-    // waves: [
-    //   // 1
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "right", delay: 3 },
-    //     { type: "goblin", lane: "right", delay: 5 },
-    //     { type: "goblin", lane: "right", delay: 8 },
-    //     { type: "goblin", lane: "left", delay: 10 },
-    //     { type: "goblin", lane: "left", delay: 13 },
-    //     { type: "goblin", lane: "left", delay: 16 },
-    //     { type: "goblin", lane: "left", delay: 18 },
-    //     { type: "goblin", lane: "left", delay: 21 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //     { type: "goblin", lane: "left", delay: 25 },
-    //     { type: "goblin", lane: "left", delay: 28 },
-    //     { type: "goblin", lane: "left", delay: 29 },
-    //     { type: "goblin", lane: "left", delay: 32 },
-    //     { type: "goblin", lane: "left", delay: 35 },
-    //     { type: "orc", lane: "center", delay: 38 },
-
-    //   ],
-    //   // 2
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "right", delay: 8 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //   ],
-    //   // 3
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "left", delay: 10 },
-    //     { type: "goblin", lane: "right", delay: 12 },
-    //     { type: "orc", lane: "center", delay: 9 },
-    //   ],
-    //   // 4
-    //   [
-    //     { type: "goblin", lane: "right", delay: 2 },
-    //     { type: "goblin", lane: "left", delay: 4 },
-    //     { type: "goblin", lane: "right", delay: 12 },
-    //     { type: "orc", lane: "center", delay: 3 },
-    //     { type: "orc", lane: "center", delay: 9 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //   ],
-    //   // 5
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "right", delay: 2 },
-    //     { type: "goblin", lane: "left", delay: 4 },
-    //     { type: "goblin", lane: "right", delay: 8 },
-    //     { type: "goblin", lane: "left", delay: 10 },
-    //     { type: "goblin", lane: "right", delay: 12 },
-    //     { type: "orc", lane: "center", delay: 3 },
-    //     { type: "orc", lane: "center", delay: 6 },
-    //     { type: "orc", lane: "center", delay: 9 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //   ],
-    //   // 6
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "right", delay: 2 },
-    //     { type: "goblin", lane: "left", delay: 4 },
-    //     { type: "goblin", lane: "right", delay: 8 },
-    //     { type: "goblin", lane: "left", delay: 10 },
-    //     { type: "goblin", lane: "right", delay: 12 },
-    //     { type: "orc", lane: "center", delay: 3 },
-    //     { type: "orc", lane: "center", delay: 6 },
-    //     { type: "orc", lane: "center", delay: 9 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //   ],
-    //   // 7
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "right", delay: 2 },
-    //     { type: "goblin", lane: "left", delay: 4 },
-    //     { type: "goblin", lane: "right", delay: 8 },
-    //     { type: "goblin", lane: "left", delay: 10 },
-    //     { type: "goblin", lane: "right", delay: 12 },
-    //     { type: "orc", lane: "center", delay: 3 },
-    //     { type: "orc", lane: "center", delay: 6 },
-    //     { type: "orc", lane: "center", delay: 9 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //   ],
-    //   // 8
-    //   [
-    //     { type: "goblin", lane: "left", delay: 0 },
-    //     { type: "goblin", lane: "right", delay: 2 },
-    //     { type: "goblin", lane: "left", delay: 4 },
-    //     { type: "goblin", lane: "right", delay: 8 },
-    //     { type: "goblin", lane: "left", delay: 10 },
-    //     { type: "goblin", lane: "right", delay: 12 },
-    //     { type: "orc", lane: "center", delay: 3 },
-    //     { type: "orc", lane: "center", delay: 6 },
-    //     { type: "orc", lane: "center", delay: 9 },
-    //     { type: "orc", lane: "center", delay: 12 },
-    //   ],
-    // ],
-
-    waves: [
-      // 0
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "left", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "left", delay: 6 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "goblin", lane: "right", delay: 14 },
-        { type: "goblin", lane: "right", delay: 16 },
-        { type: "goblin", lane: "right", delay: 18 },
-        { type: "goblin", lane: "right", delay: 20 },
-        { type: "orc", lane: "center", delay: 7 },
-        { type: "orc", lane: "center", delay: 14 },
-        { type: "orc", lane: "center", delay: 21 },
-      ],
-      // 1
-      [
-        { type: "troll", lane: "center", delay: 0 },
-        { type: "goblin", lane: "right", delay: 5 },
-        { type: "troll", lane: "center", delay: 10 },
-        { type: "goblin", lane: "left", delay: 15 },
-        { type: "troll", lane: "center", delay: 20 },
-      ],
-      // 2
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-      ],
-      // 3
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "goblin", lane: "left", delay: 14 },
-        { type: "goblin", lane: "right", delay: 16 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 12 },
-        { type: "orc", lane: "center", delay: 18 },
-      ],
-      [
-        // 4
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "goblin", lane: "left", delay: 14 },
-        { type: "goblin", lane: "right", delay: 16 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-        { type: "troll", lane: "center", delay: 20 },
-      ],
-      // 5
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-      ],
-      // 6
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 2 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 8 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 12 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-      ],
-      //7
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 1 },
-        { type: "goblin", lane: "left", delay: 2 },
-        { type: "goblin", lane: "right", delay: 3 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 5 },
-        { type: "goblin", lane: "left", delay: 6 },
-        { type: "goblin", lane: "right", delay: 7 },
-        { type: "goblin", lane: "left", delay: 8 },
-        { type: "goblin", lane: "right", delay: 9 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 11 },
-        { type: "goblin", lane: "left", delay: 14 },
-        { type: "goblin", lane: "right", delay: 16 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-        { type: "orc", lane: "center", delay: 16 },
-        { type: "troll", lane: "center", delay: 20 },
-      ],
-      // 8
-      [
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 1 },
-        { type: "goblin", lane: "left", delay: 2 },
-        { type: "goblin", lane: "right", delay: 3 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 5 },
-        { type: "goblin", lane: "left", delay: 6 },
-        { type: "goblin", lane: "right", delay: 7 },
-        { type: "goblin", lane: "left", delay: 8 },
-        { type: "goblin", lane: "right", delay: 9 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 11 },
-        { type: "goblin", lane: "left", delay: 14 },
-        { type: "goblin", lane: "right", delay: 16 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-        { type: "orc", lane: "center", delay: 16 },
-        { type: "troll", lane: "center", delay: 20 },
-      ],
-      [
-        { type: "dragon", lane: "center", delay: 0 },
-        { type: "goblin", lane: "left", delay: 0 },
-        { type: "goblin", lane: "right", delay: 1 },
-        { type: "goblin", lane: "left", delay: 2 },
-        { type: "goblin", lane: "right", delay: 3 },
-        { type: "goblin", lane: "left", delay: 4 },
-        { type: "goblin", lane: "right", delay: 5 },
-        { type: "goblin", lane: "left", delay: 6 },
-        { type: "goblin", lane: "right", delay: 7 },
-        { type: "goblin", lane: "left", delay: 8 },
-        { type: "goblin", lane: "right", delay: 9 },
-        { type: "goblin", lane: "left", delay: 10 },
-        { type: "goblin", lane: "right", delay: 11 },
-        { type: "orc", lane: "center", delay: 3 },
-        { type: "orc", lane: "center", delay: 6 },
-        { type: "orc", lane: "center", delay: 9 },
-        { type: "orc", lane: "center", delay: 12 },
-        { type: "orc", lane: "center", delay: 15 },
-        { type: "orc", lane: "center", delay: 18 },
-        { type: "orc", lane: "center", delay: 21 },
-        { type: "orc", lane: "center", delay: 24 },
-      ],
-    ],
+    stage: {
+      number: 1,
+      name: "cozy hills",
+      firstWaveAtRow: 2,
+      cols: 4,
+      rows: null,
+    },
+    waves: [],
+  },
+  2: {
+    stage: { number: 2, name: "Lapa boulevard", firstWaveAtRow: 2 },
+    waves: [],
+  },
+  3: {
+    stage: { number: 3, name: "Urca sunset", firstWaveAtRow: 2 },
+    waves: [],
   },
 };
+
+// enemyType: any, lane: any, quantity: any, interval: any, startingAt: any
+
+STAGES_AND_WAVES[1].waves[0] = new WaveDefinition()
+  .defEnemySeq("goblin", "center", 5, 5, 0)
+  .defEnemySeq("goblin", "left", 1, 1, 4).wave;
+
+STAGES_AND_WAVES[1].waves[1] = new WaveDefinition()
+  .defEnemySeq("goblin", "center", 6, 5, 0)
+  .defEnemySeq("orc", "center", 1, 1, 12).wave;
+
+STAGES_AND_WAVES[1].waves[2] = new WaveDefinition()
+  .defEnemySeq("goblin", "left", 6, 5, 0)
+  .defEnemySeq("goblin", "right", 6, 5, 1)
+  .defEnemySeq("orc", "center", 2, 12, 12).wave;
+
+STAGES_AND_WAVES[1].stage.rows = STAGES_AND_WAVES[1].waves.length;
+
+console.log(STAGES_AND_WAVES);
+
+// waves:
+// [
+//   // 0
+//   [{ type: "goblin", lane: "left", delay: 0 }],
+//   // 1
+//   [{ type: "troll", lane: "center", delay: 0 }],
+//   // 2
+//   [{ type: "goblin", lane: "left", delay: 0 }],
+//   // 3
+//   [{ type: "goblin", lane: "left", delay: 0 }],
+//   // 4
+//   [{ type: "goblin", lane: "left", delay: 0 }],
+//   // 5
+//   [{ type: "goblin", lane: "left", delay: 0 }],
+//   // 6
+//   [{ type: "goblin", lane: "left", delay: 0 }],
+//   //7
+//   [
+//     { type: "orc", lane: "center", delay: 0 },
+//     { type: "orc", lane: "center", delay: 0 },
+//     { type: "troll", lane: "center", delay: 0 },
+//   ],
+//   // 8
+//   [{ type: "troll", lane: "center", delay: 0 }],
+//   [{ type: "dragon", lane: "center", delay: 0 }],
+// ],
+
+// waves: [
+//   // 1
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "right", delay: 3 },
+//     { type: "goblin", lane: "right", delay: 5 },
+//     { type: "goblin", lane: "right", delay: 8 },
+//     { type: "goblin", lane: "left", delay: 10 },
+//     { type: "goblin", lane: "left", delay: 13 },
+//     { type: "goblin", lane: "left", delay: 16 },
+//     { type: "goblin", lane: "left", delay: 18 },
+//     { type: "goblin", lane: "left", delay: 21 },
+//     { type: "orc", lane: "center", delay: 12 },
+//     { type: "goblin", lane: "left", delay: 25 },
+//     { type: "goblin", lane: "left", delay: 28 },
+//     { type: "goblin", lane: "left", delay: 29 },
+//     { type: "goblin", lane: "left", delay: 32 },
+//     { type: "goblin", lane: "left", delay: 35 },
+//     { type: "orc", lane: "center", delay: 38 },
+
+//   ],
+//   // 2
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "right", delay: 8 },
+//     { type: "orc", lane: "center", delay: 12 },
+//   ],
+//   // 3
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "left", delay: 10 },
+//     { type: "goblin", lane: "right", delay: 12 },
+//     { type: "orc", lane: "center", delay: 9 },
+//   ],
+//   // 4
+//   [
+//     { type: "goblin", lane: "right", delay: 2 },
+//     { type: "goblin", lane: "left", delay: 4 },
+//     { type: "goblin", lane: "right", delay: 12 },
+//     { type: "orc", lane: "center", delay: 3 },
+//     { type: "orc", lane: "center", delay: 9 },
+//     { type: "orc", lane: "center", delay: 12 },
+//   ],
+//   // 5
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "right", delay: 2 },
+//     { type: "goblin", lane: "left", delay: 4 },
+//     { type: "goblin", lane: "right", delay: 8 },
+//     { type: "goblin", lane: "left", delay: 10 },
+//     { type: "goblin", lane: "right", delay: 12 },
+//     { type: "orc", lane: "center", delay: 3 },
+//     { type: "orc", lane: "center", delay: 6 },
+//     { type: "orc", lane: "center", delay: 9 },
+//     { type: "orc", lane: "center", delay: 12 },
+//   ],
+//   // 6
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "right", delay: 2 },
+//     { type: "goblin", lane: "left", delay: 4 },
+//     { type: "goblin", lane: "right", delay: 8 },
+//     { type: "goblin", lane: "left", delay: 10 },
+//     { type: "goblin", lane: "right", delay: 12 },
+//     { type: "orc", lane: "center", delay: 3 },
+//     { type: "orc", lane: "center", delay: 6 },
+//     { type: "orc", lane: "center", delay: 9 },
+//     { type: "orc", lane: "center", delay: 12 },
+//   ],
+//   // 7
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "right", delay: 2 },
+//     { type: "goblin", lane: "left", delay: 4 },
+//     { type: "goblin", lane: "right", delay: 8 },
+//     { type: "goblin", lane: "left", delay: 10 },
+//     { type: "goblin", lane: "right", delay: 12 },
+//     { type: "orc", lane: "center", delay: 3 },
+//     { type: "orc", lane: "center", delay: 6 },
+//     { type: "orc", lane: "center", delay: 9 },
+//     { type: "orc", lane: "center", delay: 12 },
+//   ],
+//   // 8
+//   [
+//     { type: "goblin", lane: "left", delay: 0 },
+//     { type: "goblin", lane: "right", delay: 2 },
+//     { type: "goblin", lane: "left", delay: 4 },
+//     { type: "goblin", lane: "right", delay: 8 },
+//     { type: "goblin", lane: "left", delay: 10 },
+//     { type: "goblin", lane: "right", delay: 12 },
+//     { type: "orc", lane: "center", delay: 3 },
+//     { type: "orc", lane: "center", delay: 6 },
+//     { type: "orc", lane: "center", delay: 9 },
+//     { type: "orc", lane: "center", delay: 12 },
+//   ],
+// ],
