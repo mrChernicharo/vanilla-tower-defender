@@ -5,19 +5,20 @@ import { G } from "./G";
 import { hideRing } from "./tile-menu";
 
 export function createGrid() {
-  const tiles = [];
-  const { cols, rows } = STAGES_AND_WAVES[G.stageNumber].stage;
+  const { stage, blockedTiles } = STAGES_AND_WAVES[G.stageNumber];
+  const { cols, rows, entrypoint } = stage;
 
   // set scene size
-  svg.setAttribute('width', (cols + 1) * TILE_WIDTH)
-  svg.setAttribute('height',(rows + 1) * TILE_WIDTH)
+  svg.setAttribute("width", (cols + 1) * TILE_WIDTH);
+  svg.setAttribute("height", (rows + 1) * TILE_WIDTH);
 
   // define rocks and entrypointCol
 
-  const isInitialPath = (row, col) => row == 0 && col == 1;
+  const isInitialPath = (row, col) => row == 0 && col == entrypoint;
   const isBlocked = (row, col) =>
-    (row == 3 && col == 2) || (row == 4 && col == 1);
+    Boolean(blockedTiles[row] && blockedTiles[row].includes(col));
 
+  const tiles = [];
   // prettier-ignore
   for (let row of Array(rows).fill().map((_, i) => i)) {
     for (let col of Array(cols).fill().map((_, i) => i)) {
@@ -41,11 +42,13 @@ export function createGrid() {
             "rect"
           );
           const isStartingPoint = isInitialPath(row,col);
+          
           this.type = isStartingPoint ? 'path' : 'grass';
           this.blocked = isBlocked(row, col);
           this.startingPoint = isStartingPoint
           this.exits = isStartingPoint ? getTileExits(this): null;
           this.fill = getTileColor(this.type, this.blocked);
+
           this.shape.setAttribute("id", this.id);
           this.shape.setAttribute("data-entity", "tile");
           this.shape.setAttribute("data-index", this.index);
