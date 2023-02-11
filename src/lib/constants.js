@@ -8,7 +8,7 @@ export const ROWS = 12;
 export const initialGold = 450;
 export const initialEmeralds = 50;
 export const initialCastleHP = 10;
-export const FIRST_WAVE_AT_ROW = 2;
+// export const STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow = 2;
 
 export const sceneRect = svg.getBoundingClientRect();
 export const tileWidth = sceneRect.width / 6;
@@ -224,7 +224,7 @@ export const STAGES_AND_WAVES = {
     stage: {
       number: 1,
       name: "cozy hills",
-      firstWaveAtRow: 2,
+      firstWaveAtRow: 4,
       cols: 4,
       rows: null,
     },

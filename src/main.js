@@ -1,7 +1,6 @@
 import {
   COLS,
   ROWS,
-  FIRST_WAVE_AT_ROW,
   MARGIN,
   sceneRect,
   menuIcons,
@@ -102,7 +101,7 @@ function updateClock() {
 
 function addNewToWavesTimes(tile) {
   const newWaveInfo = { start: G.clock, end: null };
-  G.waveNumber = tile.pos.y / tileWidth - FIRST_WAVE_AT_ROW;
+  G.waveNumber = tile.pos.y / tileWidth - STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
   G.wavesTimes[G.waveNumber] = newWaveInfo;
 }
 
@@ -145,7 +144,7 @@ function handleCreateNewPath(e, tile, icon) {
   const adj = getAdjacentTile(G.tiles, tile, direction);
   const barrierBroken =
     direction === "bottom" &&
-    adj.pos.y / tileWidth + 1 > FIRST_WAVE_AT_ROW + G.waveNumber;
+    adj.pos.y / tileWidth + 1 > STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + G.waveNumber;
 
   const exits = getTileExits(adj);
 

@@ -113,7 +113,7 @@ export function updateWaveDisplay(wave = 0) {
   if (
     wave &&
     G.waveNumber &&
-    wave === STAGES_AND_WAVES[G.waveNumber]?.waves.length - 1
+    wave === STAGES_AND_WAVES[G.stageNumber].waves.length
   ) {
     waveDisplay.textContent = "Final Wave";
     addToast("Final Wave");

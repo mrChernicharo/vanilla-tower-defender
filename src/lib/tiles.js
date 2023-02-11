@@ -1,7 +1,7 @@
 import {
   COLS,
-  FIRST_WAVE_AT_ROW,
   ROWS,
+  STAGES_AND_WAVES,
   tileWidth,
 } from "./constants";
 import {
@@ -241,7 +241,7 @@ export function drawNewPathTile(tile) {
 }
 
 export function updateVisibleTiles(sum = 0) {
-  const waveLine = G.waveNumber + FIRST_WAVE_AT_ROW + sum;
+  const waveLine = G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + sum;
   for (let [i, tile] of G.tiles.entries()) {
     // console.log(tile.pos.y)
     if (tile.pos.y / tileWidth < waveLine) {
