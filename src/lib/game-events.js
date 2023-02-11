@@ -1,5 +1,5 @@
-import {  handleTileSelect, handleTowerSelect, runAnimation } from "../main";
-import { COLS, MARGIN, tileWidth } from "./constants";
+import { handleTileSelect, handleTowerSelect, runAnimation } from "../main";
+import { MARGIN, STAGES_AND_WAVES, tileWidth } from "./constants";
 import { G } from "./G";
 import { focusNoTile } from "./helpers";
 import {
@@ -16,31 +16,31 @@ import {
 import { removePreviewTower } from "./tile-menu";
 let playPauseIcon = "▶️";
 
-export function appendGameEvents () {
-scene.setAttribute("transform", `translate(${MARGIN},${MARGIN})`);
+export function appendGameEvents() {
+  scene.setAttribute("transform", `translate(${MARGIN},${MARGIN})`);
 
-svg.onpointermove = (e) => {
-  G.mouse = { x: e.offsetX, y: e.offsetY };
-};
+  svg.onpointermove = (e) => {
+    G.mouse = { x: e.offsetX, y: e.offsetY };
+  };
 
-document.onclick = (e) => {
-  if (!e.target.closest("svg")) {
-    selectionRingG.setAttribute("style", "opacity: 0; display: none");
-    selectionRing.setAttribute("style", "opacity: 0; display: none");
-    G.lastSelectedTile = G.selectedTile;
-    focusNoTile();
-  }
+  document.onclick = (e) => {
+    if (!e.target.closest("svg")) {
+      selectionRingG.setAttribute("style", "opacity: 0; display: none");
+      selectionRing.setAttribute("style", "opacity: 0; display: none");
+      G.lastSelectedTile = G.selectedTile;
+      focusNoTile();
+    }
 
-  // prettier-ignore
-  if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
+    // prettier-ignore
+    if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
   //   console.log("clicked towerIcon or tower");
   }
-  // prettier-ignore
-  if (e.target.closest(`[data-entity="tower"]`)) {
+    // prettier-ignore
+    if (e.target.closest(`[data-entity="tower"]`)) {
     // console.log("clicked tower", { e, towerPreviewActive: G.towerPreviewActive });
   }
-  // prettier-ignore
-  if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
+    // prettier-ignore
+    if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
     // console.log("clicked anywhere but not at a towerIcon neither at a tower");
 
     if (e.target.closest(`[data-entity="tile"]`) && G.tiles[e.target.closest(`[data-entity="tile"]`).dataset.index].hasTower) {
@@ -60,62 +60,63 @@ document.onclick = (e) => {
     removePreviewTower();
     G.towerPreviewActive = false;
   }
-};
-svg.onclick = (e) => {
-  G.lastClick = { x: e.offsetX - MARGIN, y: e.offsetY - MARGIN };
-  // console.log(G.lastClick);
-};
-
-scene.onclick = (e) => {
-  // console.log(e);
-  const entity = e.target.dataset.entity;
-  if (!entity) return;
-
-  // console.log(`clicked ${entity}`);
-  const entityActions = {
-    enemy(e) {},
-    tile(e) {
-      const { index } = e.target.dataset;
-      G.lastSelectedTile = G.selectedTile;
-      G.selectedTile = G.tiles[index];
-      handleTileSelect(e);
-    },
-    tower(e) {
-      const towerId = e.target.id;
-      const [_, y, x] = towerId.split("-").map((v) => Number(v) - 50);
-      const tileIdx = x / tileWidth + (y / tileWidth) * COLS;
-      const tile = G.tiles[tileIdx];
-      G.lastSelectedTile = G.selectedTile;
-      G.selectedTile = tile;
-      handleTowerSelect(e);
-    },
   };
-  entityActions[entity](e);
-};
+  svg.onclick = (e) => {
+    G.lastClick = { x: e.offsetX - MARGIN, y: e.offsetY - MARGIN };
+    // console.log(G.lastClick);
+  };
 
-playPauseBtn.onclick = (e) => {
-  handlePlayPause();
-};
+  scene.onclick = (e) => {
+    // console.log(e);
+    const entity = e.target.dataset.entity;
+    if (!entity) return;
 
-gameSpeedForm.onchange = (e) => {
-  e.preventDefault();
-  // console.log(e.target.value);
-  let speed;
-  switch (e.target.value) {
-    case "normal":
-      speed = 1;
-      break;
-    case "fast":
-      speed = 2;
-      break;
-    case "faster":
-      speed = 4;
-      break;
-  }
-  G.gameSpeed = speed;
-};
+    // console.log(`clicked ${entity}`);
+    const entityActions = {
+      enemy(e) {},
+      tile(e) {
+        const { index } = e.target.dataset;
+        G.lastSelectedTile = G.selectedTile;
+        G.selectedTile = G.tiles[index];
+        handleTileSelect(e);
+      },
+      tower(e) {
+        const towerId = e.target.id;
+        const [_, y, x] = towerId.split("-").map((v) => Number(v) - 50);
+        const tileIdx =
+          x / tileWidth +
+          (y / tileWidth) * STAGES_AND_WAVES[G.stageNumber].stage.cols;
+        const tile = G.tiles[tileIdx];
+        G.lastSelectedTile = G.selectedTile;
+        G.selectedTile = tile;
+        handleTowerSelect(e);
+      },
+    };
+    entityActions[entity](e);
+  };
+
+  playPauseBtn.onclick = (e) => {
+    handlePlayPause();
+  };
+
+  gameSpeedForm.onchange = (e) => {
+    e.preventDefault();
+    // console.log(e.target.value);
+    let speed;
+    switch (e.target.value) {
+      case "normal":
+        speed = 1;
+        break;
+      case "fast":
+        speed = 2;
+        break;
+      case "faster":
+        speed = 4;
+        break;
+    }
+    G.gameSpeed = speed;
+  };
 }
-
 
 export function handlePlayPause() {
   G.isPlaying = !G.isPlaying;

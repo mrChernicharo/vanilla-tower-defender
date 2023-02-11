@@ -165,3 +165,13 @@ export const getDistanceBetweenAngles = (aDeg, bDeg) => {
     Math.min(2 * Math.PI - Math.abs(aDeg - bDeg), Math.abs(aDeg - bDeg))
   );
 };
+
+export function getStageNumberFromUrl() {
+  const urlParams = new URLSearchParams(location.search);
+
+  for (const [k, v] of urlParams.entries()) {
+    if (k === "stage" && v) {
+      return Number(v);
+    }
+  }
+}

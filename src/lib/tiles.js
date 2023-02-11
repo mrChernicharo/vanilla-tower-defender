@@ -1,18 +1,12 @@
-import {
-  COLS,
-  ROWS,
-  STAGES_AND_WAVES,
-  tileWidth,
-} from "./constants";
-import {
-  enemyLanes,
-} from "../lib/dom-selects";
+import { STAGES_AND_WAVES, tileWidth } from "./constants";
+import { enemyLanes } from "../lib/dom-selects";
 import { focusNoTile, getChains } from "./helpers";
 import { G } from "./G";
 import { hideRing } from "./tile-menu";
 
-export function createGrid(cols = COLS, rows = ROWS) {
+export function createGrid() {
   const tiles = [];
+  const { cols, rows } = STAGES_AND_WAVES[G.stageNumber].stage;
   const isInitialPath = (row, col) => row == 0 && col == 1;
   const isBlocked = (row, col) =>
     (row == 3 && col == 2) || (row == 4 && col == 1);
@@ -146,13 +140,13 @@ export function getAdjacentTile(tiles, tile, direction) {
     case "right":
       {
         adj = tiles.find(
-          (t) => t.index === tile.index + 1 && tile.pos.x / tileWidth < COLS - 1
+          (t) => t.index === tile.index + 1 && tile.pos.x / tileWidth < STAGES_AND_WAVES[G.stageNumber].stage.cols - 1
         );
       }
       break;
     case "bottom":
       {
-        adj = tiles.find((t) => t.index === tile.index + COLS);
+        adj = tiles.find((t) => t.index === tile.index + STAGES_AND_WAVES[G.stageNumber].stage.cols);
       }
       break;
   }
@@ -241,7 +235,8 @@ export function drawNewPathTile(tile) {
 }
 
 export function updateVisibleTiles(sum = 0) {
-  const waveLine = G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + sum;
+  const waveLine =
+    G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + sum;
   for (let [i, tile] of G.tiles.entries()) {
     // console.log(tile.pos.y)
     if (tile.pos.y / tileWidth < waveLine) {

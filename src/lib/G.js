@@ -1,12 +1,12 @@
-import { COLS, ROWS, initialGold, initialCastleHP, initialEmeralds } from "./constants";
+import { initialGold, initialCastleHP, initialEmeralds } from "./constants";
 import {
   updateGoldDisplay,
   updateEmeraldDisplay,
   updateCastleHPDisplay,
   updateWaveDisplay,
+  getStageNumberFromUrl,
 } from "./helpers";
 import { createGrid, updateVisibleTiles } from "./tiles";
-import { createTower } from "./towers";
 
 const G = {
   frameId: 0,
@@ -33,7 +33,9 @@ const G = {
   wavesTimes: [{ start: 0, end: null }],
   gameSpeed: 2,
 };
-G.tiles = createGrid(COLS, ROWS);
+
+G.stageNumber = getStageNumberFromUrl();
+G.tiles = createGrid();
 
 updateVisibleTiles();
 updateGoldDisplay();
@@ -42,7 +44,3 @@ updateCastleHPDisplay();
 updateWaveDisplay(0);
 
 export { G };
-
-setTimeout(() => {
-  createTower({ x: 150, y: 150 }, "earth");
-}, 300);

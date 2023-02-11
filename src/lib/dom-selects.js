@@ -25,11 +25,3 @@ export const enemyLanes = {
 
 export const gameOverOverlay = document.querySelector("#game-over-overlay");
 
-const params = location.search;
-const urlParams = new URLSearchParams(location.search);
-
-console.log(params);
-
-for (const [k, v] of urlParams.entries()) {
-  console.log({ k, v });
-}

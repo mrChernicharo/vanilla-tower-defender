@@ -1,6 +1,4 @@
 import {
-  COLS,
-  ROWS,
   MARGIN,
   sceneRect,
   menuIcons,
@@ -415,6 +413,6 @@ export function runAnimation(frame) {
 appendGameEvents();
 
 setInterval(() => {
-  const { tiles, enemies, bullets, ...rest } = G;
-  pre.textContent = JSON.stringify(tiles, null, 2);
+  const { tiles, enemies, bullets, towers, ...rest } = G;
+  pre.textContent = JSON.stringify(rest, null, 2);
 }, 500);
