@@ -1,7 +1,7 @@
-import { handleTileSelect, handleTowerSelect, runAnimation } from "../main";
+import { runAnimation } from "../main";
 import { MARGIN, STAGES_AND_WAVES, TILE_WIDTH } from "./constants";
 import { G } from "./G";
-import { focusNoTile } from "./helpers";
+import { focusNoTile, updateFocusedTile } from "./helpers";
 import {
   pre,
   enemiesG,
@@ -13,7 +13,7 @@ import {
   selectionRing,
   selectionRingG,
 } from "./dom-selects";
-import { removePreviewTower } from "./tile-menu";
+import { handleDisplayTileMenu, hideRing, removePreviewTower, showRing } from "./tile-menu";
 let playPauseIcon = "▶️";
 
 export function appendGameEvents() {
@@ -129,3 +129,56 @@ export function handlePlayPause() {
     cancelAnimationFrame(G.frameId);
   }
 }
+
+export function handleTowerSelect(e) {
+  // console.log("handleTowerSelect", { e, G });
+  Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
+    range.classList.remove("locked");
+    range.setAttribute("opacity", 0);
+  });
+
+  if (G.lastSelectedTile?.id === G.selectedTile?.id) {
+    // console.log("selected same tower");
+    if (G.towerPreviewActive) {
+      removePreviewTower();
+    }
+    focusNoTile();
+    hideRing();
+  } else {
+    // console.log("selected different tower");
+    removePreviewTower();
+    const { x, y } = G.selectedTile.pos;
+    const rangeCircle = document.querySelector(
+      `#range-tower-${y + 50}-${x + 50}`
+    );
+    rangeCircle.classList.add("locked");
+    rangeCircle.setAttribute("opacity", 0.1);
+    updateFocusedTile();
+    showRing();
+    handleDisplayTileMenu(e, G.selectedTile);
+  }
+}
+
+export function handleTileSelect(e) {
+  // console.log("handleTileSelect", e);
+  if (G.selectedTile.hasTower) {
+    return handleTowerSelect(e);
+  }
+
+  // clicked same tile as before
+  if (G.lastSelectedTile?.id === G.selectedTile?.id) {
+    focusNoTile();
+    hideRing();
+  }
+  // clicked another tile
+  else {
+    updateFocusedTile();
+    if (G.selectedTile.blocked) {
+      hideRing();
+    } else {
+      showRing();
+    }
+    handleDisplayTileMenu(e, G.selectedTile);
+  }
+}
+

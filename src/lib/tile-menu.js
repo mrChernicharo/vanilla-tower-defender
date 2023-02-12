@@ -1,6 +1,6 @@
 import { menuIcons, TILE_WIDTH, TOWERS } from "./constants";
 import { scene, selectionRing, selectionRingG } from "../lib/dom-selects";
-import { canAfford, canBecomePath, getIconDirection } from "./helpers";
+import { canAfford, canBecomePath, getIconDirection, getMenuType } from "./helpers";
 import { menuActions } from "../main";
 import { getAdjacentTile } from "./tiles";
 import { createTower, getTowerType } from "./towers";
@@ -216,3 +216,57 @@ export function removeEnemyEntrance(entryTile) {
   G.tileChain[G.tileChain.length - 1] = entryTile;
   G.tiles[entryTile.index] = entryTile;
 }
+
+export function handleDisplayTileMenu(e, tile) {
+  // console.log("handleDisplayTileMenu", { tile, inBattle: G.inBattle });
+
+  removeRingIcons();
+
+  if (!tile?.visible) {
+    return;
+  }
+  if (tile?.blocked) {
+    return;
+  }
+
+  const menuType = getMenuType(tile);
+  if (G.inBattle && menuType === "newPath") {
+    return;
+  }
+  const icons = drawRingIcons(menuType, tile);
+  appendIconsListeners(icons, tile, menuType);
+}
+
+export function handleShowTowerPreview(e, tile, icon) {
+  const towerPos = {
+    x: tile.pos.x + TILE_WIDTH / 2,
+    y: tile.pos.y + TILE_WIDTH / 2,
+  };
+  removePreviewTower();
+  drawTowerPreview(towerPos, getTowerType(icon));
+
+  G.towerPreviewActive = true;
+
+  const icons = document.querySelectorAll(".ring-icon");
+  Array.from(icons).forEach((icon) => {
+    const iconImg = document.querySelector(`#image-${icon.id}`);
+
+    if (e.target.id === icon.id) {
+      // prettier-ignore
+      const imagePath = `/assets/icons/check-${TOWERS[getTowerType(icon)].fill}.svg`;
+
+      iconImg.setAttribute("href", imagePath);
+      icon.setAttribute("data-selected", icon.dataset.type);
+    }
+    // console.log("not clicked");
+    else {
+      const iconIdx = menuIcons["newTower"].findIndex(
+        (i) => i.type === icon.dataset.type
+      );
+      iconImg.setAttribute("href", menuIcons["newTower"][iconIdx].img);
+      icon.getAttribute("data-selected") &&
+        icon.removeAttribute("data-selected");
+    }
+  });
+}
+

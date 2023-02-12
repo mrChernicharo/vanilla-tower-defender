@@ -8,6 +8,81 @@ import { G } from "./G";
 import { hideRing, removePreviewTower } from "./tile-menu";
 import { scene } from "./dom-selects";
 
+const imagePaths = {
+  upgrade: "/assets/icons/upgrade.svg",
+  sell: "/assets/icons/sack-dollar.svg",
+  info: "/assets/icons/book.svg",
+};
+
+const uncheckOtherIcons = () => {
+  const allIcons = document.querySelectorAll(`#selection-ring-g .defs image`);
+
+  allIcons.forEach((icon) => {
+    if (icon.getAttribute("href").match(/check-(.)+\.svg/)) {
+      const imgType = icon.id.split("-")[1];
+      icon.setAttribute("href", imagePaths[imgType]);
+    }
+  });
+};
+
+const towerActions = {
+  upgrade(e, tower, towerIdx) {
+    console.log("upgrade", { tower, towerIdx });
+
+    const iconImg = document.querySelector(`#image-${e.target.id}`);
+    const imgHref = iconImg.getAttribute("href");
+
+    // confirm upgrade?
+    if (imgHref.includes("upgrade.svg")) {
+      uncheckOtherIcons();
+      iconImg.setAttribute("href", "/assets/icons/check-green.svg");
+    }
+    // upgrade confirmed!
+    else {
+      console.log("confirm tower upgrade!");
+      focusNoTile();
+      hideRing();
+      // updateGoldDisplay(tower.price / 2);
+    }
+  },
+  sell(e, tower, towerIdx) {
+    console.log("sell", { tower, towerIdx });
+
+    const iconImg = document.querySelector(`#image-${e.target.id}`);
+    const imgHref = iconImg.getAttribute("href");
+
+    // confirm sell?
+    if (imgHref.includes("sack-dollar.svg")) {
+      uncheckOtherIcons();
+      iconImg.setAttribute("href", "/assets/icons/check-gold.svg");
+    }
+    // sell confirmed!
+    else {
+      G.towers.splice(towerIdx, 1);
+      G.tiles[G.selectedTile.index].hasTower = false;
+      tower.g.remove();
+      focusNoTile();
+      hideRing();
+      updateGoldDisplay(tower.price / 2);
+    }
+  },
+  info(e, tower, towerIdx) {
+    console.log("info", { tower, towerIdx });
+
+    uncheckOtherIcons();
+  },
+};
+
+export function handleTowerOptions(e) {
+  const [_, tileY, tileX] = G.selectedTile.id.split("-");
+  const towerId = `tower-${tileY * 100 + 50}-${tileX * 100 + 50}`;
+
+  const towerIdx = G.towers.findIndex((tower) => tower.id === towerId);
+
+  // trigger tower action!
+  towerActions[e.target.dataset.type](e, G.towers[towerIdx], towerIdx);
+}
+
 export function getTowerType(icon) {
   return icon.dataset.type;
 }
@@ -38,16 +113,15 @@ export function createTower(pos, type) {
     g: null,
     init() {
       this.shotsPerSecond = 60 / this.rate_of_fire / 60;
-      
+
       this.id = tower_id;
       const patternId = `pattern-${this.id}`;
       const translations = {
-        fire: 'translate(-36, -50)',
-        ice: 'translate(-36, -50)',
-        lightning: 'translate(-36, -50)',
-        earth: 'translate(-49, -50)',
-      }
-
+        fire: "translate(-36, -50)",
+        ice: "translate(-36, -50)",
+        lightning: "translate(-36, -50)",
+        earth: "translate(-49, -50)",
+      };
 
       this.g = document.createElementNS("http://www.w3.org/2000/svg", "g");
       this.shape = document.createElementNS(

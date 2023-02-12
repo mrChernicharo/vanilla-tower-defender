@@ -1,13 +1,26 @@
 import { STAGES_AND_WAVES, TILE_WIDTH } from "./constants";
-import { enemyLanes, svg } from "../lib/dom-selects";
-import { focusNoTile, getChains } from "./helpers";
+import { enemyLanes, playPauseBtn, svg } from "../lib/dom-selects";
+import { focusNoTile, getChains, getIconDirection, updateWaveDisplay } from "./helpers";
 import { G } from "./G";
 import { hideRing } from "./tile-menu";
+import { handlePlayPause } from "./game-events";
 
 const tileColors = {
   grass: "#052",
   dirt: "#430",
   wall: "#666",
+};
+let pathTileCount = 0;
+export const getTileColor = (type, blocked = false) => {
+  if (blocked) return "#333";
+
+  if (type === "path") {
+    const pathColor = pathTileCount % 2 === 0 ? "#971" : "#861";
+    pathTileCount++;
+    return pathColor;
+  }
+
+  return tileColors[type];
 };
 
 export function createGrid() {
@@ -91,18 +104,51 @@ export function createGrid() {
   return tiles;
 }
 
-let pathTileCount = 0;
-export const getTileColor = (type, blocked = false) => {
-  if (blocked) return "#333";
+export function handleCreateNewPath(e, tile, icon) {
+  const direction = getIconDirection(icon.dataset.type);
 
-  if (type === "path") {
-    const pathColor = pathTileCount % 2 === 0 ? "#971" : "#861";
-    pathTileCount++;
-    return pathColor;
+  const adj = getAdjacentTile(G.tiles, tile, direction);
+  const barrierBroken =
+    direction === "bottom" &&
+    adj.pos.y / TILE_WIDTH + 1 > STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + G.waveNumber;
+
+  const exits = getTileExits(adj);
+
+  const newTile = {
+    ...adj,
+    type: "path",
+    exits,
+    ...(barrierBroken && { enemyEntrance: true }),
+  };
+
+  if (barrierBroken) {
+    const newWaveInfo = { start: G.clock, end: null };
+    G.waveNumber = newTile.pos.y / TILE_WIDTH - STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
+    G.wavesTimes[G.waveNumber] = newWaveInfo;
+    playPauseBtn.removeAttribute("disabled");
+    G.inBattle = true;
+
+    console.log("barrier broken! CALL WAVE", {
+      waveNumber: G.waveNumber,
+      clock: G.clock,
+      wavesTimes: G.wavesTimes,
+    });
+
+    updateVisibleTiles(1);
+    updateWaveDisplay(G.waveNumber + 1);
+    handlePlayPause();
   }
 
-  return tileColors[type];
-};
+  const newTileChain = [...G.tileChain];
+  const prevTile = newTileChain.pop();
+  prevTile.connected = true;
+
+  G.tiles[prevTile.index] = prevTile;
+  G.tiles[newTile.index] = newTile;
+  G.tileChain = [...newTileChain, prevTile, newTile];
+
+  drawNewPathTile(newTile);
+}
 
 export function getTileExits(tile) {
   // console.log("getTileExits", { tile });

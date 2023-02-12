@@ -309,6 +309,7 @@ export const STAGES_AND_WAVES = {
 // 1
 STAGES_AND_WAVES[1].waves[0] = new WaveDefinition()
   .defEnemySeq("goblin", "center", 5, 5)
+  .defEnemySeq("goblin", "center", 5, 10)
   .defEnemySeq("goblin", "left", 2, 12.5, 4).wave;
 
 STAGES_AND_WAVES[1].waves[1] = new WaveDefinition()

@@ -1,7 +1,6 @@
 import { MARGIN, STAGES_AND_WAVES } from "./constants";
 import {
   castleHPDisplay,
-  gameOverOverlay,
   goldDisplay,
   emeraldsDisplay,
   toastsArea,
@@ -103,9 +102,8 @@ export function updateCastleHPDisplay(amount = 0) {
   castleHPDisplay.textContent = G.castleHP;
 
   if (G.castleHP <= 0) {
+    // signal game over
     handlePlayPause();
-    addToast("you lose!", "danger", 3000);
-    gameOverOverlay.classList.remove("hidden");
   }
 }
 

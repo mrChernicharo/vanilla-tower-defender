@@ -192,7 +192,9 @@ button:focus-visible {
 }
 
 #game-over-overlay {
-  display: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   position: fixed;
   width: 100vw;
   height: 100vh;
@@ -201,13 +203,14 @@ button:focus-visible {
   background: #000;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 1s;
+  transition: 3s;
 }
 
 #game-over-overlay:not(.hidden) {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   align-items: center;
   opacity: 0.8;
+  pointer-events: all;
 }
+/* 
+#game-over-overlay:not(.hidden) a {
+} */
