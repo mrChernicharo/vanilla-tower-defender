@@ -1,9 +1,24 @@
 import { STAGES_AND_WAVES, TILE_WIDTH } from "./constants";
 import { enemyLanes, playPauseBtn, svg } from "../lib/dom-selects";
-import { focusNoTile, getChains, getIconDirection, updateWaveDisplay } from "./helpers";
+import {
+  focusNoTile,
+  getChains,
+  getIconDirection,
+  updateWaveDisplay,
+} from "./helpers";
 import { G } from "./G";
 import { hideRing } from "./tile-menu";
 import { handlePlayPause } from "./game-events";
+
+const tileAssets = {
+  grass: "/assets/sprites/tile-grass.svg",
+  path: "/assets/sprites/tile-dirt.svg",
+  dirt: "/assets/sprites/tile-dirt.svg",
+  blocked: "/assets/sprites/tile-sand.svg",
+  sand: "/assets/sprites/tile-sand.svg",
+  wall: "/assets/sprites/tile-rock.svg",
+};
+// /assets/sprites/tile-rock.svg
 
 const tileColors = {
   grass: "#052",
@@ -47,9 +62,12 @@ export function createGrid() {
   };
 
   const tiles = [];
-  // prettier-ignore
-  for (let row of Array(rows).fill().map((_, i) => i)) {
-    for (let col of Array(cols).fill().map((_, i) => i)) {
+  for (let row of Array(rows)
+    .fill()
+    .map((_, i) => i)) {
+    for (let col of Array(cols)
+      .fill()
+      .map((_, i) => i)) {
       const pos = { x: col * TILE_WIDTH, y: row * TILE_WIDTH };
       const newTile = {
         index: row * cols + col,
@@ -69,12 +87,17 @@ export function createGrid() {
             "http://www.w3.org/2000/svg",
             "rect"
           );
-          const isStartingPoint = isInitialPath(row,col);
-          
-          this.type = isWall(row, col) ? 'wall' : getTileType(isStartingPoint);
+          const isStartingPoint = isInitialPath(row, col);
+          const patternId = `_tile-pattern-${this.id}`;
+
           this.blocked = isBlocked(row, col);
-          this.startingPoint = isStartingPoint
-          this.exits = isStartingPoint ? getTileExits(this): null;
+          this.type = this.blocked
+            ? "blocked"
+            : isWall(row, col)
+            ? "wall"
+            : getTileType(isStartingPoint);
+          this.startingPoint = isStartingPoint;
+          this.exits = isStartingPoint ? getTileExits(this) : null;
           this.fill = getTileColor(this.type, this.blocked);
 
           this.shape.setAttribute("id", this.id);
@@ -86,15 +109,46 @@ export function createGrid() {
           this.shape.setAttribute("width", TILE_WIDTH);
           this.shape.setAttribute("fill", this.fill);
           this.shape.setAttribute("opacity", 1);
+
+          this.shape.setAttribute("fill", `url(#${patternId})`);
+
+          const defs = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "defs"
+          );
+          const pattern = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "pattern"
+          );
+          const image = document.createElementNS(
+            "http://www.w3.org/2000/svg",
+            "image"
+          );
+          defs.setAttribute("id", `defs-${this.id}`);
+          defs.setAttribute("class", "defs tile-defs");
+          pattern.setAttribute("id", patternId);
+          pattern.setAttribute("width", 1);
+          pattern.setAttribute("height", 1);
+          image.setAttribute("id", `image-${this.id}`);
+          image.setAttribute("href", tileAssets[this.type]);
+          image.setAttribute("width", TILE_WIDTH);
+          image.setAttribute("height", TILE_WIDTH);
+
+          defs.append(pattern);
+          pattern.append(image);
+          scene.append(defs);
           scene.append(this.shape);
         },
         focus() {
           this.shape.setAttribute("opacity", 0.4);
-          this.shape.setAttribute('style', `filter: drop-shadow(0 0 1rem #04f);`)
+          this.shape.setAttribute(
+            "style",
+            `filter: drop-shadow(0 0 1rem #04f);`
+          );
         },
         blur() {
           this.shape.setAttribute("opacity", 1);
-          this.shape.setAttribute('style', `filter: drop-shadow(0 0 0 #04f);`)
+          this.shape.setAttribute("style", `filter: drop-shadow(0 0 0 #04f);`);
         },
       };
       newTile.init();
@@ -110,7 +164,8 @@ export function handleCreateNewPath(e, tile, icon) {
   const adj = getAdjacentTile(G.tiles, tile, direction);
   const barrierBroken =
     direction === "bottom" &&
-    adj.pos.y / TILE_WIDTH + 1 > STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + G.waveNumber;
+    adj.pos.y / TILE_WIDTH + 1 >
+      STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + G.waveNumber;
 
   const exits = getTileExits(adj);
 
@@ -123,7 +178,9 @@ export function handleCreateNewPath(e, tile, icon) {
 
   if (barrierBroken) {
     const newWaveInfo = { start: G.clock, end: null };
-    G.waveNumber = newTile.pos.y / TILE_WIDTH - STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
+    G.waveNumber =
+      newTile.pos.y / TILE_WIDTH -
+      STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
     G.wavesTimes[G.waveNumber] = newWaveInfo;
     playPauseBtn.removeAttribute("disabled");
     G.inBattle = true;
@@ -302,18 +359,22 @@ export function drawNewPathTile(tile) {
   // console.log("drawNewPathTile", tile);
 
   const tileRect = document.querySelector(`#${tile.id}`);
+  const tileImage = document.querySelector(`#image-${tile.id}`);
+
   const chains = getChains(G.tileChain);
-  // console.log({ chains, tileChain: G.tileChain });
+  console.log({ tileRect, tileImage });
 
   enemyLanes.left.setAttribute("d", createPath(chains.left, "left"));
   enemyLanes.center.setAttribute("d", createPath(chains.center, "center"));
   enemyLanes.right.setAttribute("d", createPath(chains.right, "right"));
 
-  tileRect.setAttribute("fill", getTileColor(tile.type));
+  // tileRect.setAttribute("fill", getTileColor(tile.type));
   tileRect.setAttribute("data-type", "path");
+  tileImage.setAttribute("href", tileAssets.path);
 
   focusNoTile();
   hideRing();
+  // type.type = 'path'
 }
 
 export function updateVisibleTiles(sum = 0) {

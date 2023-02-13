@@ -195,5 +195,5 @@ appendGameEvents();
 
 setInterval(() => {
   const { tiles, enemies, bullets, towers, ...rest } = G;
-  pre.textContent = JSON.stringify(enemies, null, 2);
+  pre.textContent = JSON.stringify(tiles, null, 2);
 }, 100);

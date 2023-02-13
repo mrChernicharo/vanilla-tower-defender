@@ -175,8 +175,8 @@ export function createTower(pos, type) {
       pattern.setAttribute("height", 1);
       image.setAttribute("href", TOWERS[this.type].img);
       image.setAttribute("id", `image-${this.id}`);
-      image.setAttribute("width", 100);
-      image.setAttribute("height", 100);
+      image.setAttribute("width", TILE_WIDTH);
+      image.setAttribute("height", TILE_WIDTH);
 
       this.applyRotation(90);
 

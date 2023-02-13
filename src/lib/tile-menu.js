@@ -195,7 +195,7 @@ export const removeRingIcons = () => {
     icon.removeEventListener("click", menuActions[icon.dataset.type]);
     icon.remove();
   });
-  Array.from(document.querySelectorAll(".defs")).forEach((defs) => {
+  Array.from(document.querySelectorAll("#selection-ring-g .defs")).forEach((defs) => {
     // remove defs for ring icons, but leave tower defs
     if (!defs.classList.contains("tower-defs")) {
       defs.remove();
