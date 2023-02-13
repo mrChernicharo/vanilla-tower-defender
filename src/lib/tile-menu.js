@@ -204,7 +204,7 @@ export const removeRingIcons = () => {
 };
 
 export function showRing() {
-  console.trace("showRing");
+  // console.trace("showRing");
   const { x, y } = G.selectedTile.pos;
   selectionRing.setAttribute("transform", `translate(${x},${y})`);
   selectionRing.setAttribute("style", "opacity: .75; display: block");
@@ -212,7 +212,7 @@ export function showRing() {
 }
 
 export function hideRing() {
-  console.trace("hideRing");
+  // console.trace("hideRing");
   selectionRingG.setAttribute("style", "opacity: 0; display: none");
   selectionRing.setAttribute("style", "opacity: 0; display: none");
 }
@@ -226,7 +226,7 @@ export function removeEnemyEntrance(entryTile) {
 
 export function handleDisplayTileMenu(e, tile) {
   // console.log("handleDisplayTileMenu", { tile, inBattle: G.inBattle });
-  console.trace("handleDisplayTileMenu");
+  // console.trace("handleDisplayTileMenu");
   removeRingIcons();
 
   if (!tile?.visible) {

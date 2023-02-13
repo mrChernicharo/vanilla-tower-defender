@@ -1,4 +1,4 @@
-import { TOWERS } from "./constants";
+import { EXPLOSION_RADIUS } from "./constants";
 import { bulletsG } from "../lib/dom-selects";
 import { G } from "./G";
 import { getAngle } from "./helpers";
@@ -113,7 +113,6 @@ export function createBullet(tower, enemy) {
     hit(enemy) {
       enemy.hp -= this.damage;
       this.remove();
-      this.handleExplosion();
     },
     remove() {
       this.shape.remove();
@@ -123,28 +122,30 @@ export function createBullet(tower, enemy) {
       // const idx = G.bullets.findIndex((b) => b.id === this.id);
       // G.bullets.splice(idx, 1);
     },
-    handleExplosion() {
-      console.log("handleExplosion", { bullet: this, G });
+    handleExplosion(nearbyEnemies) {
+      console.log("handleExplosion", { bullet: this, G, nearbyEnemies });
 
-      if (this.type === "earth") {
-        const explosion = document.createElementNS(
-          "http://www.w3.org/2000/svg",
-          "circle"
-        );
+      const splashDamage = this.damage / 4;
 
-        explosion.setAttribute("r", 30);
-        explosion.setAttribute("cx", this.pos.x);
-        explosion.setAttribute("cy", this.pos.y);
-        explosion.setAttribute("fill", "red");
-        explosion.setAttribute("opacity", "0.5");
-        explosion.classList.add('explosion')
+      const explosion = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle"
+      );
 
-        bulletsG.append(explosion);
+      explosion.setAttribute("r", EXPLOSION_RADIUS);
+      explosion.setAttribute("cx", this.pos.x);
+      explosion.setAttribute("cy", this.pos.y);
+      explosion.classList.add("explosion");
 
-        setTimeout(() => {
-          explosion.remove();
-        }, 1000);
-      }
+      bulletsG.append(explosion);
+
+      nearbyEnemies.forEach((enemy) => {
+        enemy.hp -= splashDamage;
+      });
+
+      setTimeout(() => {
+        explosion.remove();
+      }, 1000);
     },
   };
   newBullet.init();

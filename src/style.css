@@ -130,19 +130,11 @@ button:focus-visible {
 }
 
 #selection-ring-g {
-  animation: grow;
+  animation: ring-grow;
   animation-duration: 0.2s;
+  /* animation-timing-function: cubic-bezier(0.250, 0.460, 0.450, 0.940); */
   transform-box: fill-box;
   transform-origin: center;
-}
-
-@keyframes grow {
-  0% {
-    scale: 0.75;
-  }
-  100% {
-    scale: 1;
-  }
 }
 
 .bullet-image {
@@ -213,7 +205,34 @@ button:focus-visible {
   pointer-events: all;
 }
 
+.explosion {
+  opacity: 0.5;
+  animation: explosion 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  transform-box: fill-box;
+  transform-origin: center;
 
-/* 
-#game-over-overlay:not(.hidden) a {
-} */
+}
+
+@keyframes explosion {
+  0% {
+    fill: blueviolet;
+    scale: 0;
+  }
+  50% {
+    fill: red;
+    scale: 1;
+  }
+  100% {
+    fill: orange;
+    scale: 0;
+  }
+}
+
+@keyframes ring-grow {
+  0% {
+    scale: 0.75;
+  }
+  100% {
+    scale: 1;
+  }
+}

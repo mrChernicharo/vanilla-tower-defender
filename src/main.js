@@ -4,6 +4,7 @@ import {
   TOWERS,
   STAGES_AND_WAVES,
   FPS,
+  EXPLOSION_RADIUS,
 } from "./lib/constants";
 import { pre, playPauseBtn, gameOverOverlay } from "./lib/dom-selects";
 
@@ -55,7 +56,10 @@ function handleWaveEnd() {
   handleDisplayTileMenu(null, G.selectedTile); // refresh ring-menu
   playPauseBtn.setAttribute("disabled", true);
 
-  if (G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1 && G.castleHP > 0) {
+  if (
+    G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1 &&
+    G.castleHP > 0
+  ) {
     addToast("you won!", "success", 3000);
     setTimeout(() => {
       alert("you won!");
@@ -127,10 +131,21 @@ function update() {
     if (distance < bullet.enemy.size) {
       // console.log("HIT!", bullet);
       bullet.hit(bullet.enemy);
+
+      if (bullet.type === "earth") {
+        const nearbyEnemies = G.enemies.filter(
+          (enemy) =>
+            enemy.id !== bullet.enemy.id &&
+            Math.abs(enemy.pos.x - bullet.pos.x) <= EXPLOSION_RADIUS &&
+            Math.abs(enemy.pos.y - bullet.pos.y) <= EXPLOSION_RADIUS
+        );
+        bullet.handleExplosion(nearbyEnemies);
+      }
+      // tower.gainXp()
     }
-    if (bullet.enemy.done) {
-      bullet.remove();
-    }
+    // if (bullet.enemy.done) {
+    //   bullet.remove();
+    // }
   }
 
   for (let enemy of G.enemies) {
@@ -192,5 +207,5 @@ appendGameEvents();
 
 setInterval(() => {
   const { tiles, enemies, bullets, towers, ...rest } = G;
-  pre.textContent = JSON.stringify(rest, null, 2);
-}, 500);
+  pre.textContent = JSON.stringify(enemies, null, 2);
+}, 100);

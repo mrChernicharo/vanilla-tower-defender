@@ -2,6 +2,7 @@ import { svg } from "./dom-selects";
 import { WaveDefinition } from "./WaveDefinition";
 
 export const FPS = 15;
+export const EXPLOSION_RADIUS = 30;
 
 export const initialGold = 200;
 export const initialEmeralds = 50;
