@@ -187,7 +187,7 @@ export function createTower(pos, type) {
       this.g.append(this.shape);
       scene.append(this.g);
     },
-    rotate(angle) {
+    rotateTowardsEnemy(angle) {
       const distanceToNextAngle = getDistanceBetweenAngles(
         this.rotation,
         angle

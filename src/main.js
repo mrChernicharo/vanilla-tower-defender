@@ -13,6 +13,7 @@ import {
   getAngle,
   getDistance,
   getDistanceBetweenAngles,
+  getNearbyEnemies,
 } from "./lib/helpers";
 import { createBullet, resetBullets } from "./lib/bullets";
 import { spawnEnemy } from "./lib/enemies";
@@ -101,25 +102,20 @@ function update() {
         targetEnemy.pos.y
       );
       distanceToEnemyInDeg = getDistanceBetweenAngles(tower.rotation, angle);
-      tower.rotate(angle);
+      tower.rotateTowardsEnemy(angle);
     }
     const enemyInSight = distanceToEnemyInDeg < 10;
 
     if (tower.cooldown > 0) {
       tower.cooldown = diff;
     } else if (tower.cooldown <= 0 && targetEnemy && enemyInSight) {
-      // } else if (targetEnemy?.spawned) {
+      // console.log("SHOOT!");
       tower.cooldown = freshCooldown;
       tower.lastShot = G.clock;
 
       const newBullet = createBullet(tower, targetEnemy);
       G.bullets.push(newBullet);
 
-      // console.log("SHOOT!", tower.type, {
-      //   targetEnemy,
-      //   bullet: newBullet,
-      //   bullets: G.bullets,
-      // });
     }
   }
 
@@ -130,22 +126,14 @@ function update() {
 
     if (distance < bullet.enemy.size) {
       // console.log("HIT!", bullet);
+      // tower.gainXp()
       bullet.hit(bullet.enemy);
 
       if (bullet.type === "earth") {
-        const nearbyEnemies = G.enemies.filter(
-          (enemy) =>
-            enemy.id !== bullet.enemy.id &&
-            Math.abs(enemy.pos.x - bullet.pos.x) <= EXPLOSION_RADIUS &&
-            Math.abs(enemy.pos.y - bullet.pos.y) <= EXPLOSION_RADIUS
-        );
+        const nearbyEnemies = getNearbyEnemies(bullet, EXPLOSION_RADIUS);
         bullet.handleExplosion(nearbyEnemies);
       }
-      // tower.gainXp()
     }
-    // if (bullet.enemy.done) {
-    //   bullet.remove();
-    // }
   }
 
   for (let enemy of G.enemies) {

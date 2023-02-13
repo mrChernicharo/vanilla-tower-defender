@@ -173,3 +173,12 @@ export function getStageNumberFromUrl() {
     }
   }
 }
+
+export function getNearbyEnemies(bullet, radius) {
+  return G.enemies.filter(
+    (enemy) =>
+      enemy.id !== bullet.enemy.id &&
+      Math.abs(enemy.pos.x - bullet.pos.x) <= radius &&
+      Math.abs(enemy.pos.y - bullet.pos.y) <= radius
+  );
+}

@@ -123,8 +123,6 @@ export function createBullet(tower, enemy) {
       // G.bullets.splice(idx, 1);
     },
     handleExplosion(nearbyEnemies) {
-      console.log("handleExplosion", { bullet: this, G, nearbyEnemies });
-
       const splashDamage = this.damage / 4;
 
       const explosion = document.createElementNS(
