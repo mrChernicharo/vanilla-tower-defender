@@ -17,7 +17,7 @@ import { createBullet, resetBullets } from "./lib/bullets";
 import { spawnEnemy } from "./lib/enemies";
 import { handleShowTowerPreview, handleDisplayTileMenu } from "./lib/tile-menu";
 import { handleCreateNewPath } from "./lib/tiles";
-import { getTowerType, handleTowerOptions, resetTowers } from "./lib/towers";
+import { getTowerType, handleTowerActions, resetTowers } from "./lib/towers";
 import { G } from "./lib/G";
 import { appendGameEvents, handlePlayPause } from "./lib/game-events";
 
@@ -28,7 +28,7 @@ export const menuActions = {
   trap: function () {},
   newPath: handleCreateNewPath,
   newTower: handleShowTowerPreview,
-  tower: handleTowerOptions,
+  tower: handleTowerActions,
 };
 
 const getCurrWave = () => G.wavesTimes[G.waveNumber];
@@ -55,7 +55,7 @@ function handleWaveEnd() {
   handleDisplayTileMenu(null, G.selectedTile); // refresh ring-menu
   playPauseBtn.setAttribute("disabled", true);
 
-  if (G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1) {
+  if (G.waveNumber === STAGES_AND_WAVES[G.stageNumber].waves.length - 1 && G.castleHP > 0) {
     addToast("you won!", "success", 3000);
     setTimeout(() => {
       alert("you won!");

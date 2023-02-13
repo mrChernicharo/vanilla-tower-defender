@@ -137,9 +137,9 @@ export const menuIcons = {
 export const TOWERS = {
   fire: {
     name: "fire",
-    damage: 40,
-    range: 160,
-    rate_of_fire: 2,
+    damage: 15,
+    range: 150,
+    rate_of_fire: 10,
     xp: 0,
     fill: "red",
     price: 100,
@@ -148,9 +148,9 @@ export const TOWERS = {
   },
   ice: {
     name: "ice",
-    damage: 20,
-    range: 200,
-    rate_of_fire: 3,
+    damage: 30,
+    range: 280,
+    rate_of_fire: 2,
     xp: 0,
     fill: "dodgerblue",
     price: 100,
@@ -160,7 +160,7 @@ export const TOWERS = {
   lightning: {
     name: "lightning",
     damage: 75,
-    range: 250,
+    range: 230,
     rate_of_fire: 1,
     xp: 0,
     fill: "gold",
@@ -170,9 +170,9 @@ export const TOWERS = {
   },
   earth: {
     name: "earth",
-    damage: 30,
-    range: 140,
-    rate_of_fire: 4,
+    damage: 140,
+    range: 180,
+    rate_of_fire: 0.5,
     xp: 0,
     fill: "orange",
     price: 100,

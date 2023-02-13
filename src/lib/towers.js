@@ -73,9 +73,9 @@ const towerActions = {
   },
 };
 
-export function handleTowerOptions(e) {
+export function handleTowerActions(e) {
   const [_, tileY, tileX] = G.selectedTile.id.split("-");
-  const towerId = `tower-${tileY * 100 + 50}-${tileX * 100 + 50}`;
+  const towerId = `tower-${tileY * TILE_WIDTH + 50}-${tileX * TILE_WIDTH + 50}`;
 
   const towerIdx = G.towers.findIndex((tower) => tower.id === towerId);
 

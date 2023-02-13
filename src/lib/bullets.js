@@ -113,6 +113,7 @@ export function createBullet(tower, enemy) {
     hit(enemy) {
       enemy.hp -= this.damage;
       this.remove();
+      this.handleExplosion();
     },
     remove() {
       this.shape.remove();
@@ -121,6 +122,29 @@ export function createBullet(tower, enemy) {
       G.bullets = G.bullets.filter((b) => b.id !== this.id);
       // const idx = G.bullets.findIndex((b) => b.id === this.id);
       // G.bullets.splice(idx, 1);
+    },
+    handleExplosion() {
+      console.log("handleExplosion", { bullet: this, G });
+
+      if (this.type === "earth") {
+        const explosion = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "circle"
+        );
+
+        explosion.setAttribute("r", 30);
+        explosion.setAttribute("cx", this.pos.x);
+        explosion.setAttribute("cy", this.pos.y);
+        explosion.setAttribute("fill", "red");
+        explosion.setAttribute("opacity", "0.5");
+        explosion.classList.add('explosion')
+
+        bulletsG.append(explosion);
+
+        setTimeout(() => {
+          explosion.remove();
+        }, 1000);
+      }
     },
   };
   newBullet.init();

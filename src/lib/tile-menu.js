@@ -1,6 +1,11 @@
 import { menuIcons, TILE_WIDTH, TOWERS } from "./constants";
 import { scene, selectionRing, selectionRingG } from "../lib/dom-selects";
-import { canAfford, canBecomePath, getIconDirection, getMenuType } from "./helpers";
+import {
+  canAfford,
+  canBecomePath,
+  getIconDirection,
+  getMenuType,
+} from "./helpers";
 import { menuActions } from "../main";
 import { getAdjacentTile } from "./tiles";
 import { createTower, getTowerType } from "./towers";
@@ -78,8 +83,8 @@ export function removePreviewTower() {
     range.remove()
   );
   Array.from(document.querySelectorAll(".preview-tower-defs")).forEach((defs) =>
-  defs.remove()
-);
+    defs.remove()
+  );
 }
 
 export const drawRingIcons = (menuType, tile) => {
@@ -199,6 +204,7 @@ export const removeRingIcons = () => {
 };
 
 export function showRing() {
+  console.trace("showRing");
   const { x, y } = G.selectedTile.pos;
   selectionRing.setAttribute("transform", `translate(${x},${y})`);
   selectionRing.setAttribute("style", "opacity: .75; display: block");
@@ -206,6 +212,7 @@ export function showRing() {
 }
 
 export function hideRing() {
+  console.trace("hideRing");
   selectionRingG.setAttribute("style", "opacity: 0; display: none");
   selectionRing.setAttribute("style", "opacity: 0; display: none");
 }
@@ -219,7 +226,7 @@ export function removeEnemyEntrance(entryTile) {
 
 export function handleDisplayTileMenu(e, tile) {
   // console.log("handleDisplayTileMenu", { tile, inBattle: G.inBattle });
-
+  console.trace("handleDisplayTileMenu");
   removeRingIcons();
 
   if (!tile?.visible) {
@@ -269,4 +276,3 @@ export function handleShowTowerPreview(e, tile, icon) {
     }
   });
 }
-

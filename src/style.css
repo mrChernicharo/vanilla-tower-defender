@@ -129,20 +129,21 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-/* #selection-ring-g.animate {
+#selection-ring-g {
   animation: grow;
-  animation-duration: 0.5s;
-  transform-origin: center center;
+  animation-duration: 0.2s;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 @keyframes grow {
   0% {
-    scale: 0.5;
+    scale: 0.75;
   }
   100% {
     scale: 1;
   }
-} */
+}
 
 .bullet-image {
   transform-box: fill-box;
@@ -208,9 +209,11 @@ button:focus-visible {
 
 #game-over-overlay:not(.hidden) {
   align-items: center;
-  opacity: 0.8;
+  opacity: 0.9;
   pointer-events: all;
 }
+
+
 /* 
 #game-over-overlay:not(.hidden) a {
 } */

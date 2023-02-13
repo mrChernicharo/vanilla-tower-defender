@@ -13,7 +13,12 @@ import {
   selectionRing,
   selectionRingG,
 } from "./dom-selects";
-import { handleDisplayTileMenu, hideRing, removePreviewTower, showRing } from "./tile-menu";
+import {
+  handleDisplayTileMenu,
+  hideRing,
+  removePreviewTower,
+  showRing,
+} from "./tile-menu";
 let playPauseIcon = "▶️";
 
 export function appendGameEvents() {
@@ -78,7 +83,12 @@ export function appendGameEvents() {
         const { index } = e.target.dataset;
         G.lastSelectedTile = G.selectedTile;
         G.selectedTile = G.tiles[index];
-        handleTileSelect(e);
+
+        // otherwise, animation wouldn't catch
+        hideRing();
+        setTimeout(() => {
+          handleTileSelect(e);
+        }, 0);
       },
       tower(e) {
         const towerId = e.target.id;
@@ -181,4 +191,3 @@ export function handleTileSelect(e) {
     handleDisplayTileMenu(e, G.selectedTile);
   }
 }
-
