@@ -54,7 +54,7 @@ function handleWaveEnd() {
   resetTowers();
   resetBullets();
   handlePlayPause();
-  handleDisplayTileMenu(null, G.selectedTile); // refresh ring-menu
+  handleDisplayTileMenu(G.selectedTile); // refresh ring-menu
   playPauseBtn.setAttribute("disabled", true);
 
   if (
@@ -78,7 +78,6 @@ function update() {
     let distanceToEnemyInDeg = null;
 
     for (let enemy of G.enemies) {
-      // prettier-ignore
       const d = getDistance(tower.pos.x, tower.pos.y, enemy.pos.x, enemy.pos.y);
       const enemyInRange = d < tower.range;
 
@@ -115,7 +114,6 @@ function update() {
 
       const newBullet = createBullet(tower, targetEnemy);
       G.bullets.push(newBullet);
-
     }
   }
 
@@ -142,6 +140,7 @@ function update() {
     if (enemy.hp <= 0) {
       enemy.die();
     }
+
     if (enemy.percProgress >= 100) {
       enemy.finish();
     }
@@ -194,6 +193,6 @@ export function runAnimation(frame) {
 appendGameEvents();
 
 setInterval(() => {
-  const { tiles, enemies, bullets, towers, ...rest } = G;
-  pre.textContent = JSON.stringify(tiles, null, 2);
+  const { tiles, enemies, bullets, towers, selectedTile, gold, ...rest } = G;
+  pre.textContent = JSON.stringify(selectedTile, null, 2);
 }, 100);

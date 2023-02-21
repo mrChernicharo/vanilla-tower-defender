@@ -165,7 +165,7 @@ export function handleTowerSelect(e) {
     rangeCircle.setAttribute("opacity", 0.1);
     updateFocusedTile();
     showRing();
-    handleDisplayTileMenu(e, G.selectedTile);
+    handleDisplayTileMenu(G.selectedTile);
   }
 }
 
@@ -188,6 +188,6 @@ export function handleTileSelect(e) {
     } else {
       showRing();
     }
-    handleDisplayTileMenu(e, G.selectedTile);
+    handleDisplayTileMenu(G.selectedTile);
   }
 }

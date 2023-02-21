@@ -1,9 +1,18 @@
 import { enemiesG, enemyLanes } from "../lib/dom-selects";
-import { addToast, getAngle, updateCastleHPDisplay, updateGoldDisplay } from "./helpers";
+import {
+  addToast,
+  canAfford,
+  getAngle,
+  getMenuType,
+  updateCastleHPDisplay,
+  updateGoldDisplay,
+} from "./helpers";
 import { G } from "./G";
 import { ENEMIES, STAGES_AND_WAVES } from "./constants";
+import { drawRingIcons, handleDisplayTileMenu } from "./tile-menu";
 
-const getCurrWave = () => STAGES_AND_WAVES[G.stageNumber].waves[G.waveNumber] || [];
+const getCurrWave = () =>
+  STAGES_AND_WAVES[G.stageNumber].waves[G.waveNumber] || [];
 
 export function spawnEnemy(waveEnemy) {
   // const initialPos =
@@ -107,6 +116,10 @@ export function spawnEnemy(waveEnemy) {
       this.text.remove();
       this.shape.remove();
       updateGoldDisplay(this.gold);
+      if (G.selectedTile) {
+        // enemy died while ringMenu was open => update colors based on affordability
+        handleDisplayTileMenu(G.selectedTile)
+      }
     },
     finish() {
       this.done = true;

@@ -106,15 +106,16 @@ export const drawRingIcons = (menuType, tile) => {
       if (!isBuildableAdj) continue;
     }
 
-    let ringColor = menuIcon.color;
-    if (menuType === "newTower" && !canAfford(TOWERS[menuIcon.type].price)) {
-      ringColor = "#999";
-    }
 
     const circle = document.createElementNS(
       "http://www.w3.org/2000/svg",
       "circle"
     );
+
+    let ringColor = menuIcon.color;
+    if (menuType === "newTower" && !canAfford(TOWERS[menuIcon.type].price)) {
+      ringColor = "#999";
+    }
 
     circle.setAttribute("class", `ring-icon`);
     circle.setAttribute("data-entity", `ring-icon`);
@@ -224,8 +225,8 @@ export function removeEnemyEntrance(entryTile) {
   G.tiles[entryTile.index] = entryTile;
 }
 
-export function handleDisplayTileMenu(e, tile) {
-  // console.log("handleDisplayTileMenu", { tile, inBattle: G.inBattle });
+export function handleDisplayTileMenu(tile) {
+  console.log("handleDisplayTileMenu", { tile, inBattle: G.inBattle });
   // console.trace("handleDisplayTileMenu");
   removeRingIcons();
 

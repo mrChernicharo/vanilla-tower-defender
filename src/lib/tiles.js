@@ -18,7 +18,7 @@ const tileAssets = {
   sand: "/assets/sprites/tile-sand.svg",
   wall: "/assets/sprites/tile-rock.svg",
 };
-// /assets/sprites/tile-rock.svg
+
 
 const tileColors = {
   grass: "#052",
@@ -40,7 +40,18 @@ export const getTileColor = (type, blocked = false) => {
 
 export function createGrid() {
   const { stage, wallTiles, blockedTiles } = STAGES_AND_WAVES[G.stageNumber];
-  const { cols, rows, entrypoint, baseTile /* wallTiles */ } = stage;
+  const { cols, rows, entrypoint, baseTile } = stage;
+
+  if (baseTile === 'dirt') {
+    tileAssets.path =  "/assets/sprites/tile-grass.svg"
+    tileAssets.wall =  "/assets/sprites/tile-sand.svg"
+    tileAssets.blocked = "/assets/sprites/tile-rock.svg"
+  } 
+  if (baseTile === 'sand') {
+    tileAssets.path =  "/assets/sprites/tile-grass.svg"
+    tileAssets.wall =  "/assets/sprites/tile-dirt.svg"
+    tileAssets.blocked = "/assets/sprites/tile-rock.svg"
+  }
 
   // set scene size
   svg.setAttribute("width", (cols + 1) * TILE_WIDTH);
@@ -143,12 +154,15 @@ export function createGrid() {
           this.shape.setAttribute("opacity", 0.4);
           this.shape.setAttribute(
             "style",
-            `filter: drop-shadow(0 0 1rem #04f);`
+            `filter: drop-shadow(0 0 12px #88f);`
           );
         },
         blur() {
-          this.shape.setAttribute("opacity", 1);
-          this.shape.setAttribute("style", `filter: drop-shadow(0 0 0 #04f);`);
+          const waveLine =
+            G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
+
+          this.shape.setAttribute("opacity", row >= waveLine ? 0.4 : 1);
+          this.shape.setAttribute("style", `filter: drop-shadow(0 0 0 #88f);`);
         },
       };
       newTile.init();
@@ -378,6 +392,7 @@ export function drawNewPathTile(tile) {
 }
 
 export function updateVisibleTiles(sum = 0) {
+  console.log("updateVisibleTiles");
   const waveLine =
     G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow + sum;
   for (let [i, tile] of G.tiles.entries()) {
@@ -391,7 +406,7 @@ export function updateVisibleTiles(sum = 0) {
     if (tile.visible) {
       tile.shape.setAttribute("opacity", 1);
     } else {
-      tile.shape.setAttribute("opacity", 0.5);
+      tile.shape.setAttribute("opacity", 0.4);
     }
   }
   console.log("updateVisibleTiles", { waveLine, tiles: G.tiles });
