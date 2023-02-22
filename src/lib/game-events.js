@@ -30,41 +30,48 @@ export function appendGameEvents() {
 
   document.onclick = (e) => {
     if (!e.target.closest("svg")) {
+        console.log("clicked outside");
       selectionRingG.setAttribute("style", "opacity: 0; display: none");
       selectionRing.setAttribute("style", "opacity: 0; display: none");
       G.lastSelectedTile = G.selectedTile;
       focusNoTile();
     }
 
-    // prettier-ignore
-    if (e.target.closest(`.ring-icon`) || e.target.closest(`[data-entity="tower"]`)) {
-  //   console.log("clicked towerIcon or tower");
-  }
-    // prettier-ignore
-    if (e.target.closest(`[data-entity="tower"]`)) {
-    // console.log("clicked tower", { e, towerPreviewActive: G.towerPreviewActive });
-  }
-    // prettier-ignore
-    if (!e.target.closest(`.ring-icon`) && !e.target.closest(`[data-entity="tower"]`)) {
-    // console.log("clicked anywhere but not at a towerIcon neither at a tower");
-
-    if (e.target.closest(`[data-entity="tile"]`) && G.tiles[e.target.closest(`[data-entity="tile"]`).dataset.index].hasTower) {
-      // console.log('clicked tile with a tower')
-      const { x, y } = G.selectedTile.pos;
-      const rangeCircle = document.querySelector(
-        `#range-tower-${y + 50}-${x + 50}`
-      );
-      rangeCircle.classList.add("locked");
-      rangeCircle.setAttribute("opacity", .1);
-      return
+    if (
+      e.target.closest(`.ring-icon`) ||
+      e.target.closest(`[data-entity="tower"]`)
+    ) {
+      //   console.log("clicked towerIcon or tower");
     }
-    Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
-      range.classList.remove("locked");
-      range.setAttribute('opacity', 0)
-    });
-    removePreviewTower();
-    G.towerPreviewActive = false;
-  }
+    if (e.target.closest(`[data-entity="tower"]`)) {
+      // console.log("clicked tower", { e, towerPreviewActive: G.towerPreviewActive });
+    }
+    if (
+      !e.target.closest(`.ring-icon`) &&
+      !e.target.closest(`[data-entity="tower"]`)
+    ) {
+      // console.log("clicked anywhere but not at a towerIcon neither at a tower");
+
+      if (
+        e.target.closest(`[data-entity="tile"]`) &&
+        G.tiles[e.target.closest(`[data-entity="tile"]`).dataset.index].hasTower
+      ) {
+        // console.log('clicked tile with a tower')
+        const { x, y } = G.selectedTile.pos;
+        const rangeCircle = document.querySelector(
+          `#range-tower-${y + 50}-${x + 50}`
+        );
+        rangeCircle.classList.add("locked");
+        rangeCircle.setAttribute("opacity", 0.1);
+        return;
+      }
+      Array.from(document.querySelectorAll(".tower-range")).forEach((range) => {
+        range.classList.remove("locked");
+        range.setAttribute("opacity", 0);
+      });
+      removePreviewTower();
+      G.towerPreviewActive = false;
+    }
   };
   svg.onclick = (e) => {
     G.lastClick = { x: e.offsetX - MARGIN, y: e.offsetY - MARGIN };
@@ -170,18 +177,20 @@ export function handleTowerSelect(e) {
 }
 
 export function handleTileSelect(e) {
-  // console.log("handleTileSelect", e);
+  console.log("handleTileSelect", e);
   if (G.selectedTile.hasTower) {
     return handleTowerSelect(e);
   }
 
   // clicked same tile as before
   if (G.lastSelectedTile?.id === G.selectedTile?.id) {
+    console.log("clicked SAME tile");
     focusNoTile();
     hideRing();
   }
   // clicked another tile
   else {
+    console.log("clicked another tile");
     updateFocusedTile();
     if (G.selectedTile.blocked) {
       hideRing();

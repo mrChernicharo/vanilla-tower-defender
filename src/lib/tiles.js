@@ -19,7 +19,6 @@ const tileAssets = {
   wall: "/assets/sprites/tile-rock.svg",
 };
 
-
 const tileColors = {
   grass: "#052",
   dirt: "#430",
@@ -42,15 +41,15 @@ export function createGrid() {
   const { stage, wallTiles, blockedTiles } = STAGES_AND_WAVES[G.stageNumber];
   const { cols, rows, entrypoint, baseTile } = stage;
 
-  if (baseTile === 'dirt') {
-    tileAssets.path =  "/assets/sprites/tile-grass.svg"
-    tileAssets.wall =  "/assets/sprites/tile-sand.svg"
-    tileAssets.blocked = "/assets/sprites/tile-rock.svg"
-  } 
-  if (baseTile === 'sand') {
-    tileAssets.path =  "/assets/sprites/tile-grass.svg"
-    tileAssets.wall =  "/assets/sprites/tile-dirt.svg"
-    tileAssets.blocked = "/assets/sprites/tile-rock.svg"
+  if (baseTile === "dirt") {
+    tileAssets.path = "/assets/sprites/tile-grass.svg";
+    tileAssets.wall = "/assets/sprites/tile-sand.svg";
+    tileAssets.blocked = "/assets/sprites/tile-rock.svg";
+  }
+  if (baseTile === "sand") {
+    tileAssets.path = "/assets/sprites/tile-grass.svg";
+    tileAssets.wall = "/assets/sprites/tile-dirt.svg";
+    tileAssets.blocked = "/assets/sprites/tile-rock.svg";
   }
 
   // set scene size
@@ -161,7 +160,8 @@ export function createGrid() {
           const waveLine =
             G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
 
-          this.shape.setAttribute("opacity", row >= waveLine ? 0.4 : 1);
+          console.log("tile blur", { waveLine, row });
+          this.shape.setAttribute("opacity", row > waveLine ? 0.4 : 1);
           this.shape.setAttribute("style", `filter: drop-shadow(0 0 0 #88f);`);
         },
       };
