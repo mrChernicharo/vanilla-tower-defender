@@ -3,6 +3,7 @@ import {
   updateGoldDisplay,
   updateEmeraldDisplay,
   updateCastleHPDisplay,
+  updateStageNameDisplay,
   updateWaveDisplay,
   getStageNumberFromUrl,
 } from "./helpers";
@@ -42,5 +43,6 @@ updateGoldDisplay();
 updateEmeraldDisplay();
 updateCastleHPDisplay();
 updateWaveDisplay(0);
+updateStageNameDisplay();
 
 export { G };

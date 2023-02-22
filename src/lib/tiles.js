@@ -157,12 +157,17 @@ export function createGrid() {
           );
         },
         blur() {
-          const waveLine =
+          let waveLine =
             G.waveNumber + STAGES_AND_WAVES[G.stageNumber].stage.firstWaveAtRow;
+          const afterWaveLineAndInvisible = row >= waveLine && !this.visible && !this.enemyEntrance;
 
-          console.log("tile blur", { waveLine, row });
-          this.shape.setAttribute("opacity", row > waveLine ? 0.4 : 1);
+          this.shape.setAttribute(
+            "opacity",
+            afterWaveLineAndInvisible ? 0.4 : 1
+          );
+
           this.shape.setAttribute("style", `filter: drop-shadow(0 0 0 #88f);`);
+          console.log("tile blur", { waveLine, row, tile: this });
         },
       };
       newTile.init();

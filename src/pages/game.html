@@ -25,12 +25,10 @@
           <div class="display-value" id="gold-display"></div>
         </div>
 
-
         <div class="stats-display">
           <img src="/assets/icons/gem.svg" width="24" height="24" />
           <div class="display-value" id="emeralds-display"></div>
         </div>
-
 
         <div class="stats-display">
           <img src="/assets/icons/heart.svg" width="24" height="24" />
@@ -44,20 +42,29 @@
         </div>
       </div>
 
-      <form id="game-speed-form">
-        <label for="normal">
-          <input type="radio" id="normal" name="speed" value="normal" checked />
-          normal
-        </label>
-        <label for="fast">
-          <input type="radio" id="fast" name="speed" value="fast" />
-          fast
-        </label>
-        <label for="faster">
-          <input type="radio" id="faster" name="speed" value="faster" />
-          faster
-        </label>
-      </form>
+      <div class="middle-display-container">
+        <h3 id="stage-name-display"></h3>
+        <form id="game-speed-form">
+          <label for="normal">
+            <input
+              type="radio"
+              id="normal"
+              name="speed"
+              value="normal"
+              checked
+            />
+            normal
+          </label>
+          <label for="fast">
+            <input type="radio" id="fast" name="speed" value="fast" />
+            fast
+          </label>
+          <label for="faster">
+            <input type="radio" id="faster" name="speed" value="faster" />
+            faster
+          </label>
+        </form>
+      </div>
 
       <button id="play-pause-btn" disabled>▶️</button>
     </section>

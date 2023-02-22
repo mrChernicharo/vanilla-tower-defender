@@ -5,6 +5,7 @@ import {
   emeraldsDisplay,
   toastsArea,
   waveDisplay,
+  stageNameDisplay,
 } from "./dom-selects";
 import { G } from "./G";
 import { handlePlayPause } from "./game-events";
@@ -119,6 +120,10 @@ export function updateWaveDisplay(wave = 0) {
     addToast(`wave ${wave}`);
   }
   waveDisplay.textContent = wave;
+}
+
+export function updateStageNameDisplay() {
+  stageNameDisplay.textContent = STAGES_AND_WAVES[G.stageNumber].stage.name;
 }
 
 export function canAfford(value) {

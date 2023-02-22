@@ -10,6 +10,8 @@ export const goldDisplay = document.querySelector("#gold-display");
 export const emeraldsDisplay = document.querySelector("#emeralds-display");
 export const castleHPDisplay = document.querySelector("#castle-hp-display");
 export const waveDisplay = document.querySelector("#wave-display");
+export const stageNameDisplay = document.querySelector("#stage-name-display");
+
 export const toastsArea = document.querySelector("#toasts-area");
 
 export const pre = document.querySelector("pre");
@@ -24,4 +26,3 @@ export const enemyLanes = {
 };
 
 export const gameOverOverlay = document.querySelector("#game-over-overlay");
-
