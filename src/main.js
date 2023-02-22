@@ -192,7 +192,7 @@ export function runAnimation(frame) {
 
 appendGameEvents();
 
-setInterval(() => {
-  const { tiles, enemies, bullets, towers, selectedTile, gold, ...rest } = G;
-  pre.textContent = JSON.stringify(G, null, 2);
-}, 100);
+// setInterval(() => {
+//   const { tiles, enemies, bullets, towers, selectedTile, gold, ...rest } = G;
+//   pre.textContent = JSON.stringify(G, null, 2);
+// }, 100);
